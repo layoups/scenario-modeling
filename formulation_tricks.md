@@ -4,4 +4,5 @@
 
 - Dummy customer node for excess supply + associated costs
 - Dummy supplier node for unmet demand + associated costs
+- Disjunctive Inequalities for mode constraints
 
