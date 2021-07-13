@@ -51,7 +51,7 @@ exp = ['conceptual', 'implemented']
 
 def draw_master_plan(i, exp):
 
-    G = gv.Digraph('MasterPlan_{}'.format(exp[i]), node_attr={'color': 'lightblue2', 'style': 'filled', 'shape': 'circle'}, engine='dot')
+    G = gv.Digraph('MasterPlan_{}'.format(exp[i]), node_attr={'color': 'lightblue2', 'style': 'filled', 'shape': 'circle'}, engine='dot', format='png')
 
     G.attr(size='6,6', rankdir='LR')
 
