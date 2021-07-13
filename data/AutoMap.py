@@ -64,6 +64,14 @@ class Nodes(auto_Base):
     def __repr__(self):
         return '{}_{}_{}_{}: {}'.format(self.name, self.country, self.region, self.role, self.pdct_fam)
 
+
+class Edges(auto_Base):
+
+    __tablename__ = 'Edges'
+
+    def __repr__(self):
+        return None
+
 auto_Base.prepare()
 RawLanes = auto_Base.classes.raw_lanes
 
