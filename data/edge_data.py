@@ -7,3 +7,4 @@ from sqlalchemy.sql import func
 
 from AutoMap import *
 
+### lets get some edges
