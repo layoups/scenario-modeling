@@ -22,22 +22,37 @@ def get_main_pflow(pdct_fam, session):
     return model_pflows
 
 
-def get_lat_long(pdct_fam, session):
+def get_lat_long(session):
     gm = googlemaps.Client(key=karim_api_key)
 
-    for i in range(0,len (X.Address.to_list())):
-        print(X.iat[i,2])
-        result=gm.geocode(X.iat[i,2])
-        #print(result)
+    locations = session.query(Locations)
+
+    for location in locations.all():
+        name = location.name
+        api = gm.geocode(name)
+
         try:
-            lat=result[0]["geometry"]["location"]["lat"]
-            long=result[0]["geometry"]["location"]["lng"]
-            print(lat,long)
-            X.iat[i,X.columns.get_loc('LAT')] =lat
-            X.iat[i,X.columns.get_loc('LONG')] =long
+            location.lat = api[0]["geometry"]["location"]["lat"]
+            location.long = api[0]["geometry"]["location"]["lng"]
+
         except:
-            lat=None
-            long=None
+            None
+        
+    session.commit()
+
+    # for i in range(0,len (X.Address.to_list())):
+    #     print(X.iat[i,2])
+    #     result=gm.geocode(X.iat[i,2])
+    #     #print(result)
+    #     try:
+    #         lat=result[0]["geometry"]["location"]["lat"]
+    #         long=result[0]["geometry"]["location"]["lng"]
+    #         print(lat,long)
+    #         X.iat[i,X.columns.get_loc('LAT')] =lat
+    #         X.iat[i,X.columns.get_loc('LONG')] =long
+    #     except:
+    #         lat=None
+    #         long=None
 
 
 def get_node_supply(pdct_fam, session):
@@ -115,5 +130,7 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    get_node_supply('4400ISR', session)
-    get_node_capacity('4400ISR', session)
+    # get_node_supply('4400ISR', session)
+    # get_node_capacity('4400ISR', session)
+
+    get_lat_long(session)

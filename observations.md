@@ -9,3 +9,9 @@ A list of observations and possible action items
 ## Alpha
 
 - calculate capacity in alpha, add total_alpha column
+
+
+## Locations
+
+- Locations stores lat long info
+- lat long info inserted in edges
