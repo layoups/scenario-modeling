@@ -40,21 +40,6 @@ def get_lat_long(session):
         
     session.commit()
 
-    # for i in range(0,len (X.Address.to_list())):
-    #     print(X.iat[i,2])
-    #     result=gm.geocode(X.iat[i,2])
-    #     #print(result)
-    #     try:
-    #         lat=result[0]["geometry"]["location"]["lat"]
-    #         long=result[0]["geometry"]["location"]["lng"]
-    #         print(lat,long)
-    #         X.iat[i,X.columns.get_loc('LAT')] =lat
-    #         X.iat[i,X.columns.get_loc('LONG')] =long
-    #     except:
-    #         lat=None
-    #         long=None
-
-
 def get_node_supply(pdct_fam, session):
     nodes = session.query(Nodes).filter(Nodes.pdct_fam == pdct_fam)
 
