@@ -72,6 +72,20 @@ class Edges(auto_Base):
     def __repr__(self):
         return None
 
+
+class Locations(auto_Base):
+
+    __tablename__ = 'Locations'
+
+    def __repr__(self):
+        return '{}_{}_{}: <latitude: {}>, <longitude: {}>'.format(
+            self.name, 
+            self.country, 
+            self.region,
+            self.lat,
+            self.long
+        )
+
 auto_Base.prepare()
 RawLanes = auto_Base.classes.raw_lanes
 
