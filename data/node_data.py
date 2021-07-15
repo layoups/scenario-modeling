@@ -116,7 +116,7 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    # get_node_supply('4400ISR', session)
-    # get_node_capacity('4400ISR', session)
+    get_node_supply('4400ISR', session)
+    get_node_capacity('4400ISR', session)
 
-    get_lat_long(session)
+    # get_lat_long(session)
