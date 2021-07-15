@@ -27,10 +27,10 @@ def get_locations(session):
     locations = session.query(Locations).all()
     return {(x.name, x.country, x.region): {'lat': x.lat, 'long': x.long} for x in locations}
 
-def insert_lat_long(session):
+def get_distances(session):
     locations = get_locations(session)
 
-    edges = session.query(Edges)
+    edges = session.query(Edges).filter(Edges.transport_distance == None)
     # start = datetime.now()
     for edge in edges.all():
         ori_location = locations[(edge.ori_name, edge.ori_country, edge.ori_region)]
@@ -53,4 +53,4 @@ if __name__ == '__main__':
     lon2 = 2.3522
     lat2 = 48.8566
 
-    insert_lat_long(session)
+    get_distances(session)
