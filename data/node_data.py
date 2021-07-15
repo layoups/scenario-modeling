@@ -25,7 +25,7 @@ def get_main_pflow(pdct_fam, session):
 def get_lat_long(session):
     gm = googlemaps.Client(key=karim_api_key)
 
-    locations = session.query(Locations)
+    locations = session.query(Locations).filter(Locations.lat == None)
 
     for location in locations.all():
         name = location.name
