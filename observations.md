@@ -14,4 +14,18 @@ A list of observations and possible action items
 ## Locations
 
 - Locations stores lat long info
-- lat long info inserted in edges
+- distance stored in edges
+- all info inferred from distances stored in edges
+
+## Scenario Edges
+- Add in_scenario column
+- Copy all scenario_0 for each scenario
+- Cost info stored in scenario edges, and brought into edge dict for each scenario
+
+
+## Scenario Nodes
+- Add in_scenario column
+- Copy all scenario_0 for each scenario
+
+
+
