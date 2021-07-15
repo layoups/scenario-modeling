@@ -26,6 +26,7 @@ A list of observations and possible action items
 ## Scenario Nodes
 - Add in_scenario column
 - Copy all scenario_0 for each scenario
+- Add replace info
 
 
 
