@@ -1,6 +1,6 @@
 ## Git Best Practices
 
-VM --> CSR --> Github --> local
+VM --> CSR --> Local --> Github
 
 ## Change in VM
 VM: git push to CSR
@@ -12,3 +12,4 @@ local: git push to Github
 local: git push to Github
 local: git push --all google to CSR
 VM: git pull
+
