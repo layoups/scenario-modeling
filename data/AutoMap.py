@@ -35,12 +35,26 @@ print(metadata.tables.keys())
 
 auto_Base = automap_base(metadata=metadata)
 
+class RawLanes(auto_Base):
+
+    row_id = Column(Integer, primary_key=True, autoincrement=True)
+
+    __tablename__ = 'scdsi_cv_lane_rate_automation_pl'
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self):
+        return "{}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <transport_mode: {}, ship_type: {}>".format(
+            self.product_family,
+            self.ship_from_name, self.ship_from_country, self.ship_from_region,
+            self.ship_to_name, self.ship_to_country, self.ship_to_region,
+            self.transport_mode, self.shipment_type)
+
 class Baselines(auto_Base):
 
     __tablename__ = 'scdsi_baselines'
 
     def __repr__(self):
-        return '{}: {} - {}'.format(self.baseline_id, self.date, self.description)
+        return 'Baseline {}: {} - {}'.format(self.baseline_id, self.date, self.description)
 
 class ShipRank(auto_Base):
 
@@ -131,6 +145,12 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
+    ship_ranks = session.query(ShipRank)
+    print(ship_ranks.all())
+
+    raw_row = session.query(RawLanes).first()
+    print(raw_row)
+
     # conn_prod = snowflake.connector.connect(
     #             user='SCDS_SCDSI_ETL_SVC',
     #             password='&p5dr#Hm8g',
@@ -148,7 +168,3 @@ if __name__ == '__main__':
 
     # df = cur.fetch_pandas_all()
     # print(df)
-
-
-    ship_types = session.query(Baselines).first()
-    print(ship_types)
