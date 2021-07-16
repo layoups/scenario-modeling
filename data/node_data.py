@@ -70,7 +70,8 @@ def get_pflow_demand(pflow, pdct_fam, session):
             Lanes.desti_role == Nodes.role,
             Lanes.desti_name == Nodes.name,
             Lanes.desti_country == Nodes.country,
-            Lanes.desti_region == Nodes.region
+            Lanes.desti_region == Nodes.region,
+            Lanes.pdct_fam == pdct_fam
         ).filter(
             Lanes.desti_role == 'Customer',
             or_(Lanes.pflow == pflow, Lanes.parent_pflow == pflow)  
@@ -88,7 +89,7 @@ def get_node_capacity(pdct_fam, session):
             update "Nodes" 
             set capacity = sub.cap
             from (
-                select total_alpha * :demand as cap, ori_role, ori_name, ori_country, ori_region
+                select total_alpha * :demand / 0.8 as cap, ori_role, ori_name, ori_country, ori_region
                 from "Lanes" join "Nodes"
                 on ori_role = role and ori_name = name and ori_country = country and ori_region = region
                 where ori_role in ('PCBA', 'DF', 'GHUB', 'OSLC', 'DSLC')
@@ -115,7 +116,7 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    # get_node_supply('4400ISR', session)
-    # get_node_capacity('4400ISR', session)
+    get_node_supply('4400ISR', session)
+    get_node_capacity('4400ISR', session)
 
-    get_lat_long(session)
+    # get_lat_long(session)
