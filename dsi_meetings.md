@@ -7,4 +7,4 @@
 - GCP: where to test and run NRP and basic db prep for optimization run
 
 ## 15/07/2021
-- Sudarshan join the trenches
+- Sudarshan kills it!!
