@@ -16,3 +16,6 @@ local: git push to Github
 local: git push --all google to CSR
 VM: git pull
 
+## Suppress Warnings
+- python -W ignore <file.py>
+
