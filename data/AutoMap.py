@@ -79,8 +79,32 @@ class RawLanes(auto_Base):
     __tablename__ = 'scdsi_nrp_raw_data'
 
     def __repr__(self):
-        return ''.format()
+        return "{} - {}: ({}_{}_{}) -> ({}_{}_{}) | ship_type: {} | total_paid: {}, total_shipped: {}>".format(
+            self.product_family, self.fiscal_quarter_ship,
+            self.ship_from_name, self.ship_from_country, self.ship_from_region_code,
+            self.ship_to_name, self.ship_to_country, self.ship_to_region_code,
+            self.shipment_type, self.agg_total_amount_paid, self.agg_chargeable_weight_total_amount
+            )
 
+
+class DecomNodes(auto_Base):
+
+    __tablename__ = 'scdsi_decommisioned_nodes'
+
+    def __repr__(self):
+        return '({}, {}): {} - <{}_{}_{}_{}>'.format(
+            self.baseline_id, self.scenario_id, self.pdct_fam, self.name, self.country, self.region, self.role
+            )
+
+
+class AltNodes(auto_Base):
+
+    __tablename__ = 'scdsi_alternative_nodes'
+
+    def __repr__(self) -> str:
+        return '({}, {}): {} - <{}_{}_{}_{}>'.format(
+            self.baseline_id, self.scenario_id, self.pdct_fam, self.name, self.country, self.region, self.role
+            )
 
 class Omega(auto_Base):
 
@@ -114,42 +138,6 @@ class Omega(auto_Base):
 #         """).format(self.d, self.f)
 #         return session.execute(stmt)
 
-
-# class pdct_fam_types(auto_Base):
-#     __tablename__ = 'pdct_fam_types'
-
-#     def __repr__(self):
-#         return "{}: {}".format(self.pdct_fam, self.pdct_type)
-
-
-# class Nodes(auto_Base):
-
-#     __tablename__ = 'Nodes'
-
-#     def __repr__(self):
-#         return '{}_{}_{}_{}: {}'.format(self.name, self.country, self.region, self.role, self.pdct_fam)
-
-
-# class Edges(auto_Base):
-
-#     __tablename__ = 'Edges'
-
-#     def __repr__(self):
-#         return None
-
-
-# class Locations(auto_Base):
-
-#     __tablename__ = 'Locations'
-
-#     def __repr__(self):
-#         return '{}_{}_{}: <latitude: {}>, <longitude: {}>'.format(
-#             self.name, 
-#             self.country, 
-#             self.region,
-#             self.lat,
-#             self.long
-#         )
 
 auto_Base.prepare()
 # RawLanes = auto_Base.classes.raw_lanes
