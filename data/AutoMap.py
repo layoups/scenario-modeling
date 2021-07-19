@@ -10,7 +10,7 @@ from sqlalchemy import Table, Column, Float, String, Integer
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.ext.automap import automap_base 
 
-from env import DB_CONN_PARAMETER
+# from env import DB_CONN_PARAMETER
 
 ## use stg engine, but prefix WI tables with WI
 
