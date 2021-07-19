@@ -126,6 +126,28 @@ class Omega(auto_Base):
     baseline_id = Column(Integer, primary_key=True)
 
     __tablename__ = 'scds_scdsi_wi.scdsi_omega'
+    
+    def __repr__(self) -> str:
+        return '{} | Cost: {}, CO2e: {}, Lead Time: {}'.format(
+            self.baseline_id, self.cost, self.co2e, self.lead_time
+        )
+
+
+class AltEdges(auto_Base):
+
+    atl_edge_id = Column(Integer, primary_key=True)
+
+    __tablename__ = "SCDS_SCDSI_WI.SCDSI_ALTERNATIVE_EDGES"
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self) -> str:
+        return "{}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
+            self.pdct_fam,
+            self.ori_name, self.ori_country, self.ori_region, self.ori_role,
+            self.desti_name, self.desti_country, self.desti_region, self.desti_role,
+            self.ship_type, self.pflow, self.path, self.path_rank, self.alpha,
+            self.d, self.f
+        ) 
 
 # class Lanes(auto_Base):
 #     __tablename__ = 'Lanes'
