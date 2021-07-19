@@ -30,12 +30,12 @@ engine = create_engine(URL(
 metadata = MetaData()
 metadata.reflect(engine, extend_existing=True) # extend_existing
 
-print(metadata.tables.keys())
+print('\n', metadata.tables.keys(), '\n')
 
 
 auto_Base = automap_base(metadata=metadata)
 
-class RawLanes(auto_Base):
+class RawHANA(auto_Base):
 
     row_id = Column(Integer, primary_key=True, autoincrement=True)
 
@@ -43,10 +43,10 @@ class RawLanes(auto_Base):
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self):
-        return "{}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <transport_mode: {}, ship_type: {}>".format(
+        return "{}: ({}_{}_{}) -> ({}_{}_{}) | <transport_mode: {}, ship_type: {}>".format(
             self.product_family,
-            self.ship_from_name, self.ship_from_country, self.ship_from_region,
-            self.ship_to_name, self.ship_to_country, self.ship_to_region,
+            self.ship_from_name, self.ship_from_country, self.ship_from_region_code,
+            self.ship_to_name, self.ship_to_country, self.ship_to_region_code,
             self.transport_mode, self.shipment_type)
 
 class Baselines(auto_Base):
@@ -67,6 +67,19 @@ class ShipRank(auto_Base):
 class Scenarios(auto_Base):
 
     __tablename__ = 'scdsi_scenarios'
+
+    def __repr__(self):
+        return 'Scenario: {} - Baseline: {} - Date: {} - {} '.format(
+            self.scenario_id, self.baseline_id, self.date, self.description
+        )
+
+
+class RawLanes(auto_Base):
+
+    __tablename__ = 'scdsi_nrp_raw_data'
+
+    def __repr__(self):
+        return ''.format()
 
 
 class Omega(auto_Base):
@@ -145,11 +158,8 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    ship_ranks = session.query(ShipRank)
-    print(ship_ranks.all())
-
-    raw_row = session.query(RawLanes).first()
-    print(raw_row)
+    raw_row = session.query(RawHANA).first()
+    print(raw_row, '\n')
 
     # conn_prod = snowflake.connector.connect(
     #             user='SCDS_SCDSI_ETL_SVC',
