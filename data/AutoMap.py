@@ -135,9 +135,26 @@ class Omega(auto_Base):
 
 class AltEdges(auto_Base):
 
-    atl_edge_id = Column(Integer, primary_key=True)
+    alt_edge_id = Column(Integer, primary_key=True)
 
     __tablename__ = "SCDS_SCDSI_WI.SCDSI_ALTERNATIVE_EDGES"
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self) -> str:
+        return "{}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
+            self.pdct_fam,
+            self.ori_name, self.ori_country, self.ori_region, self.ori_role,
+            self.desti_name, self.desti_country, self.desti_region, self.desti_role,
+            self.ship_type, self.pflow, self.path, self.path_rank, self.alpha,
+            self.d, self.f
+        ) 
+
+
+class DecomEdges(auto_Base):
+
+    decom_edge_id = Column(Integer, primary_key=True)
+
+    __tablename__ = "SCDS_SCDSI_WI.SCDSI_DECOMMISIONED_EDGES"
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
