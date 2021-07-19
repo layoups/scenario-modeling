@@ -54,7 +54,9 @@ class Baselines(auto_Base):
     __tablename__ = 'scdsi_baselines'
 
     def __repr__(self):
-        return 'Baseline {}: {} - {}'.format(self.baseline_id, self.date, self.description)
+        return 'Baseline {}:  {} to {} - {} - {}'.format(
+            self.baseline_id, self.start, self.end, self.date, self.description
+            )
 
 class ShipRank(auto_Base):
 
@@ -105,6 +107,19 @@ class AltNodes(auto_Base):
         return '({}, {}): {} - <{}_{}_{}_{}>'.format(
             self.baseline_id, self.scenario_id, self.pdct_fam, self.name, self.country, self.region, self.role
             )
+
+
+class Edges(auto_Base):
+
+    __tablename__ = 'scdsi_edges'
+
+    def __repr__(self) -> str:
+        return '({}_{}_{}) --> ({}_{}_{}): | {} | distance = {}, time = {}, co2 = {}'.format(
+            self.ori_name, self.ori_country, self.ori_region,
+            self.desti_name, self.desti_country, self.desti_region,
+            self.transport_mode,
+            self.distance, self.transport_time, self.co2e
+        )
 
 class Omega(auto_Base):
 
