@@ -76,14 +76,16 @@ def dfs_visit(scenario_id, baseline_id, pdct_type, stack, pflow, path_stack, cur
 
     path_rank += 1
 
-    result = session.query(Lanes).filter(
-        Lanes.desti_name == v.ori_name, 
-        Lanes.desti_country == v.ori_country,
-        Lanes.desti_region == v.ori_region,
-        Lanes.ship_rank <= v.ship_rank,
-        Lanes.ship_type != v.ship_type,
-        Lanes.pdct_fam == v.pdct_fam 
-        ).order_by(desc(Lanes.ship_rank), desc(Lanes.pflow))
+    result = session.query(ScenarioLanes).filter(
+        ScenarioLanes.scenario_id == scenario_id,
+        ScenarioLanes.baseline_id == baseline_id,
+        ScenarioLanes.desti_name == v.ori_name, 
+        ScenarioLanes.desti_country == v.ori_country,
+        ScenarioLanes.desti_region == v.ori_region,
+        ScenarioLanes.ship_rank <= v.ship_rank,
+        ScenarioLanes.ship_type != v.ship_type,
+        ScenarioLanes.pdct_fam == v.pdct_fam 
+        ).order_by(desc(ScenarioLanes.ship_rank), desc(ScenarioLanes.pflow))
 
 
     to_path = True
@@ -92,7 +94,7 @@ def dfs_visit(scenario_id, baseline_id, pdct_type, stack, pflow, path_stack, cur
         if u.color == 0:
             path_stack.append(1)
             stack += [u]
-            dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
+            dfs_visit(scenario_id, baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
         if u.pflow and u.pflow < pflow and u.color == 2:
             get_parent_pflow(stack, u, curr_path_head_rank, path_rank, session)
 
@@ -115,7 +117,7 @@ def dfs_visit(scenario_id, baseline_id, pdct_type, stack, pflow, path_stack, cur
 if __name__ == "__main__":
 
     pdct_fam = "4400ISR"
-    erase([pdct_fam], Session(), Lanes)
+    erase([pdct_fam], Session(), ScenarioLanes)
     dfs(0, 1, pdct_fam)
     # get_alphas(pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
