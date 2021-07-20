@@ -14,7 +14,7 @@ from Eraser import *
 from Visualize import *
 from Alpha import *
 
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(bind=wi_engine)
 
 def populate_scenario_lanes(scenario_id, baseline_id, session):
     baseline = session.query(Baselines).filter(Baselines.baseline_id == baseline_id).first()
@@ -141,11 +141,15 @@ def dfs_visit(scenario_id, baseline_id, pdct_type, stack, pflow, path_stack, cur
 
 if __name__ == "__main__":
 
-    pdct_fam = "4400ISR"
+    print(ScenarioLanes.__table__.columns.keys())
 
-    populate_scenario_lanes(0, 1, Session())
+    pdct_fam = "4400ISR"
+    scenario_id = 0
+    baseline_id = 1
+
+    # populate_scenario_lanes(scenario_id, baseline_id, Session())
     # erase([pdct_fam], Session(), ScenarioLanes)
-    # dfs(0, 1, pdct_fam)
+    dfs(scenario_id, baseline_id, pdct_fam)
     # get_alphas(pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
     # visualize_graphivz(pdct_fam, Session())
