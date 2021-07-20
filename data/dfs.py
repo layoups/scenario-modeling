@@ -16,14 +16,18 @@ from Alpha import *
 
 Session = sessionmaker(bind=engine)
 
-def dfs(pdct_fam):
+def dfs(scenario_id, baseline_id, pdct_fam):
     print('Network Reconstruction for {}'.format(pdct_fam))
 
     session = Session()
-    graph = session.query(Lanes).filter(Lanes.pdct_fam == pdct_fam).order_by(desc(Lanes.ship_rank))
+    graph = session.query(RawLanes).filter(
+        RawLanes.pdct_fam == pdct_fam,
+        RawLanes.scenario_id == scenario_id,
+        RawLanes.baseline_id == baseline_id,
+        ).order_by(desc(RawLanes.ship_rank))
 
-    pdct_types = session.query(pdct_fam_types).filter(pdct_fam_types.pdct_fam == pdct_fam)
-    pdct_type = pdct_types.first()
+    # pdct_types = session.query(pdct_fam_types).filter(pdct_fam_types.pdct_fam == pdct_fam)
+    # pdct_type = pdct_types.first()
 
     # for pdct_type in pdct_types:
     for v in graph.all():
@@ -45,18 +49,20 @@ def dfs(pdct_fam):
             path_rank = 0
             curr_path_head_rank = [-1]
             stack += [v]
-            dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
+            dfs_visit(scenario_id, baseline_id, pdct_fam, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
         pflow += 1
         # input("new pflow-----------------------------------------------------------------------new pflow")
     print("Network Revealed for {}".format(pdct_fam))
     print(datetime.now() - start)
 
 
-def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session):
+def dfs_visit(scenario_id, baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session):
     v = stack[-1]
 
     # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
 
+    v.scenario_id = scenario_id
+    v.baseline_id = baseline_id
     v.pflow = pflow
     v.path = path[0]
     v.path_rank = path_rank
@@ -110,7 +116,7 @@ if __name__ == "__main__":
 
     pdct_fam = "4400ISR"
     erase([pdct_fam], Session(), Lanes)
-    dfs(pdct_fam)
-    get_alphas(pdct_fam, Session())
-    visualize_networkx(pdct_fam, Session())
-    visualize_graphivz(pdct_fam, Session())
+    dfs(0, 1, pdct_fam)
+    # get_alphas(pdct_fam, Session())
+    # visualize_networkx(pdct_fam, Session())
+    # visualize_graphivz(pdct_fam, Session())

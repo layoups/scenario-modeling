@@ -24,6 +24,12 @@ def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
     return model_pflows
 
 
+def populate_Locations(session):
+    stmt = text("""
+            
+        """)
+
+
 def get_lat_long(session):
     gm = googlemaps.Client(key=karim_api_key)
 
