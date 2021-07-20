@@ -32,7 +32,7 @@ engine = create_engine(DB_CONN_PARAMETER_WI)
 metadata = MetaData()
 metadata.reflect(engine, extend_existing=True) # extend_existing
 Base = automap_base(metadata=metadata)
-print('\n', metadata.tables.keys(), '\n')
+# print('\n', metadata.tables.keys(), '\n')
 
 
 
@@ -353,6 +353,8 @@ if __name__ == "__main__":
 
     lane = session.query(ScenarioLanes).first()
     print(lane)
+
+    session.commit()
 
 
 
