@@ -16,3 +16,7 @@ def erase(pdcts, session, table):
         e.alpha = None
         e.in_pflow = None
     session.commit()
+
+if __name__ == '__main__':
+
+    None

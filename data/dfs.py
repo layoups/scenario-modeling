@@ -14,7 +14,25 @@ from Eraser import *
 from Visualize import *
 from Alpha import *
 
-Session = sessionmaker(bind=wi_engine)
+Session = sessionmaker(bind=engine)
+
+def create_baseline(baseline_id, start, end, description, date, session):
+    baseline = Baselines(baseline_id=baseline_id)
+    baseline.start = start
+    baseline.end = end
+    baseline.description = description
+    baseline.date = date
+    session.add(baseline)
+    session.commit()
+
+def create_scenario(scenario_id, baseline_id, date, description, session):
+    scenario = Scenarios(scenario_id=scenario_id)
+    scenario.baseline_id = baseline_id
+    scenario.date = date
+    scenario.description = description
+    session.add(scenario)
+    session.commit()
+
 
 def populate_scenario_lanes(scenario_id, baseline_id, session):
     baseline = session.query(Baselines).filter(Baselines.baseline_id == baseline_id).first()
@@ -26,7 +44,7 @@ def populate_scenario_lanes(scenario_id, baseline_id, session):
         lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"),
         "SHIPMENT_TYPE", ship_rank,
         sum("BILLED_WEIGHT"), sum("TOTAL_AMOUNT_PAID")
-        from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" rl join "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_SHIP_RANK" sr 
+        from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" rl join "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SHIP_RANK" sr 
         on rl."SHIPMENT_TYPE" = sr.ship_type
         where "BILLED_WEIGHT" != 0 
         and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
@@ -39,6 +57,7 @@ def populate_scenario_lanes(scenario_id, baseline_id, session):
     """).params(scenario_id = scenario_id, baseline_id = baseline_id, start = baseline.start, end = baseline.end)
 
     session.execute(stmt)
+    print(session.dirty)
     session.commit()
 
 def dfs(scenario_id, baseline_id, pdct_fam):
@@ -147,9 +166,12 @@ if __name__ == "__main__":
     scenario_id = 0
     baseline_id = 1
 
-    # populate_scenario_lanes(scenario_id, baseline_id, Session())
+    # create_baseline(1, '2020-01-01', datetime.now(), 'trial', '2021-07-20', Session())
+    # create_scenario(0, 1, datetime.now(), 'baseline', Session())
+
+    populate_scenario_lanes(scenario_id, baseline_id, Session())
     # erase([pdct_fam], Session(), ScenarioLanes)
-    dfs(scenario_id, baseline_id, pdct_fam)
+    # dfs(scenario_id, baseline_id, pdct_fam)
     # get_alphas(pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
     # visualize_graphivz(pdct_fam, Session())
