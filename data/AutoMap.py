@@ -1,3 +1,4 @@
+from enum import auto
 import numpy as np
 import pandas as pd
 
@@ -94,7 +95,7 @@ class DecomNodes(auto_Base):
     __tablename__ = 'scdsi_decommisioned_nodes'
 
     def __repr__(self):
-        return '({}, {}): {} - <{}_{}_{}_{}>'.format(
+        return '({}, {}) | {} - <{}_{}_{}_{}>'.format(
             self.baseline_id, self.scenario_id, self.pdct_fam, self.name, self.country, self.region, self.role
             )
 
@@ -104,8 +105,11 @@ class AltNodes(auto_Base):
     __tablename__ = 'scdsi_alternative_nodes'
 
     def __repr__(self) -> str:
-        return '({}, {}): {} - <{}_{}_{}_{}>'.format(
-            self.baseline_id, self.scenario_id, self.pdct_fam, self.name, self.country, self.region, self.role
+        return '({}, {}) | {} - <{}_{}_{}_{}> replaces <({}_{}_{}_{})> | supply: {}, capacity: {}, opex'.format(
+            self.baseline_id, self.scenario_id, self.pdct_fam, 
+            self.alt_name, self.alt_country, self.alt_region, self.role,
+            self.name, self.country, self.region, self.role,
+            self.supply, self.capacity, self.opex
             )
 
 
@@ -141,7 +145,8 @@ class AltEdges(auto_Base):
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
-        return "{}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
+        return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
+            self.scenario_id, self.baseline_id,
             self.pdct_fam,
             self.ori_name, self.ori_country, self.ori_region, self.ori_role,
             self.desti_name, self.desti_country, self.desti_region, self.desti_role,
@@ -158,7 +163,8 @@ class DecomEdges(auto_Base):
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
-        return "{}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
+        return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
+            self.scenario_id, self.baseline_id,
             self.pdct_fam,
             self.ori_name, self.ori_country, self.ori_region, self.ori_role,
             self.desti_name, self.desti_country, self.desti_region, self.desti_role,
@@ -166,35 +172,137 @@ class DecomEdges(auto_Base):
             self.d, self.f
         ) 
 
-# class Lanes(auto_Base):
-#     __tablename__ = 'Lanes'
 
-#     def __repr__(self):
-#         return "{}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
-#             self.pdct_fam,
-#             self.ori_name, self.ori_country, self.ori_region, self.ori_role,
-#             self.desti_name, self.desti_country, self.desti_region, self.desti_role,
-#             self.ship_type, self.pflow, self.path, self.path_rank, self.alpha,
-#             self.d, self.f
-#         )
-#         # return "{}: ({} - {} - {} - {}) -> ({} - {}) | ({}, {}) -> ({} - {} - {} - {})".format(
-#         #     self.pdct_fam, 
-#         #     self.ori_name, self.ori_country, self.ori_region, self.ori_role,
-#         #     self.ship_type, self.ship_rank,
-#         #     self.d, self.f,
-#         #     self.desti_name, self.desti_country, self.desti_region, self.desti_role
-#         # )
+class ScenarioLanes(auto_Base):
 
-#     def get_successors(self, session):
-#         stmt = text("""
-#         select * from "Lanes" 
-#         where d > {} and f < {}
-#         """).format(self.d, self.f)
-#         return session.execute(stmt)
+    scenario_row_id = Column(Integer, primary_key=True)
+
+    __tablename__ = "SCDS_SCDSI_WI.SCDSI_SCENARIO_LANES"
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self) -> str:
+        return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
+            self.scenario_id, self.baseline_id,
+            self.pdct_fam,
+            self.ori_name, self.ori_country, self.ori_region, self.ori_role,
+            self.desti_name, self.desti_country, self.desti_region, self.desti_role,
+            self.ship_type, self.pflow, self.path, self.path_rank, self.alpha,
+            self.d, self.f
+        )
+
+    def get_successors(self, session):
+        stmt = text("""
+        select * from "SCDS_SCDSI_WI.SCDSI_SCENARIO_LANES"
+        where d > {} and f < {}
+        """).format(self.d, self.f)
+        return session.execute(stmt)
+
+
+class Locations(auto_Base):
+
+    location_id = Column(Integer, primary_key=True)
+
+    __tablename__ = "SCDS_SCDSI_WI.SCDSI_LOCATIONS"
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self):
+        return '({}_{}_{}) | Latitude: {} - Longitude: {}'.format(
+            self.name, self.country, self.region, self.lat, self.long
+        )
+
+class ScenarioEdges(auto_Base):
+
+    scenario_edge_id = Column(Integer, primary_key=True)
+
+    __tablename__ = "SCDS_SCDSI_WI.SCDSI_SCENARIO_EDGES"
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self) -> str:
+        return '({}, {}) | ({}_{}_{}) --> ({}_{}_{}): | {} | distance = {}, time = {}, co2 = {}'.format(
+            self.scenario_id, self.baseline_id,
+            self.ori_name, self.ori_country, self.ori_region,
+            self.desti_name, self.desti_country, self.desti_region,
+            self.transport_mode,
+            self.distance, self.transport_time, self.co2e
+        )
+
+class ScenarioNodes(auto_Base):
+
+    scenario_node_id = Column(Integer, primary_key=True)
+
+    __tablename__ = "SCDS_SCDSI_WI.SCDSI_SCENARIO_NODES"
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self) -> str:
+        return '({}, {}) | ({}_{}_{}_{}) | supply: {}, capacity: {}, opex: {}'.format(
+            self.scenario_id, self.baseline_id,
+            self.name, self.country, self.region, self.role,
+            self.supply, self.capacity, self.opex
+        )
+
+
+
+class Runs(auto_Base):
+
+    run_id = Column(Integer, primary_key=True)
+
+    __tablename__ = "SCDS_SCDSI_WI.SCDSI_RUNS"
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self) -> str:
+        return '({}, {}, {}) | Date: {} | Lambda Cost: {}, Lambda Time: {}, Lambda CO2e: {}'.format(
+            self.run_id, self.scenario_id, self.baseline_id,
+            self.date,
+            self.lambda_cost, self.lambda_time, self.lambda_co2e
+        )
+
+class OptimalFlows(auto_Base):
+
+    opt_flow_id = Column(Integer, primary_key=True)
+
+    __tablename__ = "SCDS_SCDSI_WI.SCDSI_OPTIMAL_FLOWS"
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self) -> str:
+        return "({}, {}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <transport_mode: {}, flow: {}>".format(
+            self.run_id, self.scenario_id, self.baseline_id, 
+            self.pdct_fam,
+            self.ori_name, self.ori_country, self.ori_region, self.ori_role,
+            self.desti_name, self.desti_country, self.desti_region, self.desti_role,
+            self.transport_mode, self.flow
+        )
+
+
+class OptimalNodes(auto_Base):
+
+    opt_node_id = Column(Integer, primary_key=True)
+
+    __tablename__ = "SCDS_SCDSI_WI.SCDSI_OPTIMAL_NODES"
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self) -> str:
+        return '({}, {}, {}) | ({}_{}_{}_{}) | state: {}'.format(
+            self.run_id, self.scenario_id, self.baseline_id, 
+            self.name, self.country, self.region, self.role,
+            self.state
+        )
+
+
+class Solution(auto_Base):
+
+    solution_id = Column(Integer, primary_key=True)
+
+    __tablename__ = "SCDS_SCDSI_WI.SCDSI_SOLUTION"
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self) -> str:
+        return '({}, {}, {}) | <Optimal Cost: {}, Optimal Time: {}, Optimal CO2e: {}>'.format(
+            self.run_id, self.scenario_id, self.baseline_id,
+            self.optimal_cost, self.optimal_time, self.optimal_co2e
+        )
 
 
 auto_Base.prepare()
-# RawLanes = auto_Base.classes.raw_lanes
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
