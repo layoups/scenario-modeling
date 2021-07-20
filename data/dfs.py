@@ -17,22 +17,30 @@ from Alpha import *
 Session = sessionmaker(bind=engine)
 
 def populate_scenario_lanes(scenario_id, baseline_id, session):
-    stmt = """
+    baseline = session.query(Baselines).filter(Baselines.baseline_id == baseline_id).first()
+    print(Baselines.__table__.columns.keys())
+    print(baseline)
+    input()
+
+    stmt = text("""
         insert into "ScenarioLanes" (scenario_id, baseline_id, pdct_fam, ori_name, ori_country, ori_region, desti_name, desti_country, desti_region, ship_type, ship_rank, total_weight, total_paid)
-        select 1, 0, "PRODUCT_FAMILY", 
+        select :scenario_id, :baseline_id, "PRODUCT_FAMILY", 
         lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
         lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"),
         "SHIPMENT_TYPE", ship_rank,
         sum("BILLED_WEIGHT"), sum("TOTAL_AMOUNT_PAID")
-        from raw_lanes rl join "ShipRank" sr 
+        from "SCDS_SCDSI_STG.SCDSI_CV_LANE_RATE_AUTOMATION_PL" rl join "SCDS_SCDSI_STG.SCDSI_SHIP_RANK" sr 
         on rl."SHIPMENT_TYPE" = sr.ship_type
         where "BILLED_WEIGHT" != 0 
         and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
+        and "SHIP_DATE_PURE_SHIP" >= :start and "SHIP_DATE_PURE_SHIP" <= :end
         group by "PRODUCT_FAMILY", 
         "SHIP_FROM_NAME", "SHIP_FROM_COUNTRY", "SHIP_FROM_REGION_CODE", 
         "SHIP_TO_NAME", "SHIP_TO_COUNTRY", "SHIP_TO_REGION_CODE", 
         "SHIPMENT_TYPE", ship_rank;
-    """
+    """).params(scenario_id = scenario_id, baseline_id = baseline_id, start = baseline.start, end = baseline.end)
+
+    session.execute(stmt)
 
 def dfs(scenario_id, baseline_id, pdct_fam):
     print('Network Reconstruction for {}'.format(pdct_fam))
@@ -135,8 +143,10 @@ def dfs_visit(scenario_id, baseline_id, pdct_type, stack, pflow, path_stack, cur
 if __name__ == "__main__":
 
     pdct_fam = "4400ISR"
-    erase([pdct_fam], Session(), ScenarioLanes)
-    dfs(0, 1, pdct_fam)
+
+    populate_scenario_lanes(0, 1, Session())
+    # erase([pdct_fam], Session(), ScenarioLanes)
+    # dfs(0, 1, pdct_fam)
     # get_alphas(pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
     # visualize_graphivz(pdct_fam, Session())

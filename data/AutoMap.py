@@ -31,7 +31,7 @@ engine = create_engine(URL(
 metadata = MetaData()
 metadata.reflect(engine, extend_existing=True) # extend_existing
 
-print('\n', metadata.tables.keys(), '\n')
+# print('\n', metadata.tables.keys(), '\n')
 
 
 auto_Base = automap_base(metadata=metadata)
@@ -52,7 +52,10 @@ class RawHANA(auto_Base):
 
 class Baselines(auto_Base):
 
+    start = Column("START", String)
+
     __tablename__ = 'scdsi_baselines'
+    __table_args__ = {'extend_existing': True}
 
     def __repr__(self):
         return 'Baseline {}:  {} to {} - {} - {}'.format(
