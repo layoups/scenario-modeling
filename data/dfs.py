@@ -103,7 +103,7 @@ def dfs(baseline_id, pdct_fam):
             stack += [v]
             dfs_visit(baseline_id, pdct_fam, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
         pflow += 1
-        # input("new pflow-----------------------------------------------------------------------new pflow")
+        input("new pflow-----------------------------------------------------------------------new pflow")
     print("Network Revealed for {}".format(pdct_fam))
     print(datetime.now() - start)
 
@@ -111,7 +111,7 @@ def dfs(baseline_id, pdct_fam):
 def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session):
     v = stack[-1]
 
-    # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
+    debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
 
     v.scenario_id = 0
     v.baseline_id = baseline_id
@@ -157,7 +157,7 @@ def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_r
     if to_path:
         if node_role_per_path(stack, curr_path_head_rank[0], len(stack), session):
             path[0] += 1
-            # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "TAIL")
+            debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "TAIL")
     stack.pop()
     path_rank -= 1
     path_stack.append(0)
@@ -179,7 +179,7 @@ if __name__ == "__main__":
 
     # erase([pdct_fam], Session(), ScenarioLanes)
     
-    dfs(scenario_id, baseline_id, pdct_fam)
+    dfs(baseline_id, pdct_fam)
     # get_alphas(pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
     # visualize_graphivz(pdct_fam, Session())
