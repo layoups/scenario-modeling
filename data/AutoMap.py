@@ -11,22 +11,14 @@ from sqlalchemy import Table, Column, Float, String, Integer
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.ext.automap import automap_base 
 
-# from env import DB_CONN_PARAMETER
+from env import DB_CONN_PARAMETER
 
 ## use stg engine, but prefix WI tables with WI
 
 
 # engine_local = create_engine(DB_CONN_PARAMETER)
 
-engine = create_engine(URL(
-                user='SCDS_SCDSI_ETL_SVC',
-                password='&p5dr#Hm8g',
-                account='cisco.us-east-1',
-                warehouse='SCDS_SCDSI_ETL_WH',
-                database='SCDS_DB',
-                schema='SCDS_SCDSI_STG',
-                role = 'SCDS_SCDSI_ETL_ROLE'
-                ))
+engine = create_engine(DB_CONN_PARAMETER)
 
 metadata = MetaData()
 metadata.reflect(engine, extend_existing=True) # extend_existing

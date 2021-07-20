@@ -18,29 +18,28 @@ Session = sessionmaker(bind=engine)
 
 def populate_scenario_lanes(scenario_id, baseline_id, session):
     baseline = session.query(Baselines).filter(Baselines.baseline_id == baseline_id).first()
-    print(Baselines.__table__.columns.keys())
-    print(baseline)
-    input()
 
     stmt = text("""
-        insert into "ScenarioLanes" (scenario_id, baseline_id, pdct_fam, ori_name, ori_country, ori_region, desti_name, desti_country, desti_region, ship_type, ship_rank, total_weight, total_paid)
-        select :scenario_id, :baseline_id, "PRODUCT_FAMILY", 
+        insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_LANES" (scenario_row_id, scenario_id, baseline_id, pdct_fam, ori_name, ori_country, ori_region, desti_name, desti_country, desti_region, ship_type, ship_rank, total_weight, total_paid)
+        select "ROW_ID", :scenario_id, :baseline_id, "PRODUCT_FAMILY", 
         lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
         lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"),
         "SHIPMENT_TYPE", ship_rank,
         sum("BILLED_WEIGHT"), sum("TOTAL_AMOUNT_PAID")
-        from "SCDS_SCDSI_STG.SCDSI_CV_LANE_RATE_AUTOMATION_PL" rl join "SCDS_SCDSI_STG.SCDSI_SHIP_RANK" sr 
+        from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" rl join "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_SHIP_RANK" sr 
         on rl."SHIPMENT_TYPE" = sr.ship_type
         where "BILLED_WEIGHT" != 0 
         and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
         and "SHIP_DATE_PURE_SHIP" >= :start and "SHIP_DATE_PURE_SHIP" <= :end
-        group by "PRODUCT_FAMILY", 
+        and "PRODUCT_FAMILY" not in ('TBA')
+        group by "ROW_ID", "PRODUCT_FAMILY", 
         "SHIP_FROM_NAME", "SHIP_FROM_COUNTRY", "SHIP_FROM_REGION_CODE", 
         "SHIP_TO_NAME", "SHIP_TO_COUNTRY", "SHIP_TO_REGION_CODE", 
         "SHIPMENT_TYPE", ship_rank;
     """).params(scenario_id = scenario_id, baseline_id = baseline_id, start = baseline.start, end = baseline.end)
 
     session.execute(stmt)
+    session.commit()
 
 def dfs(scenario_id, baseline_id, pdct_fam):
     print('Network Reconstruction for {}'.format(pdct_fam))

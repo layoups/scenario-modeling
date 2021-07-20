@@ -6,10 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 
 from AutoMap import *
+from env import KARIM_API_KEY
 
 import googlemaps
-
-karim_api_key = 'AIzaSyACWWCaFlJje26Yapq2ifqURXhXR5PfhUs'
 
 
 def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
@@ -31,7 +30,7 @@ def populate_Locations(session):
 
 
 def get_lat_long(session):
-    gm = googlemaps.Client(key=karim_api_key)
+    gm = googlemaps.Client(key=KARIM_API_KEY)
 
     locations = session.query(Locations).filter(Locations.lat == None)
 
