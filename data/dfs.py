@@ -16,14 +16,36 @@ from Alpha import *
 
 Session = sessionmaker(bind=engine)
 
-def dfs(pdct_fam):
+def populate_scenario_lanes(scenario_id, baseline_id, session):
+    stmt = """
+        insert into "ScenarioLanes" (scenario_id, baseline_id, pdct_fam, ori_name, ori_country, ori_region, desti_name, desti_country, desti_region, ship_type, ship_rank, total_weight, total_paid)
+        select 1, 0, "PRODUCT_FAMILY", 
+        lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
+        lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"),
+        "SHIPMENT_TYPE", ship_rank,
+        sum("BILLED_WEIGHT"), sum("TOTAL_AMOUNT_PAID")
+        from raw_lanes rl join "ShipRank" sr 
+        on rl."SHIPMENT_TYPE" = sr.ship_type
+        where "BILLED_WEIGHT" != 0 
+        and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
+        group by "PRODUCT_FAMILY", 
+        "SHIP_FROM_NAME", "SHIP_FROM_COUNTRY", "SHIP_FROM_REGION_CODE", 
+        "SHIP_TO_NAME", "SHIP_TO_COUNTRY", "SHIP_TO_REGION_CODE", 
+        "SHIPMENT_TYPE", ship_rank;
+    """
+
+def dfs(scenario_id, baseline_id, pdct_fam):
     print('Network Reconstruction for {}'.format(pdct_fam))
 
     session = Session()
-    graph = session.query(Lanes).filter(Lanes.pdct_fam == pdct_fam).order_by(desc(Lanes.ship_rank))
+    graph = session.query(ScenarioLanes).filter(
+        ScenarioLanes.pdct_fam == pdct_fam,
+        ScenarioLanes.scenario_id == scenario_id,
+        ScenarioLanes.baseline_id == baseline_id,
+        ).order_by(desc(ScenarioLanes.ship_rank))
 
-    pdct_types = session.query(pdct_fam_types).filter(pdct_fam_types.pdct_fam == pdct_fam)
-    pdct_type = pdct_types.first()
+    # pdct_types = session.query(pdct_fam_types).filter(pdct_fam_types.pdct_fam == pdct_fam)
+    # pdct_type = pdct_types.first()
 
     # for pdct_type in pdct_types:
     for v in graph.all():
@@ -45,18 +67,20 @@ def dfs(pdct_fam):
             path_rank = 0
             curr_path_head_rank = [-1]
             stack += [v]
-            dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
+            dfs_visit(scenario_id, baseline_id, pdct_fam, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
         pflow += 1
         # input("new pflow-----------------------------------------------------------------------new pflow")
     print("Network Revealed for {}".format(pdct_fam))
     print(datetime.now() - start)
 
 
-def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session):
+def dfs_visit(scenario_id, baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session):
     v = stack[-1]
 
     # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
 
+    v.scenario_id = scenario_id
+    v.baseline_id = baseline_id
     v.pflow = pflow
     v.path = path[0]
     v.path_rank = path_rank
@@ -70,14 +94,16 @@ def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, pa
 
     path_rank += 1
 
-    result = session.query(Lanes).filter(
-        Lanes.desti_name == v.ori_name, 
-        Lanes.desti_country == v.ori_country,
-        Lanes.desti_region == v.ori_region,
-        Lanes.ship_rank <= v.ship_rank,
-        Lanes.ship_type != v.ship_type,
-        Lanes.pdct_fam == v.pdct_fam 
-        ).order_by(desc(Lanes.ship_rank), desc(Lanes.pflow))
+    result = session.query(ScenarioLanes).filter(
+        ScenarioLanes.scenario_id == scenario_id,
+        ScenarioLanes.baseline_id == baseline_id,
+        ScenarioLanes.desti_name == v.ori_name, 
+        ScenarioLanes.desti_country == v.ori_country,
+        ScenarioLanes.desti_region == v.ori_region,
+        ScenarioLanes.ship_rank <= v.ship_rank,
+        ScenarioLanes.ship_type != v.ship_type,
+        ScenarioLanes.pdct_fam == v.pdct_fam 
+        ).order_by(desc(ScenarioLanes.ship_rank), desc(ScenarioLanes.pflow))
 
 
     to_path = True
@@ -86,7 +112,7 @@ def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, pa
         if u.color == 0:
             path_stack.append(1)
             stack += [u]
-            dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
+            dfs_visit(scenario_id, baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
         if u.pflow and u.pflow < pflow and u.color == 2:
             get_parent_pflow(stack, u, curr_path_head_rank, path_rank, session)
 
@@ -109,8 +135,8 @@ def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, pa
 if __name__ == "__main__":
 
     pdct_fam = "4400ISR"
-    erase([pdct_fam], Session(), Lanes)
-    dfs(pdct_fam)
-    get_alphas(pdct_fam, Session())
-    visualize_networkx(pdct_fam, Session())
-    visualize_graphivz(pdct_fam, Session())
+    erase([pdct_fam], Session(), ScenarioLanes)
+    dfs(0, 1, pdct_fam)
+    # get_alphas(pdct_fam, Session())
+    # visualize_networkx(pdct_fam, Session())
+    # visualize_graphivz(pdct_fam, Session())
