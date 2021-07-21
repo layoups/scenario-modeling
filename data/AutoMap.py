@@ -546,7 +546,7 @@ if __name__ == "__main__":
 
     session.commit()
 
-    test_auto_mapping()
+    # test_auto_mapping()
 
     # conn_prod = snowflake.connector.connect(
     #             user='SCDS_SCDSI_ETL_SVC',
