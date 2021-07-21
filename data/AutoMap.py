@@ -385,6 +385,16 @@ class ScenarioEdges(Base):
 class ScenarioNodes(Base):
 
     scenario_node_id = Column(Integer, primary_key=True)
+    baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
+    scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
+    pdct_fam = Column('pdct_fam', String)
+    role = Column('role', String)
+    name = Column('name', String)
+    country = Column('country', String)
+    region = Column('region', String)
+    supply = Column('supply', Float)
+    capacity = Column('capacity', Float)
+    opex = Column('opex', Float)
 
     __tablename__ = 'scdsi_scenario_nodes'
     __table_args__ = {'extend_existing': True}
