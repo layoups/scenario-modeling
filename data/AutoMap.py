@@ -434,7 +434,7 @@ class OptimalFlows(Base):
     opt_flow_id = Column('opt_flow_id', Integer, primary_key=True)
     baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
     scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
-    run_id = Column('run_id', Integer, ForeignKey('scdsi_runs,run_id'))
+    run_id = Column('run_id', Integer, ForeignKey('scdsi_runs.run_id'))
     pdct_fam = Column('pdct_fam', String)
     ori_name = Column('ori_name', String)
     ori_country = Column('ori_country', String)
@@ -464,7 +464,7 @@ class OptimalNodes(Base):
     opt_node_id = Column('opt_node_id', Integer, primary_key=True)
     baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
     scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
-    run_id = Column('run_id', Integer, ForeignKey('scdsi_runs,run_id'))
+    run_id = Column('run_id', Integer, ForeignKey('scdsi_runs.run_id'))
     role = Column('role', String)
     name = Column('name', String)
     country = Column('country', String)
@@ -485,6 +485,12 @@ class OptimalNodes(Base):
 class Solution(Base):
 
     solution_id = Column(Integer, primary_key=True)
+    baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
+    scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
+    run_id = Column('run_id', Integer, ForeignKey('scdsi_runs.run_id'))
+    optimal_cost = Column('optimal_cost', Float)
+    optimal_co2e = Column('optimal_co2e', Float)
+    optimal_time = Column('optimal_time', Float)
 
     __tablename__ = 'scdsi_solution'
     __table_args__ = {'extend_existing': True}
