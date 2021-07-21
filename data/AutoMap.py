@@ -410,9 +410,14 @@ class ScenarioNodes(Base):
 
 class Runs(Base):
 
-    run_id = Column(Integer, primary_key=True)
-    # baseline_id = Column(Integer, ForeignKey('scdsi_baselines.baseline_id'))
-    # scdsi_baselines = relationship('scdsi_baselines', backref='scdsi_runs_collection', foreign_keys=[baseline_id])
+    run_id = Column(Integer, primary_key=True, nullable=True)
+    baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'), primary_key=True, nullable=True)
+    scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'), primary_key=True, nullable=True)
+    date = Column('date', Date)
+    description = Column('description', String)
+    lambda_cost = Column('lambda_cost', Float)
+    lambda_time = Column('lambda_time', Float)
+    lambda_co2e = Column('lambda_co2e', Float)
 
     __tablename__ = 'scdsi_runs'
     __table_args__ = {'extend_existing': True}
