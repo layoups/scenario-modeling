@@ -181,6 +181,19 @@ class AltNodes(Base):
 
 class Edges(Base):
 
+    edge_id = Column('edge_id', Integer, primary_key=True, nullable=True)
+    distance = Column('distance', Float)
+    co2e = Column('co2e', Float)
+    transport_mode = Column('transport_mode', String)
+    transport_time = Column('transport_time', Float)
+    ori_name = Column('ori_name', String)
+    ori_country = Column('ori_country', String)
+    ori_region = Column('ori_region', String)
+    desti_name = Column('desti_name', String)
+    desti_country = Column('desti_country', String)
+    desti_region = Column('desti_region', String)
+
+
     __tablename__ = 'scdsi_edges'
     __table_args__ = {'extend_existing': True}
 
@@ -240,35 +253,35 @@ class DecomEdges(Base):
 
 class ScenarioLanes(Base):
 
-    # scenario_row_id = Column(Integer, primary_key=True)
-    # scenario_id = Column(Integer)
-    # baseline_id = Column(String)
-    # pdct_fam = Column(String)
-    # ori_name = Column(String)
-    # ori_country = Column(String)
-    # ori_region = Column(String)
-    # ori_role = Column(String, default='')
-    # desti_name = Column(String)
-    # desti_country = Column(String)
-    # desti_region = Column(String)
-    # desti_role = Column(String, default='')
-    # ship_type = Column(String)
-    # ship_rank = Column(Integer)
-    # total_weight = Column(Float)
-    # total_paid = Column(Float)
-    # alpha = Column(Float)
-    # total_alpha = Column(Float)
-    # color = Column(Integer, default=0)
-    # d = Column(Integer, default=0)
-    # f = Column(Integer, default=0)
-    # path = Column(Integer, default=0)
-    # path_rank = Column(Integer, default=0)
-    # pflow = Column(Integer, default=0)
-    # parent_pflow = Column(Integer)
-    # in_pflow = Column(Integer)
+    scenario_row_id = Column(Integer, primary_key=True)
+    scenario_id = Column(Integer)
+    baseline_id = Column(String)
+    pdct_fam = Column(String)
+    ori_name = Column(String)
+    ori_country = Column(String)
+    ori_region = Column(String)
+    ori_role = Column(String, default='')
+    desti_name = Column(String)
+    desti_country = Column(String)
+    desti_region = Column(String)
+    desti_role = Column(String, default='')
+    ship_type = Column(String)
+    ship_rank = Column(Integer)
+    total_weight = Column(Float)
+    total_paid = Column(Float)
+    alpha = Column(Float)
+    total_alpha = Column(Float)
+    color = Column(Integer, default=0)
+    d = Column(Integer, default=0)
+    f = Column(Integer, default=0)
+    path = Column(Integer, default=0)
+    path_rank = Column(Integer, default=0)
+    pflow = Column(Integer, default=0)
+    parent_pflow = Column(Integer)
+    in_pflow = Column(Integer)
 
     __tablename__ = 'scdsi_scenario_lanes'
-    # __table_args__ = {'extend_existing': True}
+    __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
         return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
