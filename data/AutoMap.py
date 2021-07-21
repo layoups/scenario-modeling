@@ -153,6 +153,7 @@ class DecomNodes(Base):
 class AltNodes(Base):
 
     __tablename__ = 'scdsi_alternative_nodes'
+    __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
         return '({}, {}) | {} - <{}_{}_{}_{}> replaces <({}_{}_{}_{})> | supply: {}, capacity: {}, opex'.format(
@@ -166,6 +167,7 @@ class AltNodes(Base):
 class Edges(Base):
 
     __tablename__ = 'scdsi_edges'
+    __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
         return '({}_{}_{}) --> ({}_{}_{}): | {} | distance = {}, time = {}, co2 = {}'.format(
@@ -177,6 +179,7 @@ class Edges(Base):
 class Omega(Base):
 
     __tablename__ = 'scdsi_omega'
+    __table_args__ = {'extend_existing': True}
     
     def __repr__(self) -> str:
         return '{} | Cost: {}, CO2e: {}, Lead Time: {}'.format(
