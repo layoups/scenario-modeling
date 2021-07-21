@@ -1,3 +1,4 @@
+from decimal import FloatOperation
 import numpy as np
 import pandas as pd
 
@@ -232,7 +233,12 @@ class ScenarioLanes(Base):
 
 class Locations(Base):
 
-    location_id = Column("LOCATION_ID", Integer, primary_key=True)
+    location_id = Column(Integer, primary_key=True)
+    name = Column(String)
+    country = Column(String)
+    region = Column(String)
+    lat = Column(Float)
+    long = Column(Float)
 
     __tablename__ = "SCDSI_LOCATIONS"
     __table_args__ = {'extend_existing': True}
