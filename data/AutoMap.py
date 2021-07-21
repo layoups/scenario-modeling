@@ -206,6 +206,12 @@ class Edges(Base):
         )
 class Omega(Base):
 
+    baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'), primary_key=True, nullable=True)
+    baseline_cost = Column('baseline_cost', Float)
+    baseline_lead_time = Column('baseline_lead_time', Float)
+    baseline_co2e = Column('baseline_co2e', Float)
+
+
     __tablename__ = 'scdsi_omega'
     __table_args__ = {'extend_existing': True}
     
