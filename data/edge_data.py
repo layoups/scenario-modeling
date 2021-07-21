@@ -48,9 +48,6 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    lon1 = 84.3880
-    lat1 = 33.7490
-    lon2 = 2.3522
-    lat2 = 48.8566
-
     get_distances(session)
+
+    session.commit()
