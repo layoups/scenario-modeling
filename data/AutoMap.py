@@ -149,7 +149,7 @@ class AltEdges(Base):
 
     alt_edge_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDSI_ALTERNATIVE_EDGES"
+    __tablename__ = 'scdsi_alternative_edges'
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -167,7 +167,7 @@ class DecomEdges(Base):
 
     decom_edge_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDSI_DECOMMISIONED_EDGES"
+    __tablename__ = 'scdsi_decommissioned_edges'
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -183,34 +183,34 @@ class DecomEdges(Base):
 
 class ScenarioLanes(Base):
 
-    scenario_row_id = Column(Integer, primary_key=True)
-    scenario_id = Column(Integer)
-    baseline_id = Column(String)
-    pdct_fam = Column(String)
-    ori_name = Column(String)
-    ori_country = Column(String)
-    ori_region = Column(String)
-    ori_role = Column(String, default='')
-    desti_name = Column(String)
-    desti_country = Column(String)
-    desti_region = Column(String)
-    desti_role = Column(String, default='')
-    ship_type = Column(String)
-    ship_rank = Column(Integer)
-    total_weight = Column(Float)
-    total_paid = Column(Float)
-    alpha = Column(Float)
-    total_alpha = Column(Float)
-    color = Column(Integer, default=0)
-    d = Column(Integer, default=0)
-    f = Column(Integer, default=0)
-    path = Column(Integer, default=0)
-    path_rank = Column(Integer, default=0)
-    pflow = Column(Integer, default=0)
-    parent_pflow = Column(Integer)
-    in_pflow = Column(Integer)
+    # scenario_row_id = Column(Integer, primary_key=True)
+    # scenario_id = Column(Integer)
+    # baseline_id = Column(String)
+    # pdct_fam = Column(String)
+    # ori_name = Column(String)
+    # ori_country = Column(String)
+    # ori_region = Column(String)
+    # ori_role = Column(String, default='')
+    # desti_name = Column(String)
+    # desti_country = Column(String)
+    # desti_region = Column(String)
+    # desti_role = Column(String, default='')
+    # ship_type = Column(String)
+    # ship_rank = Column(Integer)
+    # total_weight = Column(Float)
+    # total_paid = Column(Float)
+    # alpha = Column(Float)
+    # total_alpha = Column(Float)
+    # color = Column(Integer, default=0)
+    # d = Column(Integer, default=0)
+    # f = Column(Integer, default=0)
+    # path = Column(Integer, default=0)
+    # path_rank = Column(Integer, default=0)
+    # pflow = Column(Integer, default=0)
+    # parent_pflow = Column(Integer)
+    # in_pflow = Column(Integer)
 
-    __tablename__ = "SCDSI_SCENARIO_LANES"
+    __tablename__ = 'scdsi_scenario_lanes'
     # __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -240,7 +240,7 @@ class Locations(Base):
     lat = Column(Float)
     long = Column(Float)
 
-    __tablename__ = "SCDSI_LOCATIONS"
+    __tablename__ = 'scdsi_locations'
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self):
@@ -252,7 +252,7 @@ class ScenarioEdges(Base):
 
     scenario_edge_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDSI_SCENARIO_EDGES"
+    __tablename__ = 'scdsi_scenario_edges'
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -268,7 +268,7 @@ class ScenarioNodes(Base):
 
     scenario_node_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDSI_SCENARIO_NODES"
+    __tablename__ = 'scdsi_scenario_nodes'
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -286,7 +286,7 @@ class Runs(Base):
     # baseline_id = Column(Integer, ForeignKey('scdsi_baselines.baseline_id'))
     # scdsi_baselines = relationship('scdsi_baselines', backref='scdsi_runs_collection', foreign_keys=[baseline_id])
 
-    __tablename__ = "SCDSI_RUNS"
+    __tablename__ = 'scdsi_runs'
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -300,7 +300,7 @@ class OptimalFlows(Base):
 
     opt_flow_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDSI_OPTIMAL_FLOWS"
+    __tablename__ = 'scdsi_optimal_flows'
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -317,7 +317,7 @@ class OptimalNodes(Base):
 
     opt_node_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDSI_OPTIMAL_NODES"
+    __tablename__ = 'scdsi_optimal_nodes'
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -332,7 +332,7 @@ class Solution(Base):
 
     solution_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDSI_SOLUTION"
+    __tablename__ = 'scdsi_solution'
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -344,25 +344,40 @@ class Solution(Base):
 
 Base.prepare()
 
-print(Locations.__table__.columns.keys())
-
 if __name__ == "__main__":
 
-    Session = sessionmaker(bind=engine)
-    session = Session()
+    # Session = sessionmaker(bind=engine)
+    # session = Session()
 
     # raw_row = session.query(RawHANA).first()
     # print(raw_row, '\n')
 
-    
+    print(Baselines.__tablename__, Baselines.__table__.columns.keys())
+    print(ShipRank.__tablename__, ShipRank.__table__.columns.keys())
+    print(Scenarios.__tablename__, Scenarios.__table__.columns.keys())
+    print(RawLanes.__tablename__, RawLanes.__table__.columns.keys())
+    print(DecomNodes.__tablename__, DecomNodes.__table__.columns.keys())
+    print(AltNodes.__tablename__, AltNodes.__table__.columns.keys())
+    print(Edges.__tablename__, Edges.__table__.columns.keys())
+    print(Omega.__tablename__, Omega.__table__.columns.keys())
+    print(AltEdges.__tablename__, AltEdges.__table__.columns.keys())
+    print(DecomEdges.__tablename__, DecomEdges.__table__.columns.keys())
+    print(ScenarioLanes.__tablename__, ScenarioLanes.__table__.columns.keys())
+    print(Locations.__tablename__, Locations.__table__.columns.keys())
+    print(ScenarioEdges.__tablename__, ScenarioEdges.__table__.columns.keys())
+    print(ScenarioNodes.__tablename__, ScenarioNodes.__table__.columns.keys())
+    print(Runs.__tablename__, Runs.__table__.columns.keys())
+    print(OptimalFlows.__tablename__, OptimalFlows.__table__.columns.keys())
+    print(OptimalNodes.__tablename__, OptimalNodes.__table__.columns.keys())
+    print(Solution.__tablename__, Solution.__table__.columns.keys())
 
-    raw_baseline = session.query(Baselines).first()
-    print(raw_baseline)
+    # raw_baseline = session.query(Baselines).first()
+    # print(raw_baseline)
 
-    lane = session.query(ScenarioLanes).first()
-    print(lane)
+    # lane = session.query(ScenarioLanes).first()
+    # print(lane)
 
-    session.commit()
+    # session.commit()
 
 
 
