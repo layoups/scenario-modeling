@@ -24,6 +24,7 @@ def populate_edges(session):
                 when "TRANSPORT_MODE" in ('OCEAN') THEN 'Ocean'
                 when "TRANSPORT_MODE" in () THEN 'Rail'
                 else "TRANSPORT_MODE"
+            end
             from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" 
             where "BILLED_WEIGHT" != 0 
             and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
