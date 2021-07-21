@@ -132,7 +132,17 @@ class RawLanes(Base):
 
 class DecomNodes(Base):
 
+    decom_node_id = Column('decom_node_id', Integer, primary_key=True, nullable=True)
+    baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
+    scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
+    pdct_fam = Column('pdct_fam', String)
+    role = Column('role', String)
+    name = Column('name', String)
+    country = Column('country', String)
+    region = Column('region', String)
+
     __tablename__ = 'scdsi_decommisioned_nodes'
+    __table_args__ = {'extend_existing': True}
 
     def __repr__(self):
         return '({}, {}) | {} - <{}_{}_{}_{}>'.format(
