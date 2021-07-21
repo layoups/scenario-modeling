@@ -102,13 +102,30 @@ class Scenarios(Base):
 
 class RawLanes(Base):
 
+    id = Column('id', Integer, primary_key=True, nullable=True)
+    baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
+    pdct_fam = Column('pdct_fam', String)
+    shipment_type = Column('shipment_type', String)
+    fiscal_quarter_ship = Column('fiscal_quarter_ship', String)
+    agg_total_amount_paid = Column('agg_total_amount_paid', Float)
+    agg_chargeable_weight_total_amount = Column('agg_chargeable_weight_total_amount', Float)
+    ori_name = Column('ori_name', String)
+    ori_country = Column('ori_country', String)
+    ori_region = Column('ori_region', String)
+    desti_name = Column('desti_name', String)
+    desti_country = Column('desti_country', String)
+    desti_region = Column('desti_region', String)
+
     __tablename__ = 'scdsi_nrp_raw_data'
+    __table_args__ = {'extend_existing': True}
+
 
     def __repr__(self):
-        return "{} - {}: ({}_{}_{}) -> ({}_{}_{}) | ship_type: {} | total_paid: {}, total_shipped: {}>".format(
-            self.product_family, self.fiscal_quarter_ship,
-            self.ship_from_name, self.ship_from_country, self.ship_from_region_code,
-            self.ship_to_name, self.ship_to_country, self.ship_to_region_code,
+        return "{} | {} - {}: ({}_{}_{}) -> ({}_{}_{}) | ship_type: {} | total_paid: {}, total_shipped: {}>".format(
+            self.baseline_id, 
+            self.pdct_fam, self.fiscal_quarter_ship,
+            self.ori_name, self.ori_country, self.ori_region,
+            self.desti_name, self.desti_country, self.desti_region,
             self.shipment_type, self.agg_total_amount_paid, self.agg_chargeable_weight_total_amount
             )
 
