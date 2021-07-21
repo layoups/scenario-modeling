@@ -57,7 +57,11 @@ class RawHANA(Base):
 
 class Baselines(Base):
     
+    baseline_id = Column('baseline_id', String, primary_key=True, nullable=True)
+    date = Column('date', Date)
+    description = Column('description', String)
     start = Column("START", String)
+    end = Column('end', String)
 
     __tablename__ = 'scdsi_baselines'
     __table_args__ = {'extend_existing': True}
@@ -72,8 +76,6 @@ class ShipRank(Base):
     ship_type_id = Column('ship_type_id', primary_key=True, autoincrement=True)
     ship_type = Column('ship_type', String)
     ship_rank = Column('ship_rank', Integer)
-    date = Column('date', Date)
-    description = Column('description', String)
 
     __tablename__ = 'scdsi_ship_rank'
     __table_args__ = {'extend_existing': True}
@@ -86,6 +88,8 @@ class Scenarios(Base):
 
     baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'), primary_key=True)
     scenario_id = Column('scenario_id', Integer, primary_key=True, nullable=True)
+    date = Column('date', Date)
+    description = Column('description', String)
 
     __tablename__ = 'scdsi_scenarios'
     __table_args__ = {'extend_existing': True}
