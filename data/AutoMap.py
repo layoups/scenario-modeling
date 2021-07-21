@@ -42,7 +42,7 @@ class RawHANA(Base):
 
     row_id = Column(Integer, primary_key=True, autoincrement=True)
 
-    __tablename__ = 'scds_scdsi_stg.SCDSI_CV_LANE_RATE_AUTOMATION_PL'
+    __tablename__ = 'scds_db.scds_scdsi_stg.scdsi_cv_lane_rate_automation_pl'
 
 
     __table_args__ = {'extend_existing': True}
@@ -69,7 +69,12 @@ class Baselines(Base):
 
 class ShipRank(Base):
 
+    ship_type_id = Column('ship_type_id', primary_key=True, autoincrement=True)
+    ship_type = Column('ship_type', String)
+    ship_rank = Column('ship_rank', Integer)
+
     __tablename__ = 'scdsi_ship_rank'
+    __table_args__ = {'extend_existing': True}
 
     def __repr__(self):
         return "ShipRank(ship_type = {}, ship_rank = {})".format(self.ship_rank, self.ship_type)
@@ -77,7 +82,8 @@ class ShipRank(Base):
 
 class Scenarios(Base):
 
-    scenario_id = Column(Integer, primary_key=True, nullable=True)
+    baseline_id = Column
+    scenario_id = Column('scenario_id', Integer, nullable=True)
 
     __tablename__ = 'scdsi_scenarios'
     __table_args__ = {'extend_existing': True}
@@ -344,14 +350,8 @@ class Solution(Base):
 
 Base.prepare()
 
-if __name__ == "__main__":
-
-    # Session = sessionmaker(bind=engine)
-    # session = Session()
-
-    # raw_row = session.query(RawHANA).first()
-    # print(raw_row, '\n')
-
+def test_auto_mapping():
+    print(RawHANA.__tablename__, RawHANA.__table__.columns.keys())
     print(Baselines.__tablename__, Baselines.__table__.columns.keys())
     print(ShipRank.__tablename__, ShipRank.__table__.columns.keys())
     print(Scenarios.__tablename__, Scenarios.__table__.columns.keys())
@@ -371,15 +371,28 @@ if __name__ == "__main__":
     print(OptimalNodes.__tablename__, OptimalNodes.__table__.columns.keys())
     print(Solution.__tablename__, Solution.__table__.columns.keys())
 
+if __name__ == "__main__":
+
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    # raw_row = session.query(RawHANA).first()
+    # print(raw_row, '\n')
+
+    
+
     # raw_baseline = session.query(Baselines).first()
     # print(raw_baseline)
 
     # lane = session.query(ScenarioLanes).first()
     # print(lane)
 
+    ships = session.query(ShipRank).first()
+    print(ships, '\n')
+
     # session.commit()
 
-
+    test_auto_mapping()
 
     # conn_prod = snowflake.connector.connect(
     #             user='SCDS_SCDSI_ETL_SVC',
