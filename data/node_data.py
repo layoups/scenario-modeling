@@ -1,4 +1,4 @@
-from env import DB_CONN_PARAMETER
+from env import DB_CONN_PARAMETER_WI
 import numpy as np
 
 from sqlalchemy import create_engine, desc, or_, text
@@ -6,10 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import func
 
 from AutoMap import *
+from env import KARIM_API_KEY
 
 import googlemaps
-
-karim_api_key = 'AIzaSyACWWCaFlJje26Yapq2ifqURXhXR5PfhUs'
 
 
 def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
@@ -26,12 +25,31 @@ def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
 
 def populate_Locations(session):
     stmt = text("""
-            
+            insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_LOCATIONS" ("NAME", "COUNTRY", "REGION")
+            select distinct lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE")
+            from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" 
+            where "BILLED_WEIGHT" != 0 
+            and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
         """)
+
+    session.execute(stmt)
+    session.commit()
+
+    stmt = text("""
+            insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_LOCATIONS" ("NAME", "COUNTRY", "REGION")
+            select distinct lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE")
+            from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" 
+            where "BILLED_WEIGHT" != 0 
+            and "SHIPMENT_TYPE" in ('LEG2-2')
+    """)
+
+    session.execute(stmt)
+    session.commit()
+
 
 
 def get_lat_long(session):
-    gm = googlemaps.Client(key=karim_api_key)
+    gm = googlemaps.Client(key=KARIM_API_KEY)
 
     locations = session.query(Locations).filter(Locations.lat == None)
 
@@ -134,11 +152,13 @@ def get_node_capacity(scenario_id, baseline_id, pdct_fam, session):
 
 
 if __name__ == '__main__':
-    engine = create_engine(DB_CONN_PARAMETER)
+    engine = create_engine(DB_CONN_PARAMETER_WI)
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    get_node_supply('4400ISR', session)
-    get_node_capacity('4400ISR', session)
+    # get_node_supply('4400ISR', session)
+    # get_node_capacity('4400ISR', session)
 
-    # get_lat_long(session)
+    # populate_Locations(session)
+    get_lat_long(session)
+    session.commit()

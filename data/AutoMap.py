@@ -1,4 +1,3 @@
-from enum import auto
 import numpy as np
 import pandas as pd
 
@@ -7,40 +6,44 @@ import snowflake.connector
 from snowflake.sqlalchemy import URL
 
 from sqlalchemy import create_engine, text, MetaData
-from sqlalchemy import Table, Column, Float, String, Integer
-from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy.ext.automap import automap_base 
+from sqlalchemy import Table, Column, Float, String, Integer, ForeignKey
+from sqlalchemy.orm import sessionmaker, declarative_base, relationship
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.sql.expression import null
+from sqlalchemy.sql.schema import ForeignKey 
 
-# from env import DB_CONN_PARAMETER
+from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI
 
 ## use stg engine, but prefix WI tables with WI
 
 
 # engine_local = create_engine(DB_CONN_PARAMETER)
 
-engine = create_engine(URL(
-                user='SCDS_SCDSI_ETL_SVC',
-                password='&p5dr#Hm8g',
-                account='cisco.us-east-1',
-                warehouse='SCDS_SCDSI_ETL_WH',
-                database='SCDS_DB',
-                schema='SCDS_SCDSI_STG',
-                role = 'SCDS_SCDSI_ETL_ROLE'
-                ))
+# stg_engine = create_engine(DB_CONN_PARAMETER_STG)
+# stg_metadata = MetaData()
+# stg_metadata.reflect(stg_engine, extend_existing=True) # extend_existing
+# stg_Base = automap_base(metadata=stg_metadata)
+# print('\n', metadata.tables.keys(), '\n')
 
+
+
+
+engine = create_engine(DB_CONN_PARAMETER_WI)
 metadata = MetaData()
 metadata.reflect(engine, extend_existing=True) # extend_existing
+Base = automap_base(metadata=metadata)
+# print('\n', metadata.tables.keys(), '\n')
 
-print('\n', metadata.tables.keys(), '\n')
 
 
-auto_Base = automap_base(metadata=metadata)
 
-class RawHANA(auto_Base):
+class RawHANA(Base):
 
     row_id = Column(Integer, primary_key=True, autoincrement=True)
 
-    __tablename__ = 'scdsi_cv_lane_rate_automation_pl'
+    __tablename__ = 'scds_scdsi_stg.SCDSI_CV_LANE_RATE_AUTOMATION_PL'
+
+
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self):
@@ -50,16 +53,20 @@ class RawHANA(auto_Base):
             self.ship_to_name, self.ship_to_country, self.ship_to_region_code,
             self.transport_mode, self.shipment_type)
 
-class Baselines(auto_Base):
+
+class Baselines(Base):
+
+    start = Column("START", String)
 
     __tablename__ = 'scdsi_baselines'
+    __table_args__ = {'extend_existing': True}
 
     def __repr__(self):
         return 'Baseline {}:  {} to {} - {} - {}'.format(
             self.baseline_id, self.start, self.end, self.date, self.description
             )
 
-class ShipRank(auto_Base):
+class ShipRank(Base):
 
     __tablename__ = 'scdsi_ship_rank'
 
@@ -67,9 +74,12 @@ class ShipRank(auto_Base):
         return "ShipRank(ship_type = {}, ship_rank = {})".format(self.ship_rank, self.ship_type)
 
 
-class Scenarios(auto_Base):
+class Scenarios(Base):
+
+    scenario_id = Column(Integer, primary_key=True, nullable=True)
 
     __tablename__ = 'scdsi_scenarios'
+    __table_args__ = {'extend_existing': True}
 
     def __repr__(self):
         return 'Scenario: {} - Baseline: {} - Date: {} - {} '.format(
@@ -77,7 +87,7 @@ class Scenarios(auto_Base):
         )
 
 
-class RawLanes(auto_Base):
+class RawLanes(Base):
 
     __tablename__ = 'scdsi_nrp_raw_data'
 
@@ -90,7 +100,7 @@ class RawLanes(auto_Base):
             )
 
 
-class DecomNodes(auto_Base):
+class DecomNodes(Base):
 
     __tablename__ = 'scdsi_decommisioned_nodes'
 
@@ -100,7 +110,7 @@ class DecomNodes(auto_Base):
             )
 
 
-class AltNodes(auto_Base):
+class AltNodes(Base):
 
     __tablename__ = 'scdsi_alternative_nodes'
 
@@ -113,7 +123,7 @@ class AltNodes(auto_Base):
             )
 
 
-class Edges(auto_Base):
+class Edges(Base):
 
     __tablename__ = 'scdsi_edges'
 
@@ -124,12 +134,9 @@ class Edges(auto_Base):
             self.transport_mode,
             self.distance, self.transport_time, self.co2e
         )
+class Omega(Base):
 
-class Omega(auto_Base):
-
-    baseline_id = Column(Integer, primary_key=True)
-
-    __tablename__ = 'scds_scdsi_wi.scdsi_omega'
+    __tablename__ = 'scdsi_omega'
     
     def __repr__(self) -> str:
         return '{} | Cost: {}, CO2e: {}, Lead Time: {}'.format(
@@ -137,11 +144,11 @@ class Omega(auto_Base):
         )
 
 
-class AltEdges(auto_Base):
+class AltEdges(Base):
 
     alt_edge_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDS_SCDSI_WI.SCDSI_ALTERNATIVE_EDGES"
+    __tablename__ = "SCDSI_ALTERNATIVE_EDGES"
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -155,11 +162,11 @@ class AltEdges(auto_Base):
         ) 
 
 
-class DecomEdges(auto_Base):
+class DecomEdges(Base):
 
     decom_edge_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDS_SCDSI_WI.SCDSI_DECOMMISIONED_EDGES"
+    __tablename__ = "SCDSI_DECOMMISIONED_EDGES"
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -173,12 +180,37 @@ class DecomEdges(auto_Base):
         ) 
 
 
-class ScenarioLanes(auto_Base):
+class ScenarioLanes(Base):
 
     scenario_row_id = Column(Integer, primary_key=True)
+    scenario_id = Column(Integer)
+    baseline_id = Column(String)
+    pdct_fam = Column(String)
+    ori_name = Column(String)
+    ori_country = Column(String)
+    ori_region = Column(String)
+    ori_role = Column(String, default='')
+    desti_name = Column(String)
+    desti_country = Column(String)
+    desti_region = Column(String)
+    desti_role = Column(String, default='')
+    ship_type = Column(String)
+    ship_rank = Column(Integer)
+    total_weight = Column(Float)
+    total_paid = Column(Float)
+    alpha = Column(Float)
+    total_alpha = Column(Float)
+    color = Column(Integer, default=0)
+    d = Column(Integer, default=0)
+    f = Column(Integer, default=0)
+    path = Column(Integer, default=0)
+    path_rank = Column(Integer, default=0)
+    pflow = Column(Integer, default=0)
+    parent_pflow = Column(Integer)
+    in_pflow = Column(Integer)
 
-    __tablename__ = "SCDS_SCDSI_WI.SCDSI_SCENARIO_LANES"
-    __table_args__ = {'extend_existing': True}
+    __tablename__ = "SCDSI_SCENARIO_LANES"
+    # __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
         return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
@@ -192,17 +224,17 @@ class ScenarioLanes(auto_Base):
 
     def get_successors(self, session):
         stmt = text("""
-        select * from "SCDS_SCDSI_WI.SCDSI_SCENARIO_LANES"
+        select * from "SCDSI_SCENARIO_LANES"
         where d > {} and f < {}
         """).format(self.d, self.f)
         return session.execute(stmt)
 
 
-class Locations(auto_Base):
+class Locations(Base):
 
     location_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDS_SCDSI_WI.SCDSI_LOCATIONS"
+    __tablename__ = "SCDSI_LOCATIONS"
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self):
@@ -210,11 +242,11 @@ class Locations(auto_Base):
             self.name, self.country, self.region, self.lat, self.long
         )
 
-class ScenarioEdges(auto_Base):
+class ScenarioEdges(Base):
 
     scenario_edge_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDS_SCDSI_WI.SCDSI_SCENARIO_EDGES"
+    __tablename__ = "SCDSI_SCENARIO_EDGES"
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -226,11 +258,11 @@ class ScenarioEdges(auto_Base):
             self.distance, self.transport_time, self.co2e
         )
 
-class ScenarioNodes(auto_Base):
+class ScenarioNodes(Base):
 
     scenario_node_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDS_SCDSI_WI.SCDSI_SCENARIO_NODES"
+    __tablename__ = "SCDSI_SCENARIO_NODES"
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -242,11 +274,13 @@ class ScenarioNodes(auto_Base):
 
 
 
-class Runs(auto_Base):
+class Runs(Base):
 
     run_id = Column(Integer, primary_key=True)
+    # baseline_id = Column(Integer, ForeignKey('scdsi_baselines.baseline_id'))
+    # scdsi_baselines = relationship('scdsi_baselines', backref='scdsi_runs_collection', foreign_keys=[baseline_id])
 
-    __tablename__ = "SCDS_SCDSI_WI.SCDSI_RUNS"
+    __tablename__ = "SCDSI_RUNS"
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -256,11 +290,11 @@ class Runs(auto_Base):
             self.lambda_cost, self.lambda_time, self.lambda_co2e
         )
 
-class OptimalFlows(auto_Base):
+class OptimalFlows(Base):
 
     opt_flow_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDS_SCDSI_WI.SCDSI_OPTIMAL_FLOWS"
+    __tablename__ = "SCDSI_OPTIMAL_FLOWS"
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -273,11 +307,11 @@ class OptimalFlows(auto_Base):
         )
 
 
-class OptimalNodes(auto_Base):
+class OptimalNodes(Base):
 
     opt_node_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDS_SCDSI_WI.SCDSI_OPTIMAL_NODES"
+    __tablename__ = "SCDSI_OPTIMAL_NODES"
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -288,11 +322,11 @@ class OptimalNodes(auto_Base):
         )
 
 
-class Solution(auto_Base):
+class Solution(Base):
 
     solution_id = Column(Integer, primary_key=True)
 
-    __tablename__ = "SCDS_SCDSI_WI.SCDSI_SOLUTION"
+    __tablename__ = "SCDSI_SOLUTION"
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
@@ -302,14 +336,27 @@ class Solution(auto_Base):
         )
 
 
-auto_Base.prepare()
+Base.prepare()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
+
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    raw_row = session.query(RawHANA).first()
-    print(raw_row, '\n')
+    # raw_row = session.query(RawHANA).first()
+    # print(raw_row, '\n')
+
+    
+
+    raw_baseline = session.query(Baselines).first()
+    print(raw_baseline)
+
+    lane = session.query(ScenarioLanes).first()
+    print(lane)
+
+    session.commit()
+
+
 
     # conn_prod = snowflake.connector.connect(
     #             user='SCDS_SCDSI_ETL_SVC',
