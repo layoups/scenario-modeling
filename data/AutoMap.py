@@ -30,7 +30,7 @@ from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI
 
 engine = create_engine(DB_CONN_PARAMETER_WI)
 metadata = MetaData()
-metadata.reflect(engine, extend_existing=True) # extend_existing
+metadata.reflect(engine) # extend_existing
 Base = automap_base(metadata=metadata)
 # print('\n', metadata.tables.keys(), '\n')
 
@@ -232,7 +232,7 @@ class ScenarioLanes(Base):
 
 class Locations(Base):
 
-    location_id = Column(Integer, primary_key=True)
+    location_id = Column("LOCATION_ID", Integer, primary_key=True)
 
     __tablename__ = "SCDSI_LOCATIONS"
     __table_args__ = {'extend_existing': True}
@@ -337,6 +337,8 @@ class Solution(Base):
 
 
 Base.prepare()
+
+print(Locations.__table__.columns.keys())
 
 if __name__ == "__main__":
 
