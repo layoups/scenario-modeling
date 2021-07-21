@@ -12,6 +12,26 @@ from datetime import datetime
 
 from math import radians, cos, sin, asin, sqrt
 
+def populate_edges(session):
+    stmt = text("""
+            insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_EDGES" 
+            ("ORI_NAME", "ORI_COUNTRY", "ORI_REGION", "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", "TRANSPORT_MODE")
+            select distinct lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
+            lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"),
+            case
+                when "TRANSPORT_MODE" in () THEN 'Air'
+                when "TRANSPORT_MODE" in () THEN 'Truck'
+                when "TRANSPORT_MODE" in ('OCEAN') THEN 'Ocean'
+                when "TRANSPORT_MODE" in () THEN 'Rail'
+            from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" 
+            where "BILLED_WEIGHT" != 0 
+            and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
+            and "TRANSPORT_MODE" is not null
+        """)
+
+    session.execute(stmt)
+    session.commit()
+
 def haversine_distance(lat1, lon1, lat2, lon2):
     lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
 
@@ -48,9 +68,6 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    lon1 = 84.3880
-    lat1 = 33.7490
-    lon2 = 2.3522
-    lat2 = 48.8566
-
     get_distances(session)
+
+    session.commit()

@@ -1,4 +1,4 @@
-from env import DB_CONN_PARAMETER
+from env import DB_CONN_PARAMETER_WI
 import numpy as np
 
 from sqlalchemy import create_engine, desc
