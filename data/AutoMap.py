@@ -431,7 +431,19 @@ class Runs(Base):
 
 class OptimalFlows(Base):
 
-    opt_flow_id = Column(Integer, primary_key=True)
+    opt_flow_id = Column('opt_flow_id', Integer, primary_key=True)
+    baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
+    scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
+    pdct_fam = Column('pdct_fam', String)
+    ori_name = Column('ori_name', String)
+    ori_country = Column('ori_country', String)
+    ori_region = Column('ori_region', String)
+    ori_role = Column('ori_role', String, default='')
+    desti_name = Column('desti_name', String)
+    desti_country = Column('desti_country', String)
+    desti_region = Column('desti_region', String)
+    desti_role = Column('desti_role', String, default='')
+    transport_mode = Column('transport_mode', String)
 
     __tablename__ = 'scdsi_optimal_flows'
     __table_args__ = {'extend_existing': True}
