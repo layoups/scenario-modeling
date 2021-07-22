@@ -502,6 +502,21 @@ class Solution(Base):
         )
 
 
+class CO2Factors(Base):
+
+    co2e_factor_id = Column('co2e_factor_id', Integer, primary_key=True, autoincrement=True, nullable=True)
+    transport_mode = Column('transport_mode', String)
+    co2e_factor = Column('co2e_factor', Float)
+
+    __tablename__ = 'scdsi_co2e_factors'
+    __table_args__ = {'extend_existing': True}
+
+    def __repr__(self) -> str:
+        return 'Mode: {} - Emissions: {} kg CO2e/kg flow/km'.format(
+            self.transport_mode, self.co2e_factor
+        )
+
+
 Base.prepare()
 
 def test_auto_mapping():
@@ -524,6 +539,7 @@ def test_auto_mapping():
     print(OptimalFlows.__tablename__, OptimalFlows.__table__.columns.keys())
     print(OptimalNodes.__tablename__, OptimalNodes.__table__.columns.keys())
     print(Solution.__tablename__, Solution.__table__.columns.keys())
+    print(CO2Factors.__tablename__, CO2Factors.__table__.columns.keys())
 
 if __name__ == "__main__":
 
@@ -546,7 +562,7 @@ if __name__ == "__main__":
 
     session.commit()
 
-    # test_auto_mapping()
+    test_auto_mapping()
 
     # conn_prod = snowflake.connector.connect(
     #             user='SCDS_SCDSI_ETL_SVC',
