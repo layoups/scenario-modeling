@@ -12,8 +12,9 @@ from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.sql.expression import null
 
+from datetime import datetime
 
-from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI
+from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI, DB_CONN_PARAMETER
 
 ## use stg engine, but prefix WI tables with WI
 
@@ -29,7 +30,7 @@ from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI
 
 
 
-engine = create_engine(DB_CONN_PARAMETER_WI)
+engine = create_engine(DB_CONN_PARAMETER)
 metadata = MetaData()
 metadata.reflect(engine) # extend_existing
 Base = automap_base(metadata=metadata)
@@ -335,7 +336,7 @@ class ScenarioLanes(Base):
 
 class Locations(Base):
 
-    location_id = Column(Integer, primary_key=True)
+    location_id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     name = Column(String)
     country = Column(String)
     region = Column(String)
@@ -543,6 +544,8 @@ def test_auto_mapping():
 
 if __name__ == "__main__":
 
+    start = datetime.now()
+
     Session = sessionmaker(bind=engine)
     session = Session()
 
@@ -557,8 +560,12 @@ if __name__ == "__main__":
     # lane = session.query(ScenarioLanes).first()
     # print(lane)
 
-    ships = session.query(ShipRank).first()
+    # location = Locations(name="atlanta", country="US", region="US", lat=10, long=1)
+    # session.add(location)
+
+    ships = session.query(Locations).first()
     print(ships, '\n')
+    print(datetime.now() - start)
 
     session.commit()
 
