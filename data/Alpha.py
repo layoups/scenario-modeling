@@ -38,7 +38,7 @@ def get_customer_alphas(scenario_id, baseline_id, pdct_fam, session):
         )
         total = np.sum([e.total_weight for e in c_pflow.all()])
         for e in c_pflow.all():
-            e.alpha = round(e.total_weight / total)
+            e.alpha = round(e.total_weight / total, 5)
             e.total_alpha = e.alpha
         session.commit()
 
