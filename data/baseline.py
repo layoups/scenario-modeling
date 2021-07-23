@@ -14,6 +14,8 @@ from Eraser import *
 from Visualize import *
 from Alpha import *
 from dfs import *
+from edge_data import *
+from node_data import *
 
 def create_baseline(baseline_id, start, end, description, session):
     date = datetime.now()
