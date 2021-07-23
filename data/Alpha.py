@@ -1,7 +1,7 @@
 from env import DB_CONN_PARAMETER_WI
 import numpy as np
 
-from sqlalchemy import create_engine, desc
+from sqlalchemy import create_engine, desc, distinct
 from sqlalchemy.orm import sessionmaker
 
 from AutoMap import *
@@ -19,21 +19,26 @@ def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
     return model_pflows
 
 def get_customer_alphas(scenario_id, baseline_id, pdct_fam, session):
-    customers = session.query(ScenarioNodes).filter(
-        ScenarioNodes.scenario_id == scenario_id,
-        ScenarioNodes.baseline_id == baseline_id,
-        ScenarioNodes.role == 'Customer', 
-        ScenarioNodes.pdct_fam == pdct_fam
-    )
+    customers = session.query(
+        ScenarioLanes.desti_name, 
+        ScenarioLanes.desti_country, 
+        ScenarioLanes.desti_region,
+        ScenarioLanes.desti_role
+        ).filter(
+            ScenarioLanes.scenario_id == scenario_id,
+            ScenarioLanes.baseline_id == baseline_id,
+            ScenarioLanes.desti_role == 'Customer', 
+            ScenarioLanes.pdct_fam == pdct_fam
+        ).distinct().all()
     for c in customers:
         c_pflow = session.query(ScenarioLanes).filter(
             ScenarioLanes.scenario_id == scenario_id,
             ScenarioLanes.baseline_id == baseline_id,
-            ScenarioLanes.desti_name == c.name,
-            ScenarioLanes.desti_country == c.country, 
-            ScenarioLanes.desti_region == c.region, 
-            ScenarioLanes.desti_role == c.role,
-            ScenarioLanes.pdct_fam == c.pdct_fam,
+            ScenarioLanes.desti_name == c.desti_name,
+            ScenarioLanes.desti_country == c.desti_country, 
+            ScenarioLanes.desti_region == c.desti_region, 
+            ScenarioLanes.desti_role == c.desti_role,
+            ScenarioLanes.pdct_fam == pdct_fam,
             ScenarioLanes.in_pflow == 1
         )
         total = np.sum([e.total_weight for e in c_pflow.all()])
