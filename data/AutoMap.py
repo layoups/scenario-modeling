@@ -27,12 +27,13 @@ class Lanes(auto_Base):
     __tablename__ = 'Lanes'
 
     def __repr__(self):
-        return "{}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
+        return "{}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})> | in_pflow: {}".format(
             self.pdct_fam,
             self.ori_name, self.ori_country, self.ori_region, self.ori_role,
             self.desti_name, self.desti_country, self.desti_region, self.desti_role,
             self.ship_type, self.pflow, self.path, self.path_rank, self.alpha,
-            self.d, self.f
+            self.d, self.f,
+            self.in_pflow
         )
         # return "{}: ({} - {} - {} - {}) -> ({} - {}) | ({}, {}) -> ({} - {} - {} - {})".format(
         #     self.pdct_fam, 
