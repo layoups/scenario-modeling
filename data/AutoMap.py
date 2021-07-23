@@ -371,6 +371,7 @@ class ScenarioEdges(Base):
     co2e = Column('co2e', Float)
     transport_cost = Column('transport_cost', Float)
     distance = Column('distance', Float)
+    in_pflow = Column('in_pflow', Integer)
 
     __tablename__ = 'scdsi_scenario_edges'
     __table_args__ = {'extend_existing': True}
@@ -397,6 +398,7 @@ class ScenarioNodes(Base):
     supply = Column('supply', Float)
     capacity = Column('capacity', Float)
     opex = Column('opex', Float)
+    in_pflow = Column('in_pflow', Integer)
 
     __tablename__ = 'scdsi_scenario_nodes'
     __table_args__ = {'extend_existing': True}
