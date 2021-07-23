@@ -55,14 +55,13 @@ def get_lat_long(session):
 
     for location in locations.all():
         name = location.name
-        api = gm.geocode(name)
-
         try:
+            api = gm.geocode(name)
             location.lat = api[0]["geometry"]["location"]["lat"]
             location.long = api[0]["geometry"]["location"]["lng"]
-
         except:
-            None
+            api = None
+        print(api)
         
     session.commit()
 
