@@ -45,7 +45,7 @@ def populate_scenario_lanes(baseline_id, session):
         lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
         lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"),
         "SHIPMENT_TYPE", ship_rank,
-        sum("BILLED_WEIGHT"), sum("TOTAL_AMOUNT_PAID")
+        sum("BILLED_WEIGHT"), sum("TOTAL_AMOUNT_PAID_USD")
         from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" rl join "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SHIP_RANK" sr 
         on rl."SHIPMENT_TYPE" = sr.ship_type
         where "BILLED_WEIGHT" != 0 
