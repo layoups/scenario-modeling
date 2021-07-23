@@ -12,24 +12,24 @@ from datetime import datetime
 
 from math import radians, cos, sin, asin, sqrt
 
-def populate_edges(session):
+def populate_scenario_edges(scenario_id, baseline_id, session):
     stmt = text("""
-            insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_EDGES" 
-            ("ORI_NAME", "ORI_COUNTRY", "ORI_REGION", "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", "TRANSPORT_MODE")
-            select distinct lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
+            insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_EDGES" 
+            ("SCENARIO_ID", "BASELINE_ID" , "ORI_NAME", "ORI_COUNTRY", "ORI_REGION", "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", "TRANSPORT_MODE")
+            select distinct :scenario_id, :baseline_id, lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
             lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"),
             case
-                when "TRANSPORT_MODE" in () THEN 'Air'
-                when "TRANSPORT_MODE" in () THEN 'Truck'
+                when "TRANSPORT_MODE" in ('PARCEL', 'AIR') THEN 'Air'
+                when "TRANSPORT_MODE" in ('LTL', 'LCL', 'TL', 'DRAY', 'WHSE') THEN 'Truck'
                 when "TRANSPORT_MODE" in ('OCEAN') THEN 'Ocean'
-                when "TRANSPORT_MODE" in () THEN 'Rail'
+                when "TRANSPORT_MODE" in ('RAIL') THEN 'Rail'
                 else "TRANSPORT_MODE"
             end
             from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" 
             where "BILLED_WEIGHT" != 0 
             and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
             and "TRANSPORT_MODE" is not null
-        """)
+        """).params(scenario_id=scenario_id, baseline_id=baseline_id)
 
     session.execute(stmt)
     session.commit()
