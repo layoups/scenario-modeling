@@ -7,6 +7,7 @@ from sqlalchemy.sql import func
 
 from AutoMap import *
 from env import KARIM_API_KEY
+from datetime import datetime
 
 import googlemaps
 
@@ -51,7 +52,7 @@ def populate_Locations(session):
 def get_lat_long(session):
     gm = googlemaps.Client(key=KARIM_API_KEY)
 
-    locations = session.query(Locations).filter(Locations.lat == None)
+    locations = session.query(Locations).filter(Locations.lat == None).limit(500)
 
     for location in locations.all():
         name = location.name
@@ -61,7 +62,7 @@ def get_lat_long(session):
             location.long = api[0]["geometry"]["location"]["lng"]
         except:
             api = None
-        print(api)
+        # print(api)
         
     session.commit()
 
@@ -155,9 +156,14 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
+    start = datetime.now()
+    print(start)
+
     # get_node_supply('4400ISR', session)
     # get_node_capacity('4400ISR', session)
 
     # populate_Locations(session)
     get_lat_long(session)
+
+    print(datetime.now() - start)
     session.commit()
