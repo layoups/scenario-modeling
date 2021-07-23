@@ -150,7 +150,8 @@ def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_r
         if u.pflow and u.pflow < pflow and u.color == 2:
             get_parent_pflow(stack, u, curr_path_head_rank, path_rank, session)
 
-    v.color = 2
+    if v.in_pflow == 1:
+        v.color = 2
     time[0] += 1
     v.f = time[0]
 
@@ -180,6 +181,7 @@ if __name__ == "__main__":
     # erase([pdct_fam], Session(), ScenarioLanes)
     
     dfs(baseline_id, pdct_fam)
-    # get_alphas(pdct_fam, Session())
+    # get_customer_alphas(scenario_id, baseline_id, pdct_fam, session)
+    # get_alphas(scenario_id, baseline_id, pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
     # visualize_graphivz(pdct_fam, Session())
