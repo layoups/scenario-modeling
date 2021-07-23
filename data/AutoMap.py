@@ -14,7 +14,7 @@ from sqlalchemy.sql.expression import null
 
 from datetime import datetime
 
-from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI, DB_CONN_PARAMETER
+from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI, DB_CONN_PARAMETER, DB_CONN_PARAMETER_PROD
 
 ## use stg engine, but prefix WI tables with WI
 
@@ -30,7 +30,7 @@ from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI, DB_CONN_PARAMETER
 
 
 
-engine = create_engine(DB_CONN_PARAMETER_WI)
+engine = create_engine(DB_CONN_PARAMETER_PROD)
 metadata = MetaData()
 metadata.reflect(engine) # extend_existing
 Base = automap_base(metadata=metadata)
@@ -566,7 +566,7 @@ if __name__ == "__main__":
     # location = Locations(name="atlanta", country="US", region="US", lat=10, long=1)
     # session.add(location)
 
-    ships = session.query(Locations).first()
+    ships = session.query(ScenarioLanes).first()
     print(ships, '\n')
     print(datetime.now() - start)
 
