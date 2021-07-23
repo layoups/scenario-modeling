@@ -30,7 +30,7 @@ from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI, DB_CONN_PARAMETER
 
 
 
-engine = create_engine(DB_CONN_PARAMETER)
+engine = create_engine(DB_CONN_PARAMETER_WI)
 metadata = MetaData()
 metadata.reflect(engine) # extend_existing
 Base = automap_base(metadata=metadata)
