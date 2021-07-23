@@ -15,9 +15,12 @@ from math import radians, cos, sin, asin, sqrt
 def populate_scenario_edges(scenario_id, baseline_id, session):
     stmt = text("""
             insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_EDGES" 
-            ("SCENARIO_ID", "BASELINE_ID" , "ORI_NAME", "ORI_COUNTRY", "ORI_REGION", "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", "TRANSPORT_MODE")
+            ("SCENARIO_ID", "BASELINE_ID" , 
+            lower("ORI_NAME"), lower("ORI_COUNTRY"), lower("ORI_REGION"), 
+            lower("DESTI_NAME"), lower("DESTI_COUNTRY"), lower("DESTI_REGION"), 
+            "TRANSPORT_MODE")
             select distinct :scenario_id, :baseline_id, lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
-            lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"),
+            lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"), sum("TOTAL_AMOUNT_PAID_USD"), sum(BILLED_WEIGHT),
             case
                 when "TRANSPORT_MODE" in ('PARCEL', 'AIR') THEN 'Air'
                 when "TRANSPORT_MODE" in ('LTL', 'LCL', 'TL', 'DRAY', 'WHSE') THEN 'Truck'
@@ -29,6 +32,7 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             where "BILLED_WEIGHT" != 0 
             and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
             and "TRANSPORT_MODE" is not null
+            group by
         """).params(scenario_id=scenario_id, baseline_id=baseline_id)
 
     session.execute(stmt)
@@ -49,10 +53,14 @@ def get_locations(session):
     locations = session.query(Locations).all()
     return {(x.name, x.country, x.region): {'lat': x.lat, 'long': x.long} for x in locations}
 
-def get_distances(session):
+def get_distances(scenario_id, baseline_id, session):
     locations = get_locations(session)
 
-    edges = session.query(Edges).filter(Edges.transport_distance == None)
+    edges = session.query(ScenarioEdges).filter(
+        ScenarioEdges.transport_distance == None,
+        ScenarioEdges.scenario_id == scenario_id,
+        ScenarioEdges.baseline_id == baseline_id
+        )
     # start = datetime.now()
     for edge in edges.all():
         ori_location = locations[(edge.ori_name, edge.ori_country, edge.ori_region)]
@@ -63,6 +71,16 @@ def get_distances(session):
     # print(datetime.now() - start)
 
     session.commit()
+
+def get_transport_time_and_co2(edge):
+    distance = edge.distance
+    mode = edge.transport_mode
+
+    if mode == 'Air':
+        edge.transport_time = 0
+        edge.co2e = 0
+
+    return None
 
 if __name__ == '__main__':
     

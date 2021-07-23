@@ -52,7 +52,7 @@ def populate_Locations(session):
 def get_lat_long(session):
     gm = googlemaps.Client(key=KARIM_API_KEY)
 
-    locations = session.query(Locations).filter(Locations.lat == None).limit(500)
+    locations = session.query(Locations).filter(Locations.lat == None).limit(2000)
 
     for location in locations.all():
         name = location.name
