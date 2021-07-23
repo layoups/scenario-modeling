@@ -1,7 +1,7 @@
 from env import DB_CONN_PARAMETER
 import numpy as np
 
-from sqlalchemy import create_engine, desc
+from sqlalchemy import create_engine, desc, distinct
 from sqlalchemy.orm import sessionmaker
 
 from AutoMap import *
@@ -14,19 +14,25 @@ def get_main_pflow(pdct_fam, session):
     return model_pflows
 
 def get_customer_alphas(pdct_fam, session):
-    customers = session.query(Nodes).filter(Nodes.role == 'Customer', Nodes.pdct_fam == pdct_fam)
+    customers = session.query(
+        Lanes.desti_name, 
+        Lanes.desti_country, 
+        Lanes.desti_region,
+        Lanes.desti_role).filter(
+            Lanes.desti_role == 'Customer', 
+            Lanes.pdct_fam == pdct_fam).distinct().all()
     for c in customers:
         c_pflow = session.query(Lanes).filter(
-            Lanes.desti_name == c.name,
-            Lanes.desti_country == c.country, 
-            Lanes.desti_region == c.region, 
-            Lanes.desti_role == c.role,
-            Lanes.pdct_fam == c.pdct_fam,
+            Lanes.desti_name == c.desti_name,
+            Lanes.desti_country == c.desti_country, 
+            Lanes.desti_region == c.desti_region, 
+            Lanes.desti_role == c.desti_role,
+            Lanes.pdct_fam == pdct_fam,
             Lanes.in_pflow == 1
         )
         total = np.sum([e.total_weight for e in c_pflow.all()])
         for e in c_pflow.all():
-            e.alpha = round(e.total_weight / total)
+            e.alpha = round(e.total_weight / total, 5)
             e.total_alpha = e.alpha
         session.commit()
 
@@ -59,5 +65,5 @@ if __name__ == "__main__":
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    get_customer_alphas('4400ISR' ,session)
-    get_alphas('4400ISR', session)
+    get_customer_alphas('PHONE', session)
+    get_alphas('PHONE', session)

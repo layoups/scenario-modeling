@@ -55,8 +55,6 @@ def dfs(pdct_fam):
 def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session):
     v = stack[-1]
 
-    # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
-
     v.pflow = pflow
     v.path = path[0]
     v.path_rank = path_rank
@@ -64,6 +62,8 @@ def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, pa
     time[0] += 1
     v.d = time[0]
     v.color = 1
+
+    # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
 
     if path[0] > 1 and path_stack[0] < path_stack[1]:
         curr_path_head_rank[0] = path_rank - 1
@@ -90,7 +90,8 @@ def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, pa
         if u.pflow and u.pflow < pflow and u.color == 2:
             get_parent_pflow(stack, u, curr_path_head_rank, path_rank, session)
 
-    v.color = 2
+    if v.in_pflow == 1:
+        v.color = 2
     time[0] += 1
     v.f = time[0]
 
@@ -108,9 +109,10 @@ def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, pa
 
 if __name__ == "__main__":
 
-    pdct_fam = "4400ISR"
+    pdct_fam = "AIRANT"
     erase([pdct_fam], Session(), Lanes)
     dfs(pdct_fam)
+    get_customer_alphas(pdct_fam, Session())
     get_alphas(pdct_fam, Session())
-    visualize_networkx(pdct_fam, Session())
+    # visualize_networkx(pdct_fam, Session())
     visualize_graphivz(pdct_fam, Session())
