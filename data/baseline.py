@@ -61,6 +61,8 @@ def populate_scenario_lanes(baseline_id, session):
 
 
     if __name__ == '__main__':
+        Session = sessionmaker(bind=engine)
+
         baseline_id = "'nam"
         create_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
         populate_scenario_lanes(baseline_id, Session())
