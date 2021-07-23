@@ -111,8 +111,6 @@ def dfs(baseline_id, pdct_fam):
 def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session):
     v = stack[-1]
 
-    debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
-
     v.scenario_id = 0
     v.baseline_id = baseline_id
     v.pflow = pflow
@@ -122,6 +120,8 @@ def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_r
     time[0] += 1
     v.d = time[0]
     v.color = 1
+
+    debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
 
     if path[0] > 1 and path_stack[0] < path_stack[1]:
         curr_path_head_rank[0] = path_rank - 1
