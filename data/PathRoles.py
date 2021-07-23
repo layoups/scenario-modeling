@@ -47,17 +47,14 @@ def actions(edge):
 
 
 def path_confession(path, curr_path_head_rank, parent_pflow_head_rank):
-    start = curr_path_head_rank + 1 if curr_path_head_rank > -1 else 1
-    path[start - 1].in_pflow = 0
+    start = curr_path_head_rank + 1 
+    curr_path = path[-1].path
     for i in range(start, parent_pflow_head_rank):
-        path[i].ori_role = None
-        path[i].desti_role = None
-        path[i].color = 0
-        path[i].path = None
-        path[i].pflow = None
-        path[i].path_rank = None
-        path[i].parent_pflow = None
-        path[i].in_pflow = 0
+        if path[i].path >= curr_path:
+            path[i].in_pflow = 0
+            path[i].ori_role = None
+            path[i].desti_role = None
+            path[i].color = 0       
     # session.commit()
     return False
 
