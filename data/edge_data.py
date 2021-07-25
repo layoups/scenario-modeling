@@ -11,13 +11,13 @@ from AutoMap import *
 from datetime import datetime
 
 from math import radians, cos, sin, asin, sqrt
-
+## FIX
 def populate_scenario_edges(scenario_id, baseline_id, session):
     stmt = text("""
             insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_EDGES" 
             ("SCENARIO_ID", "BASELINE_ID" , 
-            lower("ORI_NAME"), lower("ORI_COUNTRY"), lower("ORI_REGION"), 
-            lower("DESTI_NAME"), lower("DESTI_COUNTRY"), lower("DESTI_REGION"), 
+            "ORI_NAME", "ORI_COUNTRY", "ORI_REGION", 
+            "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", 
             "TRANSPORT_MODE")
             select distinct :scenario_id, :baseline_id, lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
             lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"), sum("TOTAL_AMOUNT_PAID_USD"), sum(BILLED_WEIGHT),
@@ -32,7 +32,10 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             where "BILLED_WEIGHT" != 0 
             and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
             and "TRANSPORT_MODE" is not null
-            group by
+            group by "SCENARIO_ID", "BASELINE_ID" , 
+            "ORI_NAME", "ORI_COUNTRY", "ORI_REGION", 
+            "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", 
+            "TRANSPORT_MODE"
         """).params(scenario_id=scenario_id, baseline_id=baseline_id)
 
     session.execute(stmt)
