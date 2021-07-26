@@ -78,6 +78,18 @@ def populate_scenario_lanes(baseline_id, session):
     if __name__ == '__main__':
         Session = sessionmaker(bind=engine)
 
+        pdct_fam = 'PHONE'
+
         baseline_id = "'nam"
         create_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
         populate_scenario_lanes(baseline_id, Session())
+        dfs(baseline_id, pdct_fam)
+
+        populate_scenario_edges(0, baseline_id, Session())
+        get_distances_time_co2e(0, baseline_id, Session())
+
+        populate_baseline_nodes(baseline_id, Session())
+        get_node_supply(0, baseline_id, pdct_fam, Session)
+        get_node_capacity(0, baseline_id, pdct_fam, Session())
+
+        get_cost_omega(baseline_id, Session())
