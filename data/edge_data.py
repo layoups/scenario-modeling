@@ -121,17 +121,6 @@ def get_transport_time_and_co2(edge):
     return transport_time, co2e
 
 
-def get_cost_omega(baseline_id, session):
-    stmt = text("""
-        insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_OMEGA" ("BASELINE_ID", "OMEGA_COST")
-        select "BASELINE_ID", sum("TOTAL_WEIGHT")
-        from "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_LANES"
-        where "BASELINE_ID" = :baseline_id
-    """).params(baseline_id = baseline_id)
-
-    session.execute(stmt)
-    session.commit()
-
 if __name__ == '__main__':
     
     engine = create_engine(DB_CONN_PARAMETER)
