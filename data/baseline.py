@@ -64,29 +64,6 @@ def populate_scenario_lanes(baseline_id, session):
     session.commit()
 
 
-def populate_baseline_nodes(baseline_id, session):
-    stmt = text("""
-        insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_NODES" 
-        (baseline_id, scenario_id, name, country, region, role)
-        select :baseline_id, 0 distinct ori_name, ori_country, ori_region, ori_role
-        from "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_LANES"
-        where in_pflow = 1
-    """).params(baseline_id = baseline_id)
-
-    session.execute(stmt)
-    session.commit()
-
-    stmt = text("""
-        insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_NODES" 
-        (baseline_id, scenario_id, name, country, region, role)
-        select :baseline_id, 0 distinct desti_name, desti_country, desti_region, desti_role
-        from "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_LANES"
-        where in_pflow = 1 and ori_role = 'Customer'
-    """).params(baseline_id = baseline_id)
-
-    session.execute(stmt)
-    session.commit()
-
     if __name__ == '__main__':
         Session = sessionmaker(bind=engine)
 
