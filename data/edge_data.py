@@ -44,7 +44,7 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             ("SCENARIO_ID", "BASELINE_ID" , 
             "ORI_NAME", "ORI_COUNTRY", "ORI_REGION", 
             "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", 
-            "TRANSPORT_COST", "TOTAL_WEIGHT", "TRANSPORT_MODE")
+            "TRANSPORT_COST", "TOTAL_WEIGHT", "TRANSPORT_MODE", "IN_PFLOW")
             select distinct :scenario_id, :baseline_id, lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
             lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"), sum("TOTAL_AMOUNT_PAID_USD") / sum("BILLED_WEIGHT"),
             sum("BILLED_WEIGHT"),
@@ -54,7 +54,7 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
                 when "TRANSPORT_MODE" in ('OCEAN') THEN 'Ocean'
                 when "TRANSPORT_MODE" in ('RAIL') THEN 'Rail'
                 else "TRANSPORT_MODE"
-            end
+            end, 0
             from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" 
             where "BILLED_WEIGHT" != 0 
             and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')

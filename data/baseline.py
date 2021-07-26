@@ -37,7 +37,6 @@ def create_baseline(baseline_id, start, end, description, session):
 
     session.commit()
 
-
 def populate_scenario_lanes(baseline_id, session):
     baseline = session.query(Baselines).filter(Baselines.baseline_id == baseline_id).first()
 
@@ -63,33 +62,33 @@ def populate_scenario_lanes(baseline_id, session):
     session.execute(stmt)
     session.commit()
 
-    def get_cost_omega(baseline_id, session):
-        stmt = text("""
-            insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_OMEGA" ("BASELINE_ID", "OMEGA_COST")
-            select "BASELINE_ID", sum("TOTAL_WEIGHT")
-            from "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_LANES"
-            where "BASELINE_ID" = :baseline_id
-        """).params(baseline_id = baseline_id)
+def get_cost_omega(baseline_id, session):
+    stmt = text("""
+        insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_OMEGA" ("BASELINE_ID", "OMEGA_COST")
+        select "BASELINE_ID", sum("TOTAL_WEIGHT")
+        from "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_LANES"
+        where "BASELINE_ID" = :baseline_id
+    """).params(baseline_id = baseline_id)
 
-        session.execute(stmt)
-        session.commit()
+    session.execute(stmt)
+    session.commit()
 
 
-    if __name__ == '__main__':
-        Session = sessionmaker(bind=engine)
+if __name__ == '__main__':
+    Session = sessionmaker(bind=engine)
 
-        pdct_fam = 'PHONE'
+    pdct_fam = 'PHONE'
 
-        baseline_id = "'nam"
-        create_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
-        populate_scenario_lanes(baseline_id, Session())
-        dfs(baseline_id, pdct_fam)
+    baseline_id = "'nam"
+    create_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
+    populate_scenario_lanes(baseline_id, Session())
+    dfs(baseline_id, pdct_fam)
 
-        populate_scenario_edges(0, baseline_id, Session())
-        get_distances_time_co2e(0, baseline_id, Session())
+    populate_scenario_edges(0, baseline_id, Session())
+    get_distances_time_co2e(0, baseline_id, Session())
 
-        populate_baseline_nodes(baseline_id, Session())
-        get_node_supply(0, baseline_id, pdct_fam, Session)
-        get_node_capacity(0, baseline_id, pdct_fam, Session())
+    populate_baseline_nodes(baseline_id, Session())
+    get_node_supply(0, baseline_id, pdct_fam, Session)
+    get_node_capacity(0, baseline_id, pdct_fam, Session())
 
-        get_cost_omega(baseline_id, Session())
+    get_cost_omega(baseline_id, Session())
