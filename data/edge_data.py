@@ -18,9 +18,9 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             ("SCENARIO_ID", "BASELINE_ID" , 
             "ORI_NAME", "ORI_COUNTRY", "ORI_REGION", 
             "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", 
-            "TRANSPORT_MODE")
+            "TRANSPORT_COST", "TRANSPORT_MODE")
             select distinct :scenario_id, :baseline_id, lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
-            lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"), sum("TOTAL_AMOUNT_PAID_USD"), sum(BILLED_WEIGHT),
+            lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"), sum("TOTAL_AMOUNT_PAID_USD") / sum(BILLED_WEIGHT),
             case
                 when "TRANSPORT_MODE" in ('PARCEL', 'AIR') THEN 'Air'
                 when "TRANSPORT_MODE" in ('LTL', 'LCL', 'TL', 'DRAY', 'WHSE') THEN 'Truck'
@@ -52,12 +52,8 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     r = 6372.8 
     return c * r
 
-def get_locations(session):
-    locations = session.query(Locations).all()
-    return {(x.name, x.country, x.region): {'lat': x.lat, 'long': x.long} for x in locations}
-
 def get_distances_time_co2e(scenario_id, baseline_id, session):
-    locations = get_locations(session)
+    locations = Locations.get_locations(session)
 
     edges = session.query(ScenarioEdges).filter(
         ScenarioEdges.transport_distance == None,

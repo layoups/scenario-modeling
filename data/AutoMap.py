@@ -359,6 +359,11 @@ class Locations(Base):
             self.name, self.country, self.region, self.lat, self.long
         )
 
+    @classmethod
+    def get_locations(cls, session):
+        locations = session.query(cls).all()
+        return {(x.name, x.country, x.region): {'lat': x.lat, 'long': x.long} for x in locations}
+
 class ScenarioEdges(Base):
 
     scenario_edge_id = Column(Integer, primary_key=True)
