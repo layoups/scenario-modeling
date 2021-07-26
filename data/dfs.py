@@ -30,7 +30,7 @@ def dfs(baseline_id, pdct_fam, session):
     for v in graph.all():
         # print(v)
         v.color = 0
-        session.commit()
+    session.commit()
     
     time = [0]
     pflow = 1
