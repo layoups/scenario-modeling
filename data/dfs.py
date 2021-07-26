@@ -14,13 +14,12 @@ from Eraser import *
 from Visualize import *
 from Alpha import *
 
-def dfs(baseline_id, pdct_fam):
+def dfs(baseline_id, pdct_fam, session):
     print('Network Reconstruction for {}'.format(pdct_fam))
 
-    session = Session()
     graph = session.query(ScenarioLanes).filter(
         ScenarioLanes.pdct_fam == pdct_fam,
-        ScenarioLanes.scenario_id == scenario_id,
+        ScenarioLanes.scenario_id == 0,
         ScenarioLanes.baseline_id == baseline_id,
         ).order_by(desc(ScenarioLanes.ship_rank))
 
@@ -57,8 +56,6 @@ def dfs(baseline_id, pdct_fam):
 def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session):
     v = stack[-1]
 
-    v.scenario_id = 0
-    v.baseline_id = baseline_id
     v.pflow = pflow
     v.path = path[0]
     v.path_rank = path_rank
@@ -75,7 +72,7 @@ def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_r
     path_rank += 1
 
     result = session.query(ScenarioLanes).filter(
-        ScenarioLanes.scenario_id == scenario_id,
+        ScenarioLanes.scenario_id == 0,
         ScenarioLanes.baseline_id == baseline_id,
         ScenarioLanes.desti_name == v.ori_name, 
         ScenarioLanes.desti_country == v.ori_country,
@@ -92,7 +89,7 @@ def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_r
         if u.color == 0:
             path_stack.append(1)
             stack += [u]
-            dfs_visit(scenario_id, baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
+            dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
         if u.pflow and u.pflow < pflow and u.color == 2:
             get_parent_pflow(stack, u, curr_path_head_rank, path_rank, session)
 
