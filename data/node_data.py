@@ -52,7 +52,9 @@ def populate_Locations(session):
 def get_lat_long(session):
     gm = googlemaps.Client(key=KARIM_API_KEY)
 
-    locations = session.query(Locations).filter(Locations.lat == None).limit(2000)
+    locations = session.query(Locations).filter(Locations.lat == None)#.limit(2000)
+
+    i = 0
 
     for location in locations.all():
         name = location.name
@@ -63,8 +65,11 @@ def get_lat_long(session):
         except:
             api = None
         # print(api)
+        if i % 1000 == 0:
+            session.commit()
+            print(i)
         
-    session.commit()
+        i += 1
 
 def get_node_supply(scenario_id, baseline_id, pdct_fam, session):
     nodes = session.query(ScenarioNodes).filter(
