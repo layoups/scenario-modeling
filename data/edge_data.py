@@ -37,6 +37,8 @@ co2e_matrix = {
 
 
 def populate_scenario_edges(scenario_id, baseline_id, session):
+    baseline = session.query(Baselines).filter(Baselines.baseline_id == baseline_id).first()
+
     stmt = text("""
             insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_EDGES" 
             ("SCENARIO_ID", "BASELINE_ID" , 
@@ -57,11 +59,16 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             where "BILLED_WEIGHT" != 0 
             and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
             and "TRANSPORT_MODE" is not null
+            and "SHIP_DATE_PURE_SHIP" >= :start and "SHIP_DATE_PURE_SHIP" <= :end
             group by "SCENARIO_ID", "BASELINE_ID" , 
             "ORI_NAME", "ORI_COUNTRY", "ORI_REGION", 
             "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", 
             "TRANSPORT_MODE"
-        """).params(scenario_id=scenario_id, baseline_id=baseline_id)
+        """).params(
+            scenario_id=scenario_id, 
+            baseline_id=baseline_id,
+            start = baseline.start,
+            end = baseline.end)
 
     session.execute(stmt)
     session.commit()
@@ -119,6 +126,13 @@ def get_transport_time_and_co2(edge):
         co2e = distance * co2e_matrix[mode]
 
     return transport_time, co2e
+
+
+def set_in_pflow_for_scenario_edges(scenario_id, baseline_id, session):
+    edges = session.query(ScenarioEdges).filter(
+        ScenarioEdges.scenario_id == scenario_id,
+        ScenarioEdges.baseline_id == baseline_id).all()
+    
 
 
 if __name__ == '__main__':
