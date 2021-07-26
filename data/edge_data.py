@@ -28,6 +28,13 @@ ocean_matrix = {
     ('latm', 'latm'): {'time': 22 * 24, 'distance': 12662}
     }
 
+co2e_matrix = {
+    'Air': 0.00113,
+    'Truck': 0.00012318,
+    'Ocean': 0.00001614,
+    'Rail': 0.00002556
+}
+
 
 def populate_scenario_edges(scenario_id, baseline_id, session):
     stmt = text("""
@@ -95,20 +102,20 @@ def get_transport_time_and_co2(edge):
     mode = edge.transport_mode
 
     if mode == 'Air':
-        transport_time = 0
-        co2e = 0
+        transport_time = distance / 870
+        co2e = distance * co2e_matrix[mode]
 
     if mode == 'Truck':
-        transport_time = 0
-        co2e = 0
+        transport_time = distance / 65
+        co2e = distance * co2e_matrix[mode]
 
     if mode == 'Ocean':
-        transport_time = ocean_matrix[(edge.ori_region, edge.desti_region)]
-        co2e = 0
+        transport_time, co2e = ocean_matrix[(edge.ori_region, edge.desti_region)]['time']
+        co2e = ocean_matrix[(edge.ori_region, edge.desti_region)]['distance'] * co2e_matrix[mode]
 
     if mode == 'Rail':
-        transport_time = 0
-        co2e = 0
+        transport_time = distance / 113
+        co2e = distance * co2e_matrix[mode]
 
     return transport_time, co2e
 
