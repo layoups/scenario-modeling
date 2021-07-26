@@ -12,6 +12,23 @@ from datetime import datetime
 
 from math import radians, cos, sin, asin, sqrt
 ## FIX
+
+
+ocean_matrix = {
+    ('apac', 'apac'): {'time': 2 * 24, 'distance': 30},
+    ('apac', 'us'): {'time': 36 * 24, 'distance': 20695}, 
+    ('us', 'apac'): {'time': 36 * 24, 'distance': 20695}, 
+    ('apac', 'latm'): {'time': 22 * 24, 'distance': 12662}, 
+    ('latm', 'apac'): {'time': 22 * 24, 'distance': 12662}, 
+    ('apac', 'eum'): {'time': 31 * 24, 'distance': 17865}, 
+    ('eum', 'apac'): {'time': 31 * 24, 'distance': 17865}, 
+    ('us', 'us'): {'time': 15 * 24, 'distance': 8792}, 
+    ('us', 'eum'): {'time': 17 * 24, 'distance': 9533}, 
+    ('eum', 'us'): {'time': 17 * 24, 'distance': 9533}, 
+    ('latm', 'latm'): {'time': 22 * 24, 'distance': 12662}
+    }
+
+
 def populate_scenario_edges(scenario_id, baseline_id, session):
     stmt = text("""
             insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_EDGES" 
@@ -72,7 +89,10 @@ def get_distances_time_co2e(scenario_id, baseline_id, session):
 
     session.commit()
 
-def get_transport_time_and_co2(mode, distance):
+def get_transport_time_and_co2(edge):
+
+    distance = edge.distance
+    mode = edge.transport_mode
 
     if mode == 'Air':
         transport_time = 0
@@ -83,7 +103,7 @@ def get_transport_time_and_co2(mode, distance):
         co2e = 0
 
     if mode == 'Ocean':
-        transport_time = 0
+        transport_time = ocean_matrix[(edge.ori_region, edge.desti_region)]
         co2e = 0
 
     if mode == 'Rail':
