@@ -6,12 +6,14 @@ from sqlalchemy import Table, Column, Float, String, Integer
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.ext.automap import automap_base 
 
-from env import DB_CONN_PARAMETER
+from env import DB_CONN_PARAMETER_LOCAL
+
+from datetime import datetime
 
 ## use stg engine, but prefix WI tables with WI
 
 
-engine = create_engine(DB_CONN_PARAMETER)
+engine = create_engine(DB_CONN_PARAMETER_LOCAL)
 metadata = MetaData()
 auto_Base = automap_base(metadata=metadata)
 
@@ -74,5 +76,16 @@ class Edges(auto_Base):
         return None
 
 auto_Base.prepare()
-RawLanes = auto_Base.classes.raw_lanes
+
+
+if __name__ == '__main__':
+    start = datetime.now()
+
+    Session = sessionmaker(bind=engine)
+    session = Session()
+
+    lane = session.query(Lanes).first()
+    print(lane)
+    print(datetime.now() - start)
+    
 
