@@ -150,6 +150,13 @@ class DecomNodes(Base):
             self.baseline_id, self.scenario_id, self.pdct_fam, self.name, self.country, self.region, self.role
             )
 
+    @classmethod
+    def get_decom_nodes(cls, baseline_id, scenario_id, session):
+        decom_nodes = session.query(cls).filter(
+            cls.baseline_id == baseline_id,
+            cls.scenario_id == scenario_id).all()
+        return [((n.name, n.country, n.region, n.role), n.pdct_fam) for n in decom_nodes]
+
 
 class AltNodes(Base):
 
