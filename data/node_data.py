@@ -64,7 +64,7 @@ def get_lat_long(session):
         except:
             api = None
         # print(api)
-        if i % 1000 == 0:
+        if i % 100 == 0:
             session.commit()
             print(i, '-', datetime.now() - start)
         
