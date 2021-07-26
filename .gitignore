@@ -133,3 +133,4 @@ env.py
 *.pdf 
 *.gv
 *.csv
+*.xlsx
