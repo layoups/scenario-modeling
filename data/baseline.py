@@ -74,8 +74,8 @@ def get_cost_omega(baseline_id, session):
     session.commit()
 
 def set_baseline(baseline_id, start, end, description, session):
-    # create_baseline(baseline_id, start, end, description, session)
-    # populate_scenario_lanes(baseline_id, session)
+    create_baseline(baseline_id, start, end, description, session)
+    populate_scenario_lanes(baseline_id, session)
 
     pdct_fam = 'PHONE'
     input('baseline + scenario lanes = ready for dfs?')
@@ -98,8 +98,8 @@ if __name__ == '__main__':
 
     pdct_fam = 'PHONE'
 
-    baseline_id = 2
-    set_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial 2' , session)
+    baseline_id = 5
+    set_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial 5' , session)
 
     session.commit()
 
