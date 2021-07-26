@@ -17,7 +17,7 @@ def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
     model_pflows = session.query(ScenarioLanes.pflow).filter(
         ScenarioLanes.scenario_id == scenario_id,
         ScenarioLanes.baseline_id == baseline_id,
-        ScenarioLanes.parent_pflow == None , 
+        ScenarioLanes.parent_pflow == None, 
         ScenarioLanes.pdct_fam == pdct_fam, 
         ScenarioLanes.in_pflow == 1
         ).distinct()
