@@ -56,6 +56,8 @@ def get_lat_long(session):
 
     i = 0
 
+    start = datetime.now()
+
     for location in locations.all():
         name = location.name
         try:
@@ -67,7 +69,7 @@ def get_lat_long(session):
         # print(api)
         if i % 1000 == 0:
             session.commit()
-            print(i)
+            print(i, '-', datetime.now() - start)
         
         i += 1
 
@@ -161,8 +163,8 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    start = datetime.now()
-    print(start)
+    # start = datetime.now()
+    # print(start)
 
     # get_node_supply('4400ISR', session)
     # get_node_capacity('4400ISR', session)
@@ -170,5 +172,5 @@ if __name__ == '__main__':
     # populate_Locations(session)
     get_lat_long(session)
 
-    print(datetime.now() - start)
+    # print(datetime.now() - start)
     session.commit()

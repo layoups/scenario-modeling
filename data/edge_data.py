@@ -56,7 +56,7 @@ def get_locations(session):
     locations = session.query(Locations).all()
     return {(x.name, x.country, x.region): {'lat': x.lat, 'long': x.long} for x in locations}
 
-def get_distances(scenario_id, baseline_id, session):
+def get_distances_time_co2e(scenario_id, baseline_id, session):
     locations = get_locations(session)
 
     edges = session.query(ScenarioEdges).filter(
@@ -70,20 +70,31 @@ def get_distances(scenario_id, baseline_id, session):
         desti_location = locations[(edge.desti_name, edge.desti_country, edge.desti_region)]
         ori_lat, ori_long = ori_location['lat'], ori_location['long']
         desti_lat, desti_long = desti_location['lat'], desti_location['long']
-        edge.transport_distance = 0 if not ori_lat or not desti_lat else haversine_distance(ori_lat, ori_long, desti_lat, desti_long)
+        edge.distance = 0 if not ori_lat or not desti_lat else haversine_distance(ori_lat, ori_long, desti_lat, desti_long)
+        edge.transport_time, edge.co2e = get_transport_time_and_co2(edge.transport_mode, edge.distance)
     # print(datetime.now() - start)
 
     session.commit()
 
-def get_transport_time_and_co2(edge):
-    distance = edge.distance
-    mode = edge.transport_mode
+def get_transport_time_and_co2(mode, distance):
 
     if mode == 'Air':
-        edge.transport_time = 0
-        edge.co2e = 0
+        transport_time = 0
+        co2e = 0
 
-    return None
+    if mode == 'Truck':
+        transport_time = 0
+        co2e = 0
+
+    if mode == 'Ocean':
+        transport_time = 0
+        co2e = 0
+
+    if mode == 'Rail':
+        transport_time = 0
+        co2e = 0
+
+    return transport_time, co2e
 
 if __name__ == '__main__':
     
@@ -91,6 +102,6 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    get_distances(session)
+    get_distances_time_co2e(session)
 
     session.commit()
