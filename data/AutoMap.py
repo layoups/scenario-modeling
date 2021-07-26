@@ -383,6 +383,7 @@ class ScenarioEdges(Base):
     co2e = Column('co2e', Float)
     transport_cost = Column('transport_cost', Float)
     distance = Column('distance', Float)
+    total_weight = Column('total_weight', Float)
     in_pflow = Column('in_pflow', Integer)
 
     __tablename__ = 'scdsi_scenario_edges'
