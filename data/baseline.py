@@ -74,11 +74,12 @@ def get_cost_omega(baseline_id, session):
     session.commit()
 
 def set_baseline(baseline_id, start, end, description, session):
-    create_baseline(baseline_id, start, end, description, session)
-    populate_scenario_lanes(baseline_id, session)
+    # create_baseline(baseline_id, start, end, description, session)
+    # populate_scenario_lanes(baseline_id, session)
 
     pdct_fam = 'PHONE'
-    dfs(baseline_id, pdct_fam)
+    input('baseline + scenario lanes = ready for dfs?')
+    dfs(baseline_id, pdct_fam, session)
 
     populate_scenario_edges(0, baseline_id, session)
     get_distances_time_co2e(0, baseline_id, session)
@@ -93,10 +94,14 @@ def set_baseline(baseline_id, start, end, description, session):
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
+    session = Session()
 
     pdct_fam = 'PHONE'
 
-    baseline_id = "trial 2"
-    set_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
+    baseline_id = 2
+    set_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial 2' , session)
+
+    session.commit()
+
 
     
