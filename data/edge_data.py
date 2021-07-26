@@ -44,8 +44,8 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", 
             "TRANSPORT_COST", "TOTAL_WEIGHT", "TRANSPORT_MODE")
             select distinct :scenario_id, :baseline_id, lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
-            lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"), sum("TOTAL_AMOUNT_PAID_USD") / sum(BILLED_WEIGHT),
-            sum(BILLED_WEIGHT),
+            lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"), sum("TOTAL_AMOUNT_PAID_USD") / sum("BILLED_WEIGHT"),
+            sum("BILLED_WEIGHT"),
             case
                 when "TRANSPORT_MODE" in ('PARCEL', 'AIR') THEN 'Air'
                 when "TRANSPORT_MODE" in ('LTL', 'LCL', 'TL', 'DRAY', 'WHSE') THEN 'Truck'
