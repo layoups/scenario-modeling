@@ -86,6 +86,7 @@ if __name__ == '__main__':
 
     populate_scenario_edges(0, baseline_id, Session())
     get_distances_time_co2e(0, baseline_id, Session())
+    set_in_pflow_for_scenario_edges(0, baseline_id, Session())
 
     populate_baseline_nodes(baseline_id, Session())
     get_node_supply(0, baseline_id, pdct_fam, Session)

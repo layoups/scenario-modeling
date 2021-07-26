@@ -128,9 +128,37 @@ def get_transport_time_and_co2(edge):
     return transport_time, co2e
 
 def set_in_pflow_for_scenario_edges(scenario_id, baseline_id, session):
-    edges = session.query(ScenarioEdges).filter(
-        ScenarioEdges.scenario_id == scenario_id,
-        ScenarioEdges.baseline_id == baseline_id).all()
+    edges = session.query(
+        ScenarioLanes.ori_name,
+        ScenarioLanes.ori_country,
+        ScenarioLanes.ori_region,
+        ScenarioLanes.ori_role,
+        ScenarioLanes.desti_name,
+        ScenarioLanes.desti_country,
+        ScenarioLanes.desti_region,
+        ScenarioLanes.desti_role
+        ).filter(
+        ScenarioLanes.scenario_id == scenario_id,
+        ScenarioLanes.baseline_id == baseline_id).distinct().all()
+
+    for edge in edges:
+        scenario_edges = session.query(ScenarioEdges).filter(
+            ScenarioEdges.ori_name == edge.ori_name,
+            ScenarioEdges.ori_country == edge.ori_country,
+            ScenarioEdges.ori_region == edge.ori_region,
+            ScenarioEdges.desti_name == edge.desti_name,
+            ScenarioEdges.desti_country == edge.desti_country,
+            ScenarioEdges.desti_region == edge.desti_region,
+            ScenarioLanes.scenario_id == scenario_id,
+            ScenarioLanes.baseline_id == baseline_id
+        ).all()
+
+        for e in scenario_edges:
+            e.ori_role = edge.ori_role
+            e.desti_role = edge.desti_role
+            e.in_pflow = e.in_pflow
+
+    session.commit()
     
 
 
