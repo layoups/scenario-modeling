@@ -134,3 +134,4 @@ env.py
 *.gv
 *.csv
 *.xlsx
+db_migration.py
