@@ -127,7 +127,6 @@ def get_transport_time_and_co2(edge):
 
     return transport_time, co2e
 
-
 def set_in_pflow_for_scenario_edges(scenario_id, baseline_id, session):
     edges = session.query(ScenarioEdges).filter(
         ScenarioEdges.scenario_id == scenario_id,
