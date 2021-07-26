@@ -73,23 +73,30 @@ def get_cost_omega(baseline_id, session):
     session.execute(stmt)
     session.commit()
 
+def set_baseline(baseline_id, start, end, description, session):
+    create_baseline(baseline_id, start, end, description, session)
+    populate_scenario_lanes(baseline_id, session)
+
+    pdct_fam = 'PHONE'
+    dfs(baseline_id, pdct_fam)
+
+    populate_scenario_edges(0, baseline_id, session)
+    get_distances_time_co2e(0, baseline_id, session)
+    set_in_pflow_for_scenario_edges(0, baseline_id, session)
+
+    populate_baseline_nodes(baseline_id, session)
+    get_node_supply(0, baseline_id, pdct_fam, session)
+    get_node_capacity(0, baseline_id, pdct_fam, session)
+
+    get_cost_omega(baseline_id, session)
+
 
 if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
 
     pdct_fam = 'PHONE'
 
-    baseline_id = "'nam"
-    create_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
-    populate_scenario_lanes(baseline_id, Session())
-    dfs(baseline_id, pdct_fam)
+    baseline_id = "trial 2"
+    set_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
 
-    populate_scenario_edges(0, baseline_id, Session())
-    get_distances_time_co2e(0, baseline_id, Session())
-    set_in_pflow_for_scenario_edges(0, baseline_id, Session())
-
-    populate_baseline_nodes(baseline_id, Session())
-    get_node_supply(0, baseline_id, pdct_fam, Session)
-    get_node_capacity(0, baseline_id, pdct_fam, Session())
-
-    get_cost_omega(baseline_id, Session())
+    
