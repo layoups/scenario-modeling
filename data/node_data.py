@@ -23,7 +23,6 @@ def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
         ).distinct()
     return model_pflows
 
-
 def populate_Locations(session):
     stmt = text("""
             insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_LOCATIONS" ("NAME", "COUNTRY", "REGION")
@@ -46,8 +45,6 @@ def populate_Locations(session):
 
     session.execute(stmt)
     session.commit()
-
-
 
 def get_lat_long(session):
     gm = googlemaps.Client(key=KARIM_API_KEY)
@@ -73,12 +70,11 @@ def get_lat_long(session):
         
         i += 1
 
-
 def populate_baseline_nodes(baseline_id, session):
     stmt = text("""
         insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_NODES" 
-        (baseline_id, scenario_id, name, country, region, role)
-        select :baseline_id, 0 distinct ori_name, ori_country, ori_region, ori_role
+        (baseline_id, scenario_id, name, country, region, role, in_pflow)
+        select distinct :baseline_id, 0, ori_name, ori_country, ori_region, ori_role, 1
         from "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_LANES"
         where in_pflow = 1
     """).params(baseline_id = baseline_id)
@@ -88,15 +84,14 @@ def populate_baseline_nodes(baseline_id, session):
 
     stmt = text("""
         insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_NODES" 
-        (baseline_id, scenario_id, name, country, region, role)
-        select :baseline_id, 0 distinct desti_name, desti_country, desti_region, desti_role
+        (baseline_id, scenario_id, name, country, region, role, in_pflow)
+        select distinct :baseline_id, 0, desti_name, desti_country, desti_region, desti_role, 1
         from "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_LANES"
         where in_pflow = 1 and ori_role = 'Customer'
     """).params(baseline_id = baseline_id)
 
     session.execute(stmt)
     session.commit()
-
 
 def get_node_supply(scenario_id, baseline_id, pdct_fam, session):
     nodes = session.query(ScenarioNodes).filter(
