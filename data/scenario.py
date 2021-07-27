@@ -16,18 +16,34 @@ from Alpha import *
 from dfs import *
 
 
-def create_scenario(baseline_id, session):
-    return None
+def create_scenario(baseline_id, descriprion, session):
+    scenario = Scenarios(baseline_id=baseline_id)
+    scenario.date = datetime.now()
+    scenario.description = descriprion
 
+    session.add(scenario)
+    session.commit()
+    
 
+# node_dict = {'pdct_fam': , 'name': , 'country': , 'region': , 'role': , 'capacity': , 'supply': , 'demand': }
 def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
     return None
 
-
+# node_dict = {'pdct_fam': , 'name': , 'country': , 'region': , 'role': }
 def add_decom_nodes(scenario_id, baseline_id, node_dict, session):
     return None
 
-
+# edge_dict = {
+#     'pdct_fam': ,
+#     'ori_name': ,
+#     'ori_country': ,
+#     'ori_region': ,
+#     'ori_role': ,
+#     'desti_name': ,
+#     'desti_country': ,
+#     'desti_region': ,
+#     'desti_role': 
+# }
 def add_alt_edges(scenario_id, baseline_id, edge_dict, session):
     return None
 
