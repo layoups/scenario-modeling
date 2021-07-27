@@ -14,7 +14,7 @@ from sqlalchemy.sql.expression import null
 
 from datetime import datetime
 
-from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI, DB_CONN_PARAMETER, DB_CONN_PARAMETER_PROD
+from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI, DB_CONN_PARAMETER, DB_CONN_PARAMETER_PROD, DB_CONN_POST
 
 ## use stg engine, but prefix WI tables with WI
 
@@ -573,14 +573,14 @@ if __name__ == "__main__":
     # raw_baseline = session.query(Baselines).first()
     # print(raw_baseline)
 
-    # lane = session.query(ScenarioLanes).first()
-    # print(lane)
+    lane = session.query(Locations).first()
+    print(lane)
 
     # location = Locations(name="atlanta", country="US", region="US", lat=10, long=1)
     # session.add(location)
 
-    ships = session.query(ScenarioLanes).first()
-    print(ships, '\n')
+    # ships = session.query(ScenarioLanes).first()
+    # print(ships, '\n')
     print(datetime.now() - start)
 
     session.commit()
