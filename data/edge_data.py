@@ -60,9 +60,8 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
             and "TRANSPORT_MODE" is not null
             and "SHIP_DATE_PURE_SHIP" >= :start and "SHIP_DATE_PURE_SHIP" <= :end
-            group by "SCENARIO_ID", "BASELINE_ID" , 
-            "ORI_NAME", "ORI_COUNTRY", "ORI_REGION", 
-            "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", 
+            group by "SHIP_FROM_NAME", "SHIP_FROM_COUNTRY", "SHIP_FROM_REGION_CODE", 
+            "SHIP_TO_NAME", "SHIP_TO_COUNTRY", "SHIP_TO_REGION_CODE", 
             "TRANSPORT_MODE"
         """).params(
             scenario_id=scenario_id, 
