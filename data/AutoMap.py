@@ -43,7 +43,7 @@ class RawHANA(Base):
 
     row_id = Column(Integer, primary_key=True, autoincrement=True)
 
-    __tablename__ = 'scds_db.scds_scdsi_stg.scdsi_cv_lane_rate_automation_pl'
+    __tablename__ = 'scdsi_cv_lane_rate_automation_pl'
 
 
     __table_args__ = {'extend_existing': True}
