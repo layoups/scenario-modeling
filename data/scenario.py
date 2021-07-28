@@ -171,39 +171,72 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
     session.commit()
 
 
-
-    # ori_edges = session.query(ScenarioLanes).filter(
-    #     ScenarioLanes.scenario_id == scenario_id,
-    #     ScenarioLanes.baseline_id == baseline_id,
-    #     ScenarioLanes.pdct_fam == alt_node.pdct_fam,
-    #     ScenarioLanes.ori_name == alt_node.name, 
-    #     ScenarioLanes.ori_country == alt_node.country, 
-    #     ScenarioLanes.ori_region == alt_node.region,
-    #     ScenarioLanes.ori_role == alt_node.role
-    # ).all()
-
-    # for edge in ori_edges:
-    #     edge_dict = {}
-    #     add_alt_edges(scenario_id, baseline_id, edge_dict, session)
-
-    # desti_edges = session.query(ScenarioLanes).filter(
-    #     ScenarioLanes.scenario_id == scenario_id,
-    #     ScenarioLanes.baseline_id == baseline_id,
-    #     ScenarioLanes.pdct_fam == alt_node.pdct_fam,
-    #     ScenarioLanes.desti_name == alt_node.name, 
-    #     ScenarioLanes.desti_country == alt_node.country, 
-    #     ScenarioLanes.desti_region == alt_node.region, 
-    #     ScenarioLanes.desti_role == alt_node.role
-    # ).all()
-
-    # for edge in desti_edges:
-    #     edge_dict = {}
-    #     add_alt_edges(scenario_id, baseline_id, edge_dict, session)
-
-
 # node_dict = {'pdct_fam': , 'name': , 'country': , 'region': , 'role': }
 def add_decom_nodes(scenario_id, baseline_id, node_dict, session):
-    return None
+    decom_node = DecomNodes(
+        scenario_id=scenario_id, 
+        baseline_id=baseline_id,
+        pdct_fam = node_dict['pdct_fam'],
+        role = node_dict['role'],
+        name = node_dict['name'],
+        country = node_dict['country'],
+        region = node_dict['region']
+    )
+    session.add(decom_node)
+    session.commit()
+    
+    stmt = text(
+        """
+        update :table 
+        set in_pflow = 0
+        where scenario_id in (:scenario_id)
+            and baseline_id in (:baseline_id)
+            and pdct_fam in (:pdct_fam)
+            and name in (:name)
+            and country in (:country)
+            and region in (:region)
+            and role in (:role)
+        """
+    ).params(
+        table = DecomNodes.__tablename__,
+        scenario_id=scenario_id, 
+        baseline_id=baseline_id,
+        pdct_fam = node_dict['pdct_fam'],
+        role = node_dict['role'],
+        name = node_dict['name'],
+        country = node_dict['country'],
+        region = node_dict['region']
+    )
+
+    session.execute(stmt)
+    session.commit()
+
+    stmt = text(
+        """
+        update :table
+        set in_pflow = 0
+        where scenario_id in (:scenario_id)
+            and baseline_id in (:baseline_id)
+            and pdct_fam in (:pdct_fam)
+            and (ori_name in (:name) or desti_name in (:name))
+            and (ori_country in (:country) or desti_country in (:country))
+            and (ori_region in (:region) or desti_region in (:region))
+            and (ori_role in (:role) or desti_role in (:role))
+        """
+    ).params(
+        table = DecomNodes.__tablename__,
+        scenario_id=scenario_id, 
+        baseline_id=baseline_id,
+        pdct_fam = node_dict['pdct_fam'],
+        role = node_dict['role'],
+        name = node_dict['name'],
+        country = node_dict['country'],
+        region = node_dict['region']
+    )
+
+    session.execute(stmt)
+    session.commit()
+
 
 # edge_dict = {
 #     'pdct_fam': ,
