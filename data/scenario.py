@@ -25,6 +25,8 @@ def create_scenario(baseline_id, descriprion, session):
 
     session.add(scenario)
     session.commit()
+
+    # copy scenario lanes, scenario edges, scenario nodes
     
 
 # node_dict = {
@@ -76,40 +78,128 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
 
     stmt = text(
         """
-        insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_LANES" ()
+        insert into :insert_table 
+            (scenario_id, baseline_id, pdct_fam, 
+            ori_name, ori_country, ori_region, ori_role 
+            desti_name, desti_country, desti_region, desti_role, 
+            ship_type, ship_rank, 
+            total_weight, total_paid, 
+            alpha, total_alpha,
+            color, d, f,
+            path, path_rank, pflow, parent_pflow, in_pflow)
+        select scenario_id, baseline_id, pdct_fam,
+            :alt_name, :alt_country, :alt_region, :alt_role,
+            desti_name, desti_country, desti_region, desti_role, 
+            ship_type, ship_rank, 
+            total_weight, total_paid, 
+            alpha, total_alpha,
+            color, d, f,
+            path, path_rank, pflow, parent_pflow, in_pflow 
+        from :select_table
+            where scenario_id in (:scenario_id)
+                and baseline_id in (:baseline_id)
+                and pdct_fam in (:pdct_fam)
+                and ori_name in (:ori_name)
+                and ori_country in (:ori_country)
+                and ori_region in (:ori_region)
+                and ori_role in (:ori_role)
         """
+    ).params(
+        insert_table = ScenarioLanes.__tablename__,
+        alt_name = alt_node.alt_name,
+        alt_country = alt_node.alt_country,
+        alt_region = alt_node.alt_region,
+        alt_role = alt_node.role,
+        select_table = ScenarioLanes.__tablename__,
+        scenario_id = scenario_id,
+        baseline_id = baseline_id,
+        pdct_fam = pdct_fam,
+        ori_name = alt_node.name,
+        ori_country = alt_node.country,
+        ori_region = alt_node.region,
+        ori_role = alt_node.role
     )
 
-    ori_edges = session.query(ScenarioLanes).filter(
-        ScenarioLanes.scenario_id == scenario_id,
-        ScenarioLanes.baseline_id == baseline_id,
-        ScenarioLanes.pdct_fam == alt_node.pdct_fam,
-        ScenarioLanes.ori_name == alt_node.name, 
-        ScenarioLanes.ori_country == alt_node.country, 
-        ScenarioLanes.ori_region == alt_node.region,
-        ScenarioLanes.ori_role == alt_node.role
-    ).all()
+    session.execute(stmt)
+    session.commit()
 
-    for edge in ori_edges:
-        edge_dict = {}
-        add_alt_edges(scenario_id, baseline_id, edge_dict, session)
+    stmt = text(
+        """
+        insert into :insert_table 
+            (scenario_id, baseline_id, pdct_fam, 
+            ori_name, ori_country, ori_region, ori_role 
+            desti_name, desti_country, desti_region, desti_role, 
+            ship_type, ship_rank, 
+            total_weight, total_paid, 
+            alpha, total_alpha,
+            color, d, f,
+            path, path_rank, pflow, parent_pflow, in_pflow)
+        select scenario_id, baseline_id, pdct_fam,
+            ori_name, ori_country, ori_region, ori_role,
+            :alt_name, :alt_country, :alt_region, :alt_role, 
+            ship_type, ship_rank, 
+            total_weight, total_paid, 
+            alpha, total_alpha,
+            color, d, f,
+            path, path_rank, pflow, parent_pflow, in_pflow 
+        from :select_table
+            where scenario_id in (:scenario_id)
+                and baseline_id in (:baseline_id)
+                and pdct_fam in (:pdct_fam)
+                and desti_name in (:desti_name)
+                and desti_country in (:desti_country)
+                and desti_region in (:desti_region)
+                and desti_role in (:desti_role)
+        """
+    ).params(
+        insert_table = ScenarioLanes.__tablename__,
+        alt_name = alt_node.alt_name,
+        alt_country = alt_node.alt_country,
+        alt_region = alt_node.alt_region,
+        alt_role = alt_node.role,
+        select_table = ScenarioLanes.__tablename__,
+        scenario_id = scenario_id,
+        baseline_id = baseline_id,
+        pdct_fam = pdct_fam,
+        desti_name = alt_node.name,
+        desti_country = alt_node.country,
+        desti_region = alt_node.region,
+        desti_role = alt_node.role
+    )
 
-    desti_edges = session.query(ScenarioLanes).filter(
-        ScenarioLanes.scenario_id == scenario_id,
-        ScenarioLanes.baseline_id == baseline_id,
-        ScenarioLanes.pdct_fam == alt_node.pdct_fam,
-        ScenarioLanes.desti_name == alt_node.name, 
-        ScenarioLanes.desti_country == alt_node.country, 
-        ScenarioLanes.desti_region == alt_node.region, 
-        ScenarioLanes.desti_role == alt_node.role
-    ).all()
-
-    for edge in desti_edges:
-        edge_dict = {}
-        add_alt_edges(scenario_id, baseline_id, edge_dict, session)
+    session.execute(stmt)
+    session.commit()
 
 
-    return None
+
+    # ori_edges = session.query(ScenarioLanes).filter(
+    #     ScenarioLanes.scenario_id == scenario_id,
+    #     ScenarioLanes.baseline_id == baseline_id,
+    #     ScenarioLanes.pdct_fam == alt_node.pdct_fam,
+    #     ScenarioLanes.ori_name == alt_node.name, 
+    #     ScenarioLanes.ori_country == alt_node.country, 
+    #     ScenarioLanes.ori_region == alt_node.region,
+    #     ScenarioLanes.ori_role == alt_node.role
+    # ).all()
+
+    # for edge in ori_edges:
+    #     edge_dict = {}
+    #     add_alt_edges(scenario_id, baseline_id, edge_dict, session)
+
+    # desti_edges = session.query(ScenarioLanes).filter(
+    #     ScenarioLanes.scenario_id == scenario_id,
+    #     ScenarioLanes.baseline_id == baseline_id,
+    #     ScenarioLanes.pdct_fam == alt_node.pdct_fam,
+    #     ScenarioLanes.desti_name == alt_node.name, 
+    #     ScenarioLanes.desti_country == alt_node.country, 
+    #     ScenarioLanes.desti_region == alt_node.region, 
+    #     ScenarioLanes.desti_role == alt_node.role
+    # ).all()
+
+    # for edge in desti_edges:
+    #     edge_dict = {}
+    #     add_alt_edges(scenario_id, baseline_id, edge_dict, session)
+
 
 # node_dict = {'pdct_fam': , 'name': , 'country': , 'region': , 'role': }
 def add_decom_nodes(scenario_id, baseline_id, node_dict, session):
