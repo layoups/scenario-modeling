@@ -40,29 +40,29 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
     baseline = session.query(Baselines).filter(Baselines.baseline_id == baseline_id).first()
 
     stmt = text("""
-            insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_SCENARIO_EDGES" 
-            ("SCENARIO_ID", "BASELINE_ID" , 
-            "ORI_NAME", "ORI_COUNTRY", "ORI_REGION", 
-            "DESTI_NAME", "DESTI_COUNTRY", "DESTI_REGION", 
-            "TRANSPORT_COST", "TOTAL_WEIGHT", "TRANSPORT_MODE", "IN_PFLOW")
-            select distinct :scenario_id, :baseline_id, lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE"),
-            lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE"), sum("TOTAL_AMOUNT_PAID_USD") / sum("BILLED_WEIGHT"),
-            sum("BILLED_WEIGHT"),
+            insert into scdsi_scenario_edges 
+            (scenario_id, baseline_id , 
+            ori_name, ori_country, ori_region, 
+            desti_name, desti_country, desti_region, 
+            transport_cost, total_weight, transport_mode, in_pflow)
+            select distinct :scenario_id, :baseline_id, lower(ship_from_name), lower(ship_from_country), lower(ship_from_region_code),
+            lower(ship_to_name), lower(ship_to_country), lower(ship_to_region_code), sum(total_paid_usd) / sum(billed_weight),
+            sum(billed_weight),
             case
-                when "TRANSPORT_MODE" in ('PARCEL', 'AIR') THEN 'Air'
-                when "TRANSPORT_MODE" in ('LTL', 'LCL', 'TL', 'DRAY', 'WHSE') THEN 'Truck'
-                when "TRANSPORT_MODE" in ('OCEAN') THEN 'Ocean'
-                when "TRANSPORT_MODE" in ('RAIL') THEN 'Rail'
-                else "TRANSPORT_MODE"
+                when transport_mode in ('PARCEL', 'AIR') THEN 'Air'
+                when transport_mode in ('LTL', 'LCL', 'TL', 'DRAY', 'WHSE') THEN 'Truck'
+                when transport_mode in ('OCEAN') THEN 'Ocean'
+                when transport_mode in ('RAIL') THEN 'Rail'
+                else transport_mode
             end, 0
-            from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" 
-            where "BILLED_WEIGHT" != 0 
-            and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
-            and "TRANSPORT_MODE" is not null
-            and "SHIP_DATE_PURE_SHIP" >= :start and "SHIP_DATE_PURE_SHIP" <= :end
-            group by "SHIP_FROM_NAME", "SHIP_FROM_COUNTRY", "SHIP_FROM_REGION_CODE", 
-            "SHIP_TO_NAME", "SHIP_TO_COUNTRY", "SHIP_TO_REGION_CODE", 
-            "TRANSPORT_MODE"
+            from scdsi_cv_lane_rate_automation
+            where billed_weight != 0 
+            and shipment_type not in ('OTHER', 'BROKERAGE')
+            and transport_mode is not null
+            and ship_date_pure_ship >= :start and ship_date_pure_ship <= :end
+            group by ship_from_name, ship_from_country, ship_from_region_code, 
+            ship_to_name, ship_to_country, ship_to_region_code, 
+            transport_mode
         """).params(
             scenario_id=scenario_id, 
             baseline_id=baseline_id,
