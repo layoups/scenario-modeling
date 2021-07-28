@@ -105,7 +105,7 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
                 and ori_role in (:ori_role)
         """
     ).params(
-        insert_table = ScenarioLanes.__tablename__,
+        insert_table = AltEdges.__tablename__,
         alt_name = alt_node.alt_name,
         alt_country = alt_node.alt_country,
         alt_region = alt_node.alt_region,
@@ -152,7 +152,7 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
                 and desti_role in (:desti_role)
         """
     ).params(
-        insert_table = ScenarioLanes.__tablename__,
+        insert_table = AltEdges.__tablename__,
         alt_name = alt_node.alt_name,
         alt_country = alt_node.alt_country,
         alt_region = alt_node.alt_region,
@@ -198,7 +198,7 @@ def add_decom_nodes(scenario_id, baseline_id, node_dict, session):
             and role in (:role)
         """
     ).params(
-        table = DecomNodes.__tablename__,
+        table = ScenarioNodes.__tablename__,
         scenario_id=scenario_id, 
         baseline_id=baseline_id,
         pdct_fam = node_dict['pdct_fam'],
@@ -224,7 +224,7 @@ def add_decom_nodes(scenario_id, baseline_id, node_dict, session):
             and (ori_role in (:role) or desti_role in (:role))
         """
     ).params(
-        table = DecomNodes.__tablename__,
+        table = DecomEdges.__tablename__,
         scenario_id=scenario_id, 
         baseline_id=baseline_id,
         pdct_fam = node_dict['pdct_fam'],
@@ -266,6 +266,13 @@ def add_alt_edges(scenario_id, baseline_id, edge_dict, session):
 def add_decom_edges(scenario_id, baseline_id, edge_dict, session):
     return None
 
+
+def update_scenario_edges(scenario_id, baseline_id, session):
+    return None
+
+
+def update_scenario_lanes(scenario_id, baseline_id, session):
+    return None
 
 if __name__ == '__main__':
     engine = create_engine(DB_CONN_PARAMETER_WI)
