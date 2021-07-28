@@ -62,7 +62,7 @@ class Baselines(Base):
     date = Column('date', Date)
     description = Column('description', String)
     start = Column("START", String)
-    end = Column('end', String)
+    end = Column("END", String)
 
     __tablename__ = 'scdsi_baselines'
     __table_args__ = {'extend_existing': True}
@@ -89,7 +89,7 @@ class Scenarios(Base):
 
     baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'), primary_key=True)
     scenario_id = Column('scenario_id', Integer, primary_key=True, nullable=True)
-    date = Column('date', Date)
+    date = Column("DATE", Date)
     description = Column('description', String)
 
     __tablename__ = 'scdsi_scenarios'
