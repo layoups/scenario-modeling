@@ -14,7 +14,7 @@ from sqlalchemy.sql.expression import null
 
 from datetime import datetime
 
-from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI, DB_CONN_PARAMETER, DB_CONN_PARAMETER_PROD, DB_CONN_POST
+from env import DB_CONN_PARAMETER_CLOUD, DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI, DB_CONN_PARAMETER, DB_CONN_PARAMETER_PROD, DB_CONN_POST
 
 ## use stg engine, but prefix WI tables with WI
 
@@ -30,7 +30,7 @@ from env import DB_CONN_PARAMETER_STG, DB_CONN_PARAMETER_WI, DB_CONN_PARAMETER, 
 
 
 
-engine = create_engine(DB_CONN_PARAMETER_PROD)
+engine = create_engine(DB_CONN_PARAMETER_CLOUD)
 metadata = MetaData()
 metadata.reflect(engine) # extend_existing
 Base = automap_base(metadata=metadata)
