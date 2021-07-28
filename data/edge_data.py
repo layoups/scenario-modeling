@@ -55,7 +55,7 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
                 when transport_mode in ('RAIL') THEN 'Rail'
                 else transport_mode
             end, 0
-            from scdsi_cv_lane_rate_automation
+            from scdsi_cv_lane_rate_automation_pl
             where billed_weight != 0 
             and shipment_type not in ('OTHER', 'BROKERAGE')
             and transport_mode is not null

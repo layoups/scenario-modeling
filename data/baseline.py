@@ -47,7 +47,7 @@ def populate_scenario_lanes(baseline_id, session):
         lower(ship_to_name), lower(ship_to_country), lower(ship_to_region_code),
         shipment_type, ship_rank,
         sum(billed_weight), sum(total_amount_paid_usd)
-        from scdsi_cv_lane_rate_automation rl join scdsi_ship_rank sr 
+        from scdsi_cv_lane_rate_automation_pl rl join scdsi_ship_rank sr 
         on rl.shipment_type = sr.ship_type
         where billed_weight != 0 
         and shipment_type not in ('OTHER', 'BROKERAGE')
