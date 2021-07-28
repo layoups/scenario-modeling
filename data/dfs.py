@@ -89,6 +89,7 @@ def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, pa
             dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
         if u.pflow and u.pflow < pflow and u.color == 2:
             get_parent_pflow(stack, u, curr_path_head_rank, path_rank, session)
+            # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "TAIL")
 
     if v.in_pflow == 1:
         v.color = 2
@@ -109,7 +110,7 @@ def dfs_visit(pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, pa
 
 if __name__ == "__main__":
 
-    pdct_fam = "AIRANT"
+    pdct_fam = "PHONE"
     erase([pdct_fam], Session(), Lanes)
     dfs(pdct_fam)
     get_customer_alphas(pdct_fam, Session())
