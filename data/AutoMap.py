@@ -369,7 +369,6 @@ class ScenarioEdges(Base):
     scenario_edge_id = Column(Integer, primary_key=True)
     baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
     scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
-    pdct_fam = Column('pdct_fam', String)
     ori_name = Column('ori_name', String)
     ori_country = Column('ori_country', String)
     ori_region = Column('ori_region', String)

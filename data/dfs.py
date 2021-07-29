@@ -76,7 +76,7 @@ def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_r
         ScenarioLanes.scenario_id == 0,
         ScenarioLanes.baseline_id == baseline_id,
         ScenarioLanes.desti_name == v.ori_name, 
-        ScenarioLanes.desti_country == v.ori_country,
+        # ScenarioLanes.desti_country == v.ori_country,
         ScenarioLanes.desti_region == v.ori_region,
         ScenarioLanes.ship_rank <= v.ship_rank,
         ScenarioLanes.ship_type != v.ship_type,
@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     # print(ScenarioLanes.__table__.columns.keys())
 
-    pdct_fam = "PHONE"
+    pdct_fam = "AIRANT"
     scenario_id = 0
     baseline_id = 1
 
