@@ -345,11 +345,11 @@ class ScenarioLanes(Base):
 class Locations(Base):
 
     location_id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
-    name = Column(String)
-    country = Column(String)
-    region = Column(String)
-    lat = Column(Float)
-    long = Column(Float)
+    name = Column('name', String)
+    country = Column('country', String)
+    region = Column('region', String)
+    lat = Column('lat', Float)
+    long = Column('long', Float)
 
     __tablename__ = 'scdsi_locations'
     __table_args__ = {'extend_existing': True}
