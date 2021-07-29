@@ -145,7 +145,7 @@ def set_baseline(baseline_id, start, end, description, session):
     try:       
         populate_scenario_edges(0, baseline_id, session)
         get_distances_time_co2e(0, baseline_id, session)
-        # set_in_pflow_for_scenario_edges(0, baseline_id, session)
+        set_in_pflow_for_scenario_edges(0, baseline_id, session)
         session.commit()
 
         print("Baeline Edges are Populated")
