@@ -21,15 +21,15 @@ colors = {
         "Customer": "k",
     }
 
-def get_main_pflow(pdct_fam, session):
-    # model_pflow = session.query(Lanes.pdct_fam, Lanes.pflow, func.count(Lanes.pflow).label("num_edges")). \
-    # filter(Lanes.pdct_fam == pdct_fam).group_by(Lanes.pdct_fam, Lanes.pflow).order_by(desc("num_edges")).first()
-
-    model_pflows = session.query(Lanes.pflow, Lanes.parent_pflow, Lanes.pdct_fam, Lanes.in_pflow). \
-        filter(Lanes.parent_pflow == None , Lanes.pdct_fam == pdct_fam, Lanes.in_pflow == 1). \
-            distinct()
-    
-    graph = session.query(Lanes).filter(Lanes.parent_pflow == None , Lanes.pdct_fam == pdct_fam, Lanes.in_pflow == 1).order_by(Lanes.path, Lanes.ship_rank)
+def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
+    graph = session.query(ScenarioLanes).filter(
+        ScenarioLanes.scenario_id == scenario_id,
+        ScenarioLanes.baseline_id == baseline_id,
+        ScenarioLanes.parent_pflow == None , 
+        ScenarioLanes.pdct_fam == pdct_fam, 
+        ScenarioLanes.in_pflow == 1).order_by(
+            ScenarioLanes.path, 
+            ScenarioLanes.ship_rank)
     return graph
 
 def visualize_networkx(pdct_fam, session):
@@ -89,8 +89,8 @@ def visualize_networkx(pdct_fam, session):
     plt.tight_layout()
     plt.show()
 
-def visualize_graphivz(pdct_fam, session):
-    graph = get_main_pflow(pdct_fam, session)
+def visualize_graphivz(scenario_id, baseline_id, pdct_fam, session):
+    graph = get_main_pflow(scenario_id, baseline_id, pdct_fam, session)
 
     G = gv.Digraph(pdct_fam, node_attr={'color': 'lightblue2', 'style': 'filled'})
     # G.attr(size='6,6')
@@ -150,9 +150,12 @@ if __name__ == "__main__":
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    pdct_fam = '4400ISR'
+    scenario_id = 0
+    baseline_id = 1
+
+    pdct_fam = 'PHONE'
     # visualize_networkx(pdct_fam, session)
-    visualize_graphivz(pdct_fam, session)
+    visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
 
     # alt_names = ['DF', 'PCBA']
     # for alt_name in alt_names:
