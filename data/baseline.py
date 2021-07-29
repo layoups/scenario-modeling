@@ -46,16 +46,19 @@ def populate_scenario_lanes(baseline_id, session):
         ori_name, ori_country, ori_region, 
         desti_name, desti_country, desti_region, 
         ship_type, ship_rank, total_weight, total_paid)
-        select 0, :baseline_id
+        select 0, :baseline_id, ori_name, ori_country, ori_region, 
+        desti_name, desti_country, desti_region, 
+        ship_type, ship_rank, total_weight, total_paid
+        from
         (select product_family, 
-        lower(ship_from_name), lower(ship_from_country), lower(ship_from_region_code),
-        lower(ship_to_name), lower(ship_to_country), lower(ship_to_region_code),
+        lower(ship_from_name) as ori_name, lower(ship_from_country) as ori_country, lower(ship_from_region_code) as ori_region,
+        lower(ship_to_name) as desti_name, lower(ship_to_country) as desti_country, lower(ship_to_region_code) as desti_region,
         shipment_type,
-        sum(billed_weight), sum(total_amount_paid_usd)
+        sum(billed_weight) as total_weight, sum(total_amount_paid_usd) as total_paid
         from scdsi_cv_lane_rate_automation_pl 
         where billed_weight != 0 
         and shipment_type not in ('OTHER', 'BROKERAGE')
-        and ship_date_pure_ship >= '2020-01-01' and ship_date_pure_ship <= '2020-12-30'
+        and ship_date_pure_ship >= :start and ship_date_pure_ship <= :end
         and product_family not in ('TBA')
         and ship_from_name is not null
         and ship_from_country is not null
@@ -112,7 +115,7 @@ if __name__ == '__main__':
     pdct_fam = 'PHONE'
 
     baseline_id = 1
-    set_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial' , session)
+    set_baseline(baseline_id, '2019-01-01', '2019-12-31', 'trial' , session)
 
     session.commit()
 
