@@ -8,7 +8,7 @@ from collections import deque
 
 from datetime import datetime
 
-from sqlalchemy.sql import base
+from sqlalchemy.sql import base, func
 
 from AutoMap import *
 from PathRoles import *
@@ -93,6 +93,27 @@ def get_cost_omega(baseline_id, session):
     session.execute(stmt)
     session.commit()
 
+def get_co2e_time_omega(baseline_id, session):
+    total = session.query(func.sum(ScenarioEdges.total_weight).label('total')).filter(
+        ScenarioEdges.scenario_id == 0,
+        ScenarioEdges.baseline_id == baseline_id
+    ).group_by(
+        ScenarioEdges.scenario_id,
+        ScenarioEdges.baseline_id
+    ).first().total
+
+    total_by_mode = session.query(
+        ScenarioEdges.transport_mode, 
+        func.sum(ScenarioEdges.total_weight).label('total')).filter(
+        ScenarioEdges.scenario_id == 0,
+        ScenarioEdges.baseline_id == baseline_id
+    ).group_by(
+        ScenarioEdges.scenario_id,
+        ScenarioEdges.baseline_id,
+        ScenarioEdges.transport_mode
+    ).all()
+    return {x.transport_mode: x.total / total for x in total_by_mode}
+
 def set_baseline(baseline_id, start, end, description, session):
     try:
         create_baseline(baseline_id, start, end, description, session)
@@ -115,7 +136,7 @@ def set_baseline(baseline_id, start, end, description, session):
         session.execute(stmt)
         return session.commit()
     
-    pdct_fams = ['AIRANT']
+    pdct_fams = ['AIRANT', 'WPHONE', 'SBPHONE']
 
     try:
         for pdct_fam in pdct_fams: 
@@ -145,10 +166,10 @@ def set_baseline(baseline_id, start, end, description, session):
     try:       
         populate_scenario_edges(0, baseline_id, session)
         get_distances_time_co2e(0, baseline_id, session)
-        set_in_pflow_for_scenario_edges(0, baseline_id, session)
+        # set_in_pflow_for_scenario_edges(0, baseline_id, session)
         session.commit()
 
-        print("Baeline Edges are Populated")
+        print("Baseline Edges are Populated")
 
     except Exception as e:
         session.rollback()
@@ -227,6 +248,8 @@ if __name__ == '__main__':
 
     baseline_id = 1
     set_baseline(baseline_id, '2019-01-01', '2020-12-31', 'trial' , session)
+
+    # print(get_co2e_time_omega(baseline_id, session))
 
     print(datetime.now() - start)
 
