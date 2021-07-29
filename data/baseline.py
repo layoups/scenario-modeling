@@ -41,7 +41,11 @@ def populate_scenario_lanes(baseline_id, session):
     baseline = session.query(Baselines).filter(Baselines.baseline_id == baseline_id).first()
 
     stmt = text("""
-        insert into scdsi_scenario_lanes (scenario_row_id, scenario_id, baseline_id, pdct_fam, ori_name, ori_country, ori_region, desti_name, desti_country, desti_region, ship_type, ship_rank, total_weight, total_paid)
+        insert into scdsi_scenario_lanes 
+        (scenario_row_id, scenario_id, baseline_id, pdct_fam, 
+        ori_name, ori_country, ori_region, 
+        desti_name, desti_country, desti_region, 
+        ship_type, ship_rank, total_weight, total_paid)
         select row_id, 0, :baseline_id, product_family, 
         lower(ship_from_name), lower(ship_from_country), lower(ship_from_region_code),
         lower(ship_to_name), lower(ship_to_country), lower(ship_to_region_code),
