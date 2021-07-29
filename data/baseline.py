@@ -93,55 +93,96 @@ def get_cost_omega(baseline_id, session):
     session.commit()
 
 def set_baseline(baseline_id, start, end, description, session):
-    pdct_fam = 'AIRANT'
-    # try:
-    #     create_baseline(baseline_id, start, end, description, session)
-    #     populate_scenario_lanes(baseline_id, session)
-    #     # input('baseline + scenario lanes = ready for dfs?')
-    #     dfs(baseline_id, pdct_fam, session)
-    #     get_customer_alphas(0, baseline_id, pdct_fam, session)
-    #     get_alphas(0, baseline_id, pdct_fam, session)
-    #     session.commit()
+    try:
+        create_baseline(baseline_id, start, end, description, session)
+        populate_scenario_lanes(baseline_id, session)
+        # input('baseline + scenario lanes = ready for dfs?')
+        session.commit()
+        print("Baseline Created")
 
-    #     print("The Network is Reconstructed")
+    except Exception as e:
+        print(e)
+        print("failed to create baseline")
+        stmt = text(
+            """
+            delete from scdsi_baselines where baseline_id = :baseline_id
+            """
+        ).params(
+            baseline_id = baseline_id
+        )
+        session.execute(stmt)
+        return session.commit()
+    
+    pdct_fams = ['AIRANT']
 
-    # except Exception as e:
-    #     print(e)
-    #     print("failed to create baseline")
-    #     session.rollback()
-    #     stmt = text(
-    #         """
-    #         delete from scdsi_baselines where baseline_id = :baseline_id
-    #         """
-    #     ).params(
-    #         baseline_id = baseline_id
-    #     )
-    #     session.execute(stmt)
-    #     return session.commit() 
+    try:
+        for pdct_fam in pdct_fams: 
+            dfs(baseline_id, pdct_fam, session)
+            get_customer_alphas(0, baseline_id, pdct_fam, session)
+            get_alphas(0, baseline_id, pdct_fam, session)
+        session.commit()
 
-    # try:       
-    #     populate_scenario_edges(0, baseline_id, session)
-    #     get_distances_time_co2e(0, baseline_id, session)
-    #     # set_in_pflow_for_scenario_edges(0, baseline_id, session)
-    #     session.commit()
+        print("The Network is Reconstructed")
 
-    #     print("Baeline Edges are Populated!")
+    except Exception as e:
+        print(e)
+        print("Network Resisted Reconstruction")
+        stmt = text(
+            """
+            delete from scdsi_scenario_lanes 
+            where baseline_id = :baseline_id
+            and scenario_id = 0
+            """
+        ).params(
+            baseline_id = baseline_id
+        )
+        session.execute(stmt)
+        return session.commit()
 
-    # except Exception as e:
-    #     print(e)
-    #     print("failed to populate scenario edges")
-    #     return session.rollback()
+    try:       
+        populate_scenario_edges(0, baseline_id, session)
+        get_distances_time_co2e(0, baseline_id, session)
+        # set_in_pflow_for_scenario_edges(0, baseline_id, session)
+        session.commit()
+
+        print("Baeline Edges are Populated!")
+
+    except Exception as e:
+        print(e)
+        print("failed to populate scenario edges")
+        stmt = text(
+            """
+            delete from scdsi_scenario_edges 
+            where baseline_id = :baseline_id
+            and scenario_id = 0
+            """
+        ).params(
+            baseline_id = baseline_id
+        )
+        session.execute(stmt)
+        return session.commit()
 
     try:
         populate_baseline_nodes(baseline_id, session)
-        get_node_supply(0, baseline_id, pdct_fam, session)
-        get_node_capacity(0, baseline_id, pdct_fam, session)
+        for pdct_fam in pdct_fams:
+            get_node_supply(0, baseline_id, pdct_fam, session)
+            get_node_capacity(0, baseline_id, pdct_fam, session)
         session.commit()
 
     except Exception as e:
         print(e)
         print("failed to populate nodes")
-        return session.rollback()
+        stmt = text(
+            """
+            delete from scdsi_scenario_nodes 
+            where baseline_id = :baseline_id
+            and scenario_id = 0
+            """
+        ).params(
+            baseline_id = baseline_id
+        )
+        session.execute(stmt)
+        return session.commit()
 
     try:
         get_cost_omega(baseline_id, session)
@@ -150,7 +191,16 @@ def set_baseline(baseline_id, start, end, description, session):
     except Exception as e:
         print(e)
         print("failed to get omegas")
-        return session.rollback()
+        stmt = text(
+            """
+            delete from scdsi_omega 
+            where baseline_id = :baseline_id
+            """
+        ).params(
+            baseline_id = baseline_id
+        )
+        session.execute(stmt)
+        return session.commit()
 
     finally:
         print("Successfully created baseline!")
