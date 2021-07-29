@@ -39,4 +39,19 @@
     - Decision Var Indices: i, j, p, *
     - Considerations:
         - Manufacturing processes must only be respected at manufacturing nodes
+        - Adjacency list is necessary to accomodate alternative nodes
+            - manufacturing_adjency_list = {(j, k, p): [
+                                                            [(i, j, p), (i', j, p), (i'', j, p)],
+                                                            [(m, j, p)],
+                                                            [(l, j, p), (l', j, p)]
+                                                        ]
+                                            }, where j is a manufacturing nodes
+    - Generate:
+        - for x in manufacturing_adjacency_list: 
+            adj = manufacturing_adjacency_list[x]
+            for y in adj:
+                np.sum([X.sum(z[0], z[1], z[2], *) for z in y]) 
+                == alpha[(z[0], z[1], z[2])] * (X.sum(x[0], *, p, *) - S[(x[0], p)]
+
+
 
