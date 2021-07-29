@@ -86,6 +86,7 @@ def get_cost_omega(baseline_id, session):
         from scdsi_scenario_lanes
         where baseline_id = :baseline_id
         and scenario_id = 0
+        and in_pflow = 1
         group by baseline_id, scenario_id
     """).params(baseline_id = baseline_id)
 
@@ -145,7 +146,7 @@ def set_baseline(baseline_id, start, end, description, session):
         # set_in_pflow_for_scenario_edges(0, baseline_id, session)
         session.commit()
 
-        print("Baeline Edges are Populated!")
+        print("Baeline Edges are Populated")
 
     except Exception as e:
         print(e)
@@ -169,6 +170,8 @@ def set_baseline(baseline_id, start, end, description, session):
             get_node_capacity(0, baseline_id, pdct_fam, session)
         session.commit()
 
+        print("Scenario Nodes are Populated")
+
     except Exception as e:
         print(e)
         print("failed to populate nodes")
@@ -187,6 +190,8 @@ def set_baseline(baseline_id, start, end, description, session):
     try:
         get_cost_omega(baseline_id, session)
         session.commit()
+
+        print("Omegas are Calculated")
 
     except Exception as e:
         print(e)
@@ -213,8 +218,12 @@ if __name__ == '__main__':
 
     pdct_fam = 'PHONE'
 
+    start = datetime.now()
+
     baseline_id = 1
     set_baseline(baseline_id, '2019-01-01', '2020-12-31', 'trial' , session)
+
+    print(datetime.now() - start)
 
     session.commit()
 
