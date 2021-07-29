@@ -94,7 +94,6 @@ def set_baseline(baseline_id, start, end, description, session):
     try:
         create_baseline(baseline_id, start, end, description, session)
         populate_scenario_lanes(baseline_id, session)
-        input()
         pdct_fam = 'PHONE'
         input('baseline + scenario lanes = ready for dfs?')
         dfs(baseline_id, pdct_fam, session)
@@ -109,7 +108,8 @@ def set_baseline(baseline_id, start, end, description, session):
 
         get_cost_omega(baseline_id, session)
     
-    except:
+    except Exception as e:
+        print(e)
         session.rollback()
         stmt = text(
             """

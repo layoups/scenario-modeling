@@ -152,10 +152,10 @@ if __name__ == "__main__":
 
     pdct_fam = '4400ISR'
     # visualize_networkx(pdct_fam, session)
-    # visualize_graphivz(pdct_fam, session)
+    visualize_graphivz(pdct_fam, session)
 
-    alt_names = ['DF', 'PCBA']
-    for alt_name in alt_names:
-        visualize_alt_paths(pdct_fam, alt_name, ['alt_{}_{}'.format(alt_name, i) for i in range(1)], session, True)
-        visualize_alt_paths(pdct_fam, alt_name, ['alt_{}_{}'.format(alt_name, i) for i in range(1)], session, True)
+    # alt_names = ['DF', 'PCBA']
+    # for alt_name in alt_names:
+    #     visualize_alt_paths(pdct_fam, alt_name, ['alt_{}_{}'.format(alt_name, i) for i in range(1)], session, True)
+    #     visualize_alt_paths(pdct_fam, alt_name, ['alt_{}_{}'.format(alt_name, i) for i in range(1)], session, True)
 
