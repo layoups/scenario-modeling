@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     # print(ScenarioLanes.__table__.columns.keys())
 
-    pdct_fam = "WPHONE"
+    pdct_fam = "SBPHONE"
     scenario_id = 0
     baseline_id = 1
 

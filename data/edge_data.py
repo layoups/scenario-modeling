@@ -60,6 +60,14 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             and shipment_type not in ('OTHER', 'BROKERAGE')
             and transport_mode is not null
             and ship_date_pure_ship >= :start and ship_date_pure_ship <= :end
+            and ship_from_name is not null
+            and ship_from_country is not null
+            and ship_from_region_code is not null
+            and length(ship_from_name) > 3
+            and ship_to_name is not null
+            and ship_to_country is not null
+            and ship_to_region_code is not null
+            and length(ship_to_name) > 3
             group by ship_from_name, ship_from_country, ship_from_region_code, 
             ship_to_name, ship_to_country, ship_to_region_code, 
             transport_mode
@@ -98,7 +106,7 @@ def get_distances_time_co2e(scenario_id, baseline_id, session):
         ori_lat, ori_long = ori_location['lat'], ori_location['long']
         desti_lat, desti_long = desti_location['lat'], desti_location['long']
         edge.distance = 0 if not ori_lat or not desti_lat else haversine_distance(ori_lat, ori_long, desti_lat, desti_long)
-        edge.transport_time, edge.co2e = get_transport_time_and_co2(edge.transport_mode, edge.distance)
+        edge.transport_time, edge.co2e = get_transport_time_and_co2(edge)
     # print(datetime.now() - start)
 
     session.commit()
