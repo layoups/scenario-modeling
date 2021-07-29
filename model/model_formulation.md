@@ -42,7 +42,7 @@
         - Adjacency list is necessary to accomodate alternative nodes
             - manufacturing_adjency_list = {(j, k, p): [
                                                             [(i, j, p), (i', j, p), (i'', j, p)],
-                                                            [(m, j, p)],
+                                                            [(a, j, p)],
                                                             [(l, j, p), (l', j, p)]
                                                         ]
                                             }, where j is a manufacturing nodes
