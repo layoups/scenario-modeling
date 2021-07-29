@@ -128,7 +128,7 @@ if __name__ == "__main__":
     erase([pdct_fam], scenario_id, baseline_id, Session(), ScenarioLanes)
     
     dfs(baseline_id, pdct_fam, Session())
-    get_customer_alphas(scenario_id, baseline_id, pdct_fam, session)
+    get_customer_alphas(scenario_id, baseline_id, pdct_fam, Session())
     get_alphas(scenario_id, baseline_id, pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
     visualize_graphivz(scenario_id, baseline_id, pdct_fam, Session())

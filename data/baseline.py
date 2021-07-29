@@ -98,6 +98,9 @@ def set_baseline(baseline_id, start, end, description, session):
         input('baseline + scenario lanes = ready for dfs?')
         dfs(baseline_id, pdct_fam, session)
 
+        get_customer_alphas(scenario_id, baseline_id, pdct_fam, session)
+        get_alphas(scenario_id, baseline_id, pdct_fam, session)
+
         populate_scenario_edges(0, baseline_id, session)
         get_distances_time_co2e(0, baseline_id, session)
         # set_in_pflow_for_scenario_edges(0, baseline_id, session)
