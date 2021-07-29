@@ -94,25 +94,18 @@ def set_baseline(baseline_id, start, end, description, session):
     try:
         create_baseline(baseline_id, start, end, description, session)
         populate_scenario_lanes(baseline_id, session)
-        pdct_fam = 'PHONE'
-        input('baseline + scenario lanes = ready for dfs?')
+        pdct_fam = 'AIRANT'
+        # input('baseline + scenario lanes = ready for dfs?')
         dfs(baseline_id, pdct_fam, session)
+        get_customer_alphas(0, baseline_id, pdct_fam, session)
+        get_alphas(0, baseline_id, pdct_fam, session)
+        session.commit()
 
-        get_customer_alphas(scenario_id, baseline_id, pdct_fam, session)
-        get_alphas(scenario_id, baseline_id, pdct_fam, session)
+        print("The Network is Reconstructed")
 
-        populate_scenario_edges(0, baseline_id, session)
-        get_distances_time_co2e(0, baseline_id, session)
-        # set_in_pflow_for_scenario_edges(0, baseline_id, session)
-
-        populate_baseline_nodes(baseline_id, session)
-        get_node_supply(0, baseline_id, pdct_fam, session)
-        get_node_capacity(0, baseline_id, pdct_fam, session)
-
-        get_cost_omega(baseline_id, session)
-    
     except Exception as e:
         print(e)
+        print("failed to create baseline")
         session.rollback()
         stmt = text(
             """
@@ -122,7 +115,44 @@ def set_baseline(baseline_id, start, end, description, session):
             baseline_id = baseline_id
         )
         session.execute(stmt)
+        session.commit() 
+
+    try:       
+        populate_scenario_edges(0, baseline_id, session)
+        get_distances_time_co2e(0, baseline_id, session)
+        # set_in_pflow_for_scenario_edges(0, baseline_id, session)
         session.commit()
+
+        print("Baeline Edges are Populated!")
+
+    except Exception as e:
+        print(e)
+        print("failed to populate scenario edges")
+        session.rollback()
+
+    try:
+        populate_baseline_nodes(baseline_id, session)
+        get_node_supply(0, baseline_id, pdct_fam, session)
+        get_node_capacity(0, baseline_id, pdct_fam, session)
+        session.commit()
+
+    except Exception as e:
+        print(e)
+        print("failed to populate nodes")
+        session.rollback()
+
+    try:
+        get_cost_omega(baseline_id, session)
+        session.commit()
+
+    except Exception as e:
+        print(e)
+        print("failed to get omegas")
+        session.rollback()
+
+    finally:
+        print("Successfully created baseline!")
+    
 
 
 if __name__ == '__main__':
