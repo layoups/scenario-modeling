@@ -87,7 +87,7 @@ def get_distances_time_co2e(scenario_id, baseline_id, session):
     locations = Locations.get_locations(session)
 
     edges = session.query(ScenarioEdges).filter(
-        ScenarioEdges.transport_distance == None,
+        ScenarioEdges.distance == None,
         ScenarioEdges.scenario_id == scenario_id,
         ScenarioEdges.baseline_id == baseline_id
         )
