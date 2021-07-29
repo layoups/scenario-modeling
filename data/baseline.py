@@ -93,10 +93,10 @@ def get_cost_omega(baseline_id, session):
     session.commit()
 
 def set_baseline(baseline_id, start, end, description, session):
+    pdct_fam = 'AIRANT'
     # try:
     #     create_baseline(baseline_id, start, end, description, session)
     #     populate_scenario_lanes(baseline_id, session)
-    #     pdct_fam = 'AIRANT'
     #     # input('baseline + scenario lanes = ready for dfs?')
     #     dfs(baseline_id, pdct_fam, session)
     #     get_customer_alphas(0, baseline_id, pdct_fam, session)
