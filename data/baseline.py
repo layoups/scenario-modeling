@@ -130,7 +130,7 @@ def set_baseline(baseline_id, start, end, description, session):
     except Exception as e:
         print(e)
         print("failed to populate scenario edges")
-        session.rollback()
+        return session.rollback()
 
     try:
         populate_baseline_nodes(baseline_id, session)
@@ -141,7 +141,7 @@ def set_baseline(baseline_id, start, end, description, session):
     except Exception as e:
         print(e)
         print("failed to populate nodes")
-        session.rollback()
+        return session.rollback()
 
     try:
         get_cost_omega(baseline_id, session)
@@ -150,7 +150,7 @@ def set_baseline(baseline_id, start, end, description, session):
     except Exception as e:
         print(e)
         print("failed to get omegas")
-        session.rollback()
+        return session.rollback()
 
     finally:
         print("Successfully created baseline!")
