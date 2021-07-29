@@ -125,10 +125,10 @@ if __name__ == "__main__":
     # create_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
     # populate_scenario_lanes(baseline_id, Session())
 
-    erase([pdct_fam], scenario_id, baseline_id, Session(), ScenarioLanes)
+    # erase([pdct_fam], scenario_id, baseline_id, Session(), ScenarioLanes)
     
-    dfs(baseline_id, pdct_fam, Session())
-    get_customer_alphas(scenario_id, baseline_id, pdct_fam, Session())
+    # dfs(baseline_id, pdct_fam, Session())
+    # get_customer_alphas(scenario_id, baseline_id, pdct_fam, Session())
     get_alphas(scenario_id, baseline_id, pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
     visualize_graphivz(scenario_id, baseline_id, pdct_fam, Session())
