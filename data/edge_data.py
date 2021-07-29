@@ -46,7 +46,7 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             desti_name, desti_country, desti_region, 
             transport_cost, total_weight, transport_mode, in_pflow)
             select distinct :scenario_id, :baseline_id, lower(ship_from_name), lower(ship_from_country), lower(ship_from_region_code),
-            lower(ship_to_name), lower(ship_to_country), lower(ship_to_region_code), sum(total_paid_usd) / sum(billed_weight),
+            lower(ship_to_name), lower(ship_to_country), lower(ship_to_region_code), sum(total_amount_paid_usd) / sum(billed_weight),
             sum(billed_weight),
             case
                 when transport_mode in ('PARCEL', 'AIR') THEN 'Air'
