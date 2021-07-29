@@ -101,10 +101,14 @@ def get_distances_time_co2e(scenario_id, baseline_id, session):
         )
     # start = datetime.now()
     for edge in edges.all():
-        ori_location = locations[(edge.ori_name, edge.ori_country, edge.ori_region)]
-        desti_location = locations[(edge.desti_name, edge.desti_country, edge.desti_region)]
-        ori_lat, ori_long = ori_location['lat'], ori_location['long']
-        desti_lat, desti_long = desti_location['lat'], desti_location['long']
+        try:
+            ori_location = locations[(edge.ori_name, edge.ori_country, edge.ori_region)]
+            desti_location = locations[(edge.desti_name, edge.desti_country, edge.desti_region)]
+            ori_lat, ori_long = ori_location['lat'], ori_location['long']
+            desti_lat, desti_long = desti_location['lat'], desti_location['long']
+        except:
+            ori_lat, ori_long = None, None
+            desti_lat, desti_long = None, None
         edge.distance = 0 if not ori_lat or not desti_lat else haversine_distance(ori_lat, ori_long, desti_lat, desti_long)
         edge.transport_time, edge.co2e = get_transport_time_and_co2(edge)
     # print(datetime.now() - start)
@@ -125,7 +129,7 @@ def get_transport_time_and_co2(edge):
         co2e = distance * co2e_matrix[mode]
 
     if mode == 'Ocean':
-        transport_time, co2e = ocean_matrix[(edge.ori_region, edge.desti_region)]['time']
+        transport_time = ocean_matrix[(edge.ori_region, edge.desti_region)]['time']
         co2e = ocean_matrix[(edge.ori_region, edge.desti_region)]['distance'] * co2e_matrix[mode]
 
     if mode == 'Rail':
@@ -171,10 +175,10 @@ def set_in_pflow_for_scenario_edges(scenario_id, baseline_id, session):
 
 if __name__ == '__main__':
     
-    engine = create_engine(DB_CONN_PARAMETER)
+    engine = create_engine(DB_CONN_PARAMETER_CLOUD)
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    get_distances_time_co2e(session)
+    get_distances_time_co2e(0, 1, session)
 
     session.commit()

@@ -85,37 +85,39 @@ def get_cost_omega(baseline_id, session):
         select baseline_id, sum(total_weight)
         from scdsi_scenario_lanes
         where baseline_id = :baseline_id
+        and scenario_id = 0
+        group by baseline_id, scenario_id
     """).params(baseline_id = baseline_id)
 
     session.execute(stmt)
     session.commit()
 
 def set_baseline(baseline_id, start, end, description, session):
-    try:
-        create_baseline(baseline_id, start, end, description, session)
-        populate_scenario_lanes(baseline_id, session)
-        pdct_fam = 'AIRANT'
-        # input('baseline + scenario lanes = ready for dfs?')
-        dfs(baseline_id, pdct_fam, session)
-        get_customer_alphas(0, baseline_id, pdct_fam, session)
-        get_alphas(0, baseline_id, pdct_fam, session)
-        session.commit()
+    # try:
+    #     create_baseline(baseline_id, start, end, description, session)
+    #     populate_scenario_lanes(baseline_id, session)
+    #     pdct_fam = 'AIRANT'
+    #     # input('baseline + scenario lanes = ready for dfs?')
+    #     dfs(baseline_id, pdct_fam, session)
+    #     get_customer_alphas(0, baseline_id, pdct_fam, session)
+    #     get_alphas(0, baseline_id, pdct_fam, session)
+    #     session.commit()
 
-        print("The Network is Reconstructed")
+    #     print("The Network is Reconstructed")
 
-    except Exception as e:
-        print(e)
-        print("failed to create baseline")
-        session.rollback()
-        stmt = text(
-            """
-            delete from scdsi_baselines where baseline_id = :baseline_id
-            """
-        ).params(
-            baseline_id = baseline_id
-        )
-        session.execute(stmt)
-        session.commit() 
+    # except Exception as e:
+    #     print(e)
+    #     print("failed to create baseline")
+    #     session.rollback()
+    #     stmt = text(
+    #         """
+    #         delete from scdsi_baselines where baseline_id = :baseline_id
+    #         """
+    #     ).params(
+    #         baseline_id = baseline_id
+    #     )
+    #     session.execute(stmt)
+    #     session.commit() 
 
     try:       
         populate_scenario_edges(0, baseline_id, session)
