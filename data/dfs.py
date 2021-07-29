@@ -131,4 +131,4 @@ if __name__ == "__main__":
     get_customer_alphas(scenario_id, baseline_id, pdct_fam, session)
     get_alphas(scenario_id, baseline_id, pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
-    visualize_graphivz(pdct_fam, Session())
+    visualize_graphivz(scenario_id, baseline_id, pdct_fam, Session())
