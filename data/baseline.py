@@ -94,25 +94,49 @@ def get_cost_omega(baseline_id, session):
     session.commit()
 
 def get_co2e_time_omega(baseline_id, session):
-    total = session.query(func.sum(ScenarioEdges.total_weight).label('total')).filter(
-        ScenarioEdges.scenario_id == 0,
-        ScenarioEdges.baseline_id == baseline_id
-    ).group_by(
-        ScenarioEdges.scenario_id,
-        ScenarioEdges.baseline_id
-    ).first().total
+    stmt = text(
+        """
+        select sub.ori_name, sub.desti_name, 
+        sum(sub.cost) / sum(sub.total_weight) as avg_cost, 
+        sum(sub.emissions) / sum(sub.total_weight) as avg_co2e,
+        sum(sub.lead_time) / sum(sub.total_weight) as avg_lead_time
+        from
+            (select total_weight * transport_cost as cost, 
+            total_weight * co2e as emissions, 
+            total_weight * transport_time as lead_time,
+                total_weight, ori_name, desti_name, transport_mode
+                from scdsi_scenario_edges
+                where scenario_id = 0
+                and baseline_id = :baseline_id) as sub
+        group by sub.ori_name, sub.desti_name, sub.transport_mode       
+        """
+    ).params(baseline_id = baseline_id)
 
-    total_by_mode = session.query(
-        ScenarioEdges.transport_mode, 
-        func.sum(ScenarioEdges.total_weight).label('total')).filter(
-        ScenarioEdges.scenario_id == 0,
-        ScenarioEdges.baseline_id == baseline_id
-    ).group_by(
-        ScenarioEdges.scenario_id,
-        ScenarioEdges.baseline_id,
-        ScenarioEdges.transport_mode
+    scenario_edges = session.execute(stmt)
+    edges = {(x.ori_name, x.desti_name): {
+        'cost': x.avg_cost, 
+        'co2e': x.avg_co2e, 
+        'time': x.avg_lead_time} for x in scenario_edges}
+
+    lanes = session.query(ScenarioLanes).filter(
+        ScenarioLanes.scenario_id == 0,
+        ScenarioLanes.baseline_id == baseline_id,
+        ScenarioLanes.in_pflow == 1
     ).all()
-    return {x.transport_mode: x.total / total for x in total_by_mode}
+
+    omega = session.query(Omega).filter(
+        Omega.baseline_id == baseline_id
+    ).first()
+    omega.baseline_lead_time = 0
+    omega.baseline_co2e = 0
+
+    for lane in lanes:
+        edge = edges[(lane.ori_name, lane.desti_name)]
+        omega.baseline_lead_time += edge['time'] * lane.total_weight
+        omega.baseline_co2e += edge['co2e'] * lane.total_weight
+
+    session.commit()
+
 
 def set_baseline(baseline_id, start, end, description, session):
     try:
@@ -214,6 +238,7 @@ def set_baseline(baseline_id, start, end, description, session):
 
     try:
         get_cost_omega(baseline_id, session)
+        get_co2e_time_omega(baseline_id, session)
         session.commit()
 
         print("Omegas are Calculated")
@@ -249,7 +274,7 @@ if __name__ == '__main__':
     baseline_id = 1
     set_baseline(baseline_id, '2019-01-01', '2020-12-31', 'trial' , session)
 
-    # print(get_co2e_time_omega(baseline_id, session))
+    # get_co2e_time_omega(baseline_id, session)
 
     print(datetime.now() - start)
 
