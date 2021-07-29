@@ -25,22 +25,22 @@ def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
 
 def populate_Locations(session):
     stmt = text("""
-            insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_LOCATIONS" ("NAME", "COUNTRY", "REGION")
-            select distinct lower("SHIP_FROM_NAME"), lower("SHIP_FROM_COUNTRY"), lower("SHIP_FROM_REGION_CODE")
-            from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" 
-            where "BILLED_WEIGHT" != 0 
-            and "SHIPMENT_TYPE" not in ('OTHER', 'BROKERAGE')
+            insert into scdsi_locations (name, country, region)
+            select distinct lower(ship_from_name), lower(ship_from_country), lower(ship_from_region_code)
+            from scdsi_cv_lane_rate_automation_pl 
+            where billed_weight != 0 
+            and shipment_type not in ('OTHER', 'BROKERAGE')
         """)
 
     session.execute(stmt)
     session.commit()
 
     stmt = text("""
-            insert into "SCDS_DB"."SCDS_SCDSI_WI"."SCDSI_LOCATIONS" ("NAME", "COUNTRY", "REGION")
-            select distinct lower("SHIP_TO_NAME"), lower("SHIP_TO_COUNTRY"), lower("SHIP_TO_REGION_CODE")
-            from "SCDS_DB"."SCDS_SCDSI_STG"."SCDSI_CV_LANE_RATE_AUTOMATION_PL" 
-            where "BILLED_WEIGHT" != 0 
-            and "SHIPMENT_TYPE" in ('LEG2-2')
+            insert into scdsi_locations (name, country, region)
+            select distinct lower(ship_to_name), lower(ship_to_country), lower(ship_to_region_code)
+            from scdsi_cv_lane_rate_automation_pl 
+            where billed_weight != 0 
+            and shipment_type in ('LEG2-2')
     """)
 
     session.execute(stmt)

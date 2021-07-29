@@ -117,20 +117,20 @@ def set_baseline(baseline_id, start, end, description, session):
     #         baseline_id = baseline_id
     #     )
     #     session.execute(stmt)
-    #     session.commit() 
+    #     return session.commit() 
 
-    try:       
-        populate_scenario_edges(0, baseline_id, session)
-        get_distances_time_co2e(0, baseline_id, session)
-        # set_in_pflow_for_scenario_edges(0, baseline_id, session)
-        session.commit()
+    # try:       
+    #     populate_scenario_edges(0, baseline_id, session)
+    #     get_distances_time_co2e(0, baseline_id, session)
+    #     # set_in_pflow_for_scenario_edges(0, baseline_id, session)
+    #     session.commit()
 
-        print("Baeline Edges are Populated!")
+    #     print("Baeline Edges are Populated!")
 
-    except Exception as e:
-        print(e)
-        print("failed to populate scenario edges")
-        return session.rollback()
+    # except Exception as e:
+    #     print(e)
+    #     print("failed to populate scenario edges")
+    #     return session.rollback()
 
     try:
         populate_baseline_nodes(baseline_id, session)
