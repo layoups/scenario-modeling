@@ -259,7 +259,7 @@ def set_baseline(baseline_id, start, end, description, session):
         return session.commit()
 
     finally:
-        print("Successfully created baseline!")
+        print("Successfully Created Baseline!")
     
 
 
