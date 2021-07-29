@@ -91,22 +91,35 @@ def get_cost_omega(baseline_id, session):
     session.commit()
 
 def set_baseline(baseline_id, start, end, description, session):
-    create_baseline(baseline_id, start, end, description, session)
-    populate_scenario_lanes(baseline_id, session)
-    input()
-    pdct_fam = 'PHONE'
-    input('baseline + scenario lanes = ready for dfs?')
-    dfs(baseline_id, pdct_fam, session)
+    try:
+        create_baseline(baseline_id, start, end, description, session)
+        populate_scenario_lanes(baseline_id, session)
+        input()
+        pdct_fam = 'PHONE'
+        input('baseline + scenario lanes = ready for dfs?')
+        dfs(baseline_id, pdct_fam, session)
 
-    populate_scenario_edges(0, baseline_id, session)
-    get_distances_time_co2e(0, baseline_id, session)
-    # set_in_pflow_for_scenario_edges(0, baseline_id, session)
+        populate_scenario_edges(0, baseline_id, session)
+        get_distances_time_co2e(0, baseline_id, session)
+        # set_in_pflow_for_scenario_edges(0, baseline_id, session)
 
-    populate_baseline_nodes(baseline_id, session)
-    get_node_supply(0, baseline_id, pdct_fam, session)
-    get_node_capacity(0, baseline_id, pdct_fam, session)
+        populate_baseline_nodes(baseline_id, session)
+        get_node_supply(0, baseline_id, pdct_fam, session)
+        get_node_capacity(0, baseline_id, pdct_fam, session)
 
-    get_cost_omega(baseline_id, session)
+        get_cost_omega(baseline_id, session)
+    
+    except:
+        stmt = text(
+            """
+            delete from :name where baseline_id = :baseline_id
+            """
+        ).params(
+            name = Baselines.__tablename__,
+            baseline_id = baseline_id
+        )
+        session.execute(stmt)
+        session.commit()
 
 
 if __name__ == '__main__':
