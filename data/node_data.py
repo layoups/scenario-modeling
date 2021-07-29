@@ -88,7 +88,7 @@ def populate_baseline_nodes(baseline_id, session):
         (baseline_id, scenario_id, pdct_fam, name, country, region, role, in_pflow)
         select distinct :baseline_id, 0, pdct_fam, desti_name, desti_country, desti_region, desti_role, 1
         from scdsi_scenario_lanes
-        where in_pflow = 1 and ori_role = 'Customer'
+        where in_pflow = 1 and desti_role = 'Customer'
     """).params(baseline_id = baseline_id)
 
     session.execute(stmt)
@@ -190,7 +190,7 @@ if __name__ == '__main__':
     pdct_fam = 'AIRANT'
 
     start = datetime.now()
-    # print(start)
+    print(start)
 
     # get_node_supply('4400ISR', session)
     # get_node_capacity('4400ISR', session)
