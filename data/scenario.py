@@ -78,7 +78,7 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
 
     stmt = text(
         """
-        insert into :insert_table 
+        insert into scdsi_alternative_edges 
             (scenario_id, baseline_id, pdct_fam, 
             ori_name, ori_country, ori_region, ori_role 
             desti_name, desti_country, desti_region, desti_role, 
@@ -95,7 +95,7 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
             alpha, total_alpha,
             color, d, f,
             path, path_rank, pflow, parent_pflow, in_pflow 
-        from :select_table
+        from scdsi_scenario_lanes
             where scenario_id in (:scenario_id)
                 and baseline_id in (:baseline_id)
                 and pdct_fam in (:pdct_fam)
@@ -105,12 +105,10 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
                 and ori_role in (:ori_role)
         """
     ).params(
-        insert_table = AltEdges.__tablename__,
         alt_name = alt_node.alt_name,
         alt_country = alt_node.alt_country,
         alt_region = alt_node.alt_region,
         alt_role = alt_node.role,
-        select_table = ScenarioLanes.__tablename__,
         scenario_id = scenario_id,
         baseline_id = baseline_id,
         pdct_fam = pdct_fam,
@@ -125,7 +123,7 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
 
     stmt = text(
         """
-        insert into :insert_table 
+        insert into scdsi_alternative_edges 
             (scenario_id, baseline_id, pdct_fam, 
             ori_name, ori_country, ori_region, ori_role 
             desti_name, desti_country, desti_region, desti_role, 
@@ -142,7 +140,7 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
             alpha, total_alpha,
             color, d, f,
             path, path_rank, pflow, parent_pflow, in_pflow 
-        from :select_table
+        from scdsi_scenario_lanes
             where scenario_id in (:scenario_id)
                 and baseline_id in (:baseline_id)
                 and pdct_fam in (:pdct_fam)
@@ -152,12 +150,10 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
                 and desti_role in (:desti_role)
         """
     ).params(
-        insert_table = AltEdges.__tablename__,
         alt_name = alt_node.alt_name,
         alt_country = alt_node.alt_country,
         alt_region = alt_node.alt_region,
         alt_role = alt_node.role,
-        select_table = ScenarioLanes.__tablename__,
         scenario_id = scenario_id,
         baseline_id = baseline_id,
         pdct_fam = pdct_fam,
@@ -187,7 +183,7 @@ def add_decom_nodes(scenario_id, baseline_id, node_dict, session):
     
     stmt = text(
         """
-        update :table 
+        update scdsi_scenario_nodes 
         set in_pflow = 0
         where scenario_id in (:scenario_id)
             and baseline_id in (:baseline_id)
@@ -198,7 +194,6 @@ def add_decom_nodes(scenario_id, baseline_id, node_dict, session):
             and role in (:role)
         """
     ).params(
-        table = ScenarioNodes.__tablename__,
         scenario_id=scenario_id, 
         baseline_id=baseline_id,
         pdct_fam = node_dict['pdct_fam'],
@@ -213,7 +208,7 @@ def add_decom_nodes(scenario_id, baseline_id, node_dict, session):
 
     stmt = text(
         """
-        update :table
+        update scdsi_decommisioned_edges
         set in_pflow = 0
         where scenario_id in (:scenario_id)
             and baseline_id in (:baseline_id)
@@ -224,7 +219,6 @@ def add_decom_nodes(scenario_id, baseline_id, node_dict, session):
             and (ori_role in (:role) or desti_role in (:role))
         """
     ).params(
-        table = DecomEdges.__tablename__,
         scenario_id=scenario_id, 
         baseline_id=baseline_id,
         pdct_fam = node_dict['pdct_fam'],

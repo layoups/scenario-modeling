@@ -110,12 +110,12 @@ def set_baseline(baseline_id, start, end, description, session):
         get_cost_omega(baseline_id, session)
     
     except:
+        session.rollback()
         stmt = text(
             """
-            delete from :name where baseline_id = :baseline_id
+            delete from scdsi_baselines where baseline_id = :baseline_id
             """
         ).params(
-            name = Baselines.__tablename__,
             baseline_id = baseline_id
         )
         session.execute(stmt)
