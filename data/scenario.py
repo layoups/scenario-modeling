@@ -1,3 +1,4 @@
+from networkx.classes.function import edges, nodes
 import numpy as np
 import pandas as pd
 
@@ -41,7 +42,12 @@ def create_scenario(baseline_id, descriprion, session):
 #     'alt_name': ,
 #     'alt_country': ,
 #     'alt_region': 
-# } USE SQL
+# } 
+# add to alt nodes
+# add to scenario nodes
+# add to locations, get Locations
+# add to alternative edges
+# add to scenario edges, get distance, co2e, time
 def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
     alt_node = AltNodes(
         scenario_id=scenario_id, 
