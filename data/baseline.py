@@ -102,6 +102,7 @@ def set_baseline(baseline_id, start, end, description, session):
         print("Baseline Created")
 
     except Exception as e:
+        session.rollback()
         print(e)
         print("failed to create baseline")
         stmt = text(
@@ -126,6 +127,7 @@ def set_baseline(baseline_id, start, end, description, session):
         print("The Network is Reconstructed")
 
     except Exception as e:
+        session.rollback()
         print(e)
         print("Network Resisted Reconstruction")
         stmt = text(
@@ -149,6 +151,7 @@ def set_baseline(baseline_id, start, end, description, session):
         print("Baeline Edges are Populated")
 
     except Exception as e:
+        session.rollback()
         print(e)
         print("failed to populate scenario edges")
         stmt = text(
@@ -173,6 +176,7 @@ def set_baseline(baseline_id, start, end, description, session):
         print("Scenario Nodes are Populated")
 
     except Exception as e:
+        session.rollback()
         print(e)
         print("failed to populate nodes")
         stmt = text(
@@ -194,6 +198,7 @@ def set_baseline(baseline_id, start, end, description, session):
         print("Omegas are Calculated")
 
     except Exception as e:
+        session.rollback()
         print(e)
         print("failed to get omegas")
         stmt = text(
