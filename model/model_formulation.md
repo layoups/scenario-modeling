@@ -24,6 +24,19 @@
 
     
 #### Capacity Constraint
-    - Data Dictionary: U[(j, p)]
+    - Data Dictionaries: U[(j, p)]
     - Necessary Indices: j, p
+    - Decision Var Indices: *, j, p, *
+    - Considerations:
+        - Only warehousing and manufacturing nodes have capacities
+    - Generate:
+        - for x in dslc_lanes/oslc_lanes/df_lanes/ghub_lanes, X.sum(*, j, p, *) <= U[(j, p)] * Q[j, p]
+
+
+#### Alpha Constraint
+    - Data Dictionaries: alpha[(i, j, p)], S[(j, p)]
+    - Necessary Indices: j, p
+    - Decision Var Indices: i, j, p, *
+    - Considerations:
+        - Manufacturing processes must only be respected at manufacturing nodes
 
