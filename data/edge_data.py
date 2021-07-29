@@ -117,7 +117,7 @@ def get_distances_time_co2e(scenario_id, baseline_id, session):
 
 def get_transport_time_and_co2(edge):
 
-    distance = edge.distance
+    distance = float(edge.distance)
     mode = edge.transport_mode
 
     if mode == 'Air':
@@ -179,6 +179,7 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
+    populate_scenario_edges(0, 1, session)
     get_distances_time_co2e(0, 1, session)
 
     session.commit()
