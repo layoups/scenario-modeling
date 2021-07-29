@@ -117,14 +117,14 @@ if __name__ == "__main__":
 
     # print(ScenarioLanes.__table__.columns.keys())
 
-    pdct_fam = "4400ISR"
+    pdct_fam = "PHONE"
     scenario_id = 0
     baseline_id = 1
 
     # create_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
     # populate_scenario_lanes(baseline_id, Session())
 
-    # erase([pdct_fam], Session(), ScenarioLanes)
+    erase([pdct_fam], Session(), ScenarioLanes)
     
     dfs(baseline_id, pdct_fam)
     # get_customer_alphas(scenario_id, baseline_id, pdct_fam, session)

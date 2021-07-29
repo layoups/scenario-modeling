@@ -272,6 +272,35 @@ def update_scenario_edges(scenario_id, baseline_id, session):
 
 
 def update_scenario_lanes(scenario_id, baseline_id, session):
+    alt_edges = session.query(AltEdges).all()
+    for e in alt_edges:
+        lane = ScenarioLanes(
+            scenario_id = scenario_id,
+            baseline_id = baseline_id,
+            pdct_fam = e.pdct_fam,
+            ori_name = e.ori_name,
+            # ori_country = Column('ori_country', String)
+            # ori_region = Column('ori_region', String)
+            # ori_role = Column('ori_role', String, default='')
+            # desti_name = Column('desti_name', String)
+            # desti_country = Column('desti_country', String)
+            # desti_region = Column('desti_region', String)
+            # desti_role = Column('desti_role', String, default='')
+            # ship_type = Column('ship_type', String)
+            # ship_rank = Column('ship_rank', Integer)
+            # total_weight = Column('total_weight', Float)
+            # total_paid = Column('total_paid', Float)
+            # alpha = Column('alpha', Float)
+            # total_alpha = Column('total_alpha', Float)
+            # color = Column('color', Integer, default=0)
+            # d = Column('d', Integer, default=0)
+            # f = Column('f', Integer, default=0)
+            # path = Column('path', Integer, default=0)
+            # path_rank = Column('path_rank', Integer, default=0)
+            # pflow = Column('pflow', Integer, default=0)
+            # parent_pflow = Column('parent_pflow', Integer)
+            # in_pflow = Column('in_pflow', Integer)
+        )
     return None
 
 if __name__ == '__main__':
