@@ -74,8 +74,8 @@ def get_lat_long(session):
 def populate_baseline_nodes(baseline_id, session):
     stmt = text("""
         insert into scdsi_scenario_nodes 
-        (baseline_id, scenario_id, name, country, region, role, in_pflow)
-        select distinct :baseline_id, 0, ori_name, ori_country, ori_region, ori_role, 1
+        (baseline_id, scenario_id, pdct_fam, name, country, region, role, in_pflow)
+        select distinct :baseline_id, 0, pdct_fam, ori_name, ori_country, ori_region, ori_role, 1
         from scdsi_scenario_lanes
         where in_pflow = 1
     """).params(baseline_id = baseline_id)
@@ -85,8 +85,8 @@ def populate_baseline_nodes(baseline_id, session):
 
     stmt = text("""
         insert into scdsi_scenario_nodes 
-        (baseline_id, scenario_id, name, country, region, role, in_pflow)
-        select distinct :baseline_id, 0, desti_name, desti_country, desti_region, desti_role, 1
+        (baseline_id, scenario_id, pdct_fam, name, country, region, role, in_pflow)
+        select distinct :baseline_id, 0, pdct_fam, desti_name, desti_country, desti_region, desti_role, 1
         from scdsi_scenario_lanes
         where in_pflow = 1 and ori_role = 'Customer'
     """).params(baseline_id = baseline_id)
