@@ -152,13 +152,13 @@ def get_node_capacity(scenario_id, baseline_id, pdct_fam, session):
     for pflow in model_pflows.all():
         pflow_demand = - get_pflow_demand(scenario_id, baseline_id, pflow.pflow, pdct_fam, session).total_supply
         stmt = text("""
-            update "ScenarioNodes" 
+            update scdsi_scenario_nodes 
             set capacity = sub.cap
             from (
                 select total_alpha * :demand / 0.8 as cap, ori_role, ori_name, ori_country, ori_region
-                from "ScenarioLanes" join "ScenarioNodes"
+                from scdsi_scenario_lanes join scdsi_scenario_nodes
                 on ori_role = role and ori_name = name and ori_country = country and ori_region = region 
-                and "ScenarioLanes".scenario_id = "ScenarioNodes".scenario_id and "ScenarioLanes".baseline_id = "ScenarioNodes".baseline_id
+                and scdsi_scenario_lanes.scenario_id = scdsi_scenario_nodes.scenario_id and scdsi_scenario_lanes.baseline_id = scdsi_scenario_nodes.baseline_id
                 where ori_role in ('PCBA', 'DF', 'GHUB', 'OSLC', 'DSLC')
                 and pflow = :pflow
             ) as sub
@@ -168,7 +168,7 @@ def get_node_capacity(scenario_id, baseline_id, pdct_fam, session):
         session.execute(stmt)
 
         stmt = text("""
-            update "ScenarioNodes"
+            update scdsi_scenario_nodes
             set capacity = -1
             where role in ('Customer', 'Supplier')
         """)
@@ -180,18 +180,27 @@ def get_node_capacity(scenario_id, baseline_id, pdct_fam, session):
 
 
 if __name__ == '__main__':
-    engine = create_engine(DB_CONN_PARAMETER_WI)
+    engine = create_engine(DB_CONN_PARAMETER_CLOUD)
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    # start = datetime.now()
+    baseline_id = 1
+    scenario_id = 0
+
+    pdct_fam = 'AIRANT'
+
+    start = datetime.now()
     # print(start)
 
     # get_node_supply('4400ISR', session)
     # get_node_capacity('4400ISR', session)
 
     # populate_Locations(session)
-    get_lat_long(session)
+    # get_lat_long(session)
 
-    # print(datetime.now() - start)
+    populate_baseline_nodes(baseline_id, session)
+    get_node_supply(0, baseline_id, pdct_fam, session)
+    get_node_capacity(0, baseline_id, pdct_fam, session)
+
+    print(datetime.now() - start)
     session.commit()
