@@ -49,7 +49,7 @@ def dfs(baseline_id, pdct_fam, session):
             stack += [v]
             dfs_visit(baseline_id, pdct_fam, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
         pflow += 1
-        input("new pflow-----------------------------------------------------------------------new pflow")
+        # input("new pflow-----------------------------------------------------------------------new pflow")
     print("Network Revealed for {}".format(pdct_fam))
     print(datetime.now() - start)
 
@@ -65,7 +65,7 @@ def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_r
     v.d = time[0]
     v.color = 1
 
-    debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
+    # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
 
     if path[0] > 1 and path_stack[0] < path_stack[1]:
         curr_path_head_rank[0] = path_rank - 1
@@ -93,6 +93,7 @@ def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_r
             dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_rank, path, path_rank, time, pflow_heads, session)
         if u.pflow and u.pflow < pflow and u.color == 2:
             get_parent_pflow(stack, u, curr_path_head_rank, path_rank, session)
+            # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "TAIL")
 
     if v.in_pflow == 1:
         v.color = 2
@@ -102,7 +103,7 @@ def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_r
     if to_path:
         if node_role_per_path(stack, curr_path_head_rank[0], len(stack), session):
             path[0] += 1
-            debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "TAIL")
+            # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "TAIL")
     stack.pop()
     path_rank -= 1
     path_stack.append(0)
@@ -124,10 +125,10 @@ if __name__ == "__main__":
     # create_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
     # populate_scenario_lanes(baseline_id, Session())
 
-    erase([pdct_fam], Session(), ScenarioLanes)
+    erase([pdct_fam], scenario_id, baseline_id, Session(), ScenarioLanes)
     
-    dfs(baseline_id, pdct_fam)
-    # get_customer_alphas(scenario_id, baseline_id, pdct_fam, session)
-    # get_alphas(scenario_id, baseline_id, pdct_fam, Session())
+    dfs(baseline_id, pdct_fam, Session())
+    get_customer_alphas(scenario_id, baseline_id, pdct_fam, session)
+    get_alphas(scenario_id, baseline_id, pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
-    # visualize_graphivz(pdct_fam, Session())
+    visualize_graphivz(pdct_fam, Session())

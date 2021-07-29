@@ -57,6 +57,12 @@ def populate_scenario_lanes(baseline_id, session):
         and shipment_type not in ('OTHER', 'BROKERAGE')
         and ship_date_pure_ship >= :start and ship_date_pure_ship <= :end
         and product_family not in ('TBA')
+        and ship_from_name is not null
+        and ship_from_country is not null
+        and ship_from_region_code is not null
+        and ship_to_name is not null
+        and ship_to_country is not null
+        and ship_to_region_code is not null
         group by row_id, product_family, 
         ship_from_name, ship_from_country, ship_from_region_code, 
         ship_to_name, ship_to_country, ship_to_region_code, 
