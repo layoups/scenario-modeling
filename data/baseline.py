@@ -129,7 +129,7 @@ if __name__ == '__main__':
     pdct_fam = 'PHONE'
 
     baseline_id = 1
-    set_baseline(baseline_id, '2019-01-01', '2019-12-31', 'trial' , session)
+    set_baseline(baseline_id, '2019-01-01', '2020-12-31', 'trial' , session)
 
     session.commit()
 
