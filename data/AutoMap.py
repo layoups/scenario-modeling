@@ -1,4 +1,5 @@
 from decimal import FloatOperation
+from networkx.algorithms.shortest_paths.unweighted import single_source_shortest_path_length
 import numpy as np
 import pandas as pd
 
@@ -394,6 +395,24 @@ class ScenarioEdges(Base):
             self.transport_mode,
             self.distance, self.transport_time, self.co2e
         )
+
+    @classmethod
+    def get_scenario_edges(cls, scenario_id, baseline_id, session):
+        scenario_edges = session.query(cls).filter(
+            cls.baseline_id == baseline_id,
+            cls.scenario_id == scenario_id
+        ).all()
+        return {(
+            x.ori_name, 
+            x.ori_country, 
+            x.ori_region, 
+            x.desti_name, 
+            x.desti_country,
+            x.desti_region,
+            x.transport_mode): {
+                'cost': x.transport_cost, 
+                'time': x.transport_time, 
+                'co2e': x.co2e} for x in scenario_edges}
 
 class ScenarioNodes(Base):
 
