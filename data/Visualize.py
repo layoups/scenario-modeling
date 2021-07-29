@@ -138,7 +138,7 @@ def visualize_alt_paths(pdct_fam, var_node, alts, session, leech):
     if leech:
         G.edge(alts[-1], 'leech', ltail=cluster_name, label='N(mu, sigma^2)')
     # G.unflatten(stagger=5).view()
-    G.view()
+    # G.view()
 
 if __name__ == "__main__":
 
@@ -146,14 +146,14 @@ if __name__ == "__main__":
     # Source.from_file('file.gv')
 
 
-    engine = create_engine(DB_CONN_PARAMETER)
+    engine = create_engine(DB_CONN_PARAMETER_CLOUD)
     Session = sessionmaker(bind=engine)
     session = Session()
 
     scenario_id = 0
     baseline_id = 1
 
-    pdct_fam = 'AIRANT'
+    pdct_fam = 'WPHONE'
     # visualize_networkx(pdct_fam, session)
     visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
 
