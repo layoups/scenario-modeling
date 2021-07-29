@@ -7,21 +7,19 @@ from sqlalchemy.orm import sessionmaker
 from AutoMap import *
 
 def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
-
-    model_pflows = session.query(ScenarioLanes.pflow, ScenarioLanes.parent_pflow, ScenarioLanes.pdct_fam, ScenarioLanes.in_pflow). \
-        filter(
-            ScenarioNodes.scenario_id == scenario_id,
-            ScenarioNodes.baseline_id == baseline_id,
-            ScenarioLanes.parent_pflow == None , 
-            ScenarioLanes.pdct_fam == pdct_fam, 
-            ScenarioLanes.in_pflow == 1). \
-            distinct()
-    return model_pflows
+    model_pflows = session.query(ScenarioLanes.pflow).filter(
+        ScenarioLanes.scenario_id == scenario_id,
+        ScenarioLanes.baseline_id == baseline_id,
+        ScenarioLanes.parent_pflow == None,
+        ScenarioLanes.pdct_fam == pdct_fam,
+        ScenarioLanes.in_pflow == 1
+    ).distinct()
+    return model_pflows.all()
 
 def get_customer_alphas(scenario_id, baseline_id, pdct_fam, session):
     customers = session.query(
         ScenarioLanes.desti_name, 
-        ScenarioLanes.desti_country, 
+        # ScenarioLanes.desti_country, 
         ScenarioLanes.desti_region,
         ScenarioLanes.desti_role
         ).filter(
@@ -35,7 +33,7 @@ def get_customer_alphas(scenario_id, baseline_id, pdct_fam, session):
             ScenarioLanes.scenario_id == scenario_id,
             ScenarioLanes.baseline_id == baseline_id,
             ScenarioLanes.desti_name == c.desti_name,
-            ScenarioLanes.desti_country == c.desti_country, 
+            # ScenarioLanes.desti_country == c.desti_country, 
             ScenarioLanes.desti_region == c.desti_region, 
             ScenarioLanes.desti_role == c.desti_role,
             ScenarioLanes.pdct_fam == pdct_fam,
@@ -50,12 +48,12 @@ def get_customer_alphas(scenario_id, baseline_id, pdct_fam, session):
 
 def get_alphas(scenario_id, baseline_id, pdct_fam, session):
     model_pflows = get_main_pflow(scenario_id, baseline_id, pdct_fam, session)
-    for p in model_pflows.all():
+    for p in model_pflows:
         graph = session.query(ScenarioLanes).filter(
             ScenarioLanes.scenario_id == scenario_id,
             ScenarioLanes.baseline_id == baseline_id,
             ScenarioLanes.pdct_fam == pdct_fam, 
-            ScenarioLanes.pflow == p.pflow
+            ScenarioLanes.pflow == p[0]
             ).order_by(
                 ScenarioLanes.path, 
                 desc(ScenarioLanes.ship_rank)

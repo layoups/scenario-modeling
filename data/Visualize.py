@@ -153,7 +153,7 @@ if __name__ == "__main__":
     scenario_id = 0
     baseline_id = 1
 
-    pdct_fam = 'PHONE'
+    pdct_fam = 'AIRANT'
     # visualize_networkx(pdct_fam, session)
     visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
 
