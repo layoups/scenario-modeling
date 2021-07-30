@@ -272,8 +272,10 @@ if __name__ == '__main__':
     start = datetime.now()
 
     baseline_id = 1
-    set_baseline(baseline_id, '2019-01-01', '2020-12-31', 'trial' , session)
+    # set_baseline(baseline_id, '2019-01-01', '2020-12-31', 'trial' , session)
 
+    # get_co2e_time_omega(baseline_id, session)
+    # get_cost_omega(baseline_id, session)
     # get_co2e_time_omega(baseline_id, session)
 
     print(datetime.now() - start)
