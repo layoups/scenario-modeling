@@ -46,16 +46,19 @@ def populate_Locations(session):
     session.execute(stmt)
     session.commit()
 
-def get_lat_long(session):
+def get_lat_long(session, node=None):
     gm = googlemaps.Client(key=KARIM_API_KEY)
 
-    locations = session.query(Locations).filter(Locations.lat == None)#.limit(2000)
+    if not node:
+        locations = session.query(Locations).filter(Locations.lat == None).all()#.limit(2000)
+    else:
+        locations = [node]
 
     i = 0
 
     start = datetime.now()
 
-    for location in locations.all():
+    for location in locations:
         name = location.name
         try:
             api = gm.geocode(name)
