@@ -24,8 +24,31 @@ def create_scenario(baseline_id, descriprion, session):
     scenario.date = datetime.now()
     scenario.description = descriprion
 
+    scenario_id = scenario.scenario_id
+
     session.add(scenario)
     session.commit()
+
+    stmt = text(
+        """
+        insert into scdsi_scenario_lanes
+        (scenario_id, baseline_id, pdct_fam, 
+        ori_name, ori_country, ori_region, 
+        desti_name, desti_country, desti_region, 
+        ship_type, ship_rank, total_weight, total_paid,
+        d, f, alpha, total_alpha, path)
+        select :scenario_id, baseline_id, pdct_fam, 
+        ori_name, ori_country, ori_region, 
+        desti_name, desti_country, desti_region, 
+        ship_type, ship_rank, total_weight, total_paid
+        from scdsi_scenario_lanes
+        where baseline_id = :baseline_id
+        and scenario_id = 0
+        """
+    ).params(
+        scenario_id = scenario_id,
+        baseline_id = baseline_id
+    )
 
     # copy scenario lanes, scenario edges, scenario nodes
     
