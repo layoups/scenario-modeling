@@ -160,7 +160,7 @@ def set_baseline(baseline_id, start, end, description, session):
         session.execute(stmt)
         return session.commit()
     
-    pdct_fams = ['AIRANT', 'WPHONE', 'SBPHONE']
+    pdct_fams = ['AIRANT', 'WPHONE', 'SBPHONE', 'PHONVOC', '4400ISR']
 
     try:
         for pdct_fam in pdct_fams: 
