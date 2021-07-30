@@ -5,6 +5,7 @@ lanes = {}
 nodes = {}
 
 customer_lanes = {} 
+gateway_lanes = {}
 dslc_lanes = {} 
 oslc_lanes = {} 
 df_lanes = {} 
