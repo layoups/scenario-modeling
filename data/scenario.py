@@ -49,6 +49,15 @@ def create_scenario(baseline_id, descriprion, session):
 # add to alternative edges
 # add to scenario edges, get distance, co2e, time
 def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
+    if not session.query(Locations).filter(Locations.name == node_dict['name']):
+        location = Locations(
+            name = node_dict['name'],
+            country = node_dict['country'],
+            region = node_dict['region'],
+        )
+        session.add(location)
+        session.commit()
+
     alt_node = AltNodes(
         scenario_id=scenario_id, 
         baseline_id=baseline_id,
