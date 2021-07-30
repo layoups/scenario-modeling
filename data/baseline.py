@@ -160,13 +160,14 @@ def set_baseline(baseline_id, start, end, description, session):
         session.execute(stmt)
         return session.commit()
     
-    pdct_fams = ['AIRANT', 'WPHONE', 'SBPHONE', 'PHONVOC', '4400ISR']
+    pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
+    # ['AIRANT', 'WPHONE', 'SBPHONE', 'PHONVOC', '4400ISR']
 
     try:
         for pdct_fam in pdct_fams: 
-            dfs(baseline_id, pdct_fam, session)
-            get_customer_alphas(0, baseline_id, pdct_fam, session)
-            get_alphas(0, baseline_id, pdct_fam, session)
+            dfs(baseline_id, pdct_fam[0], session)
+            get_customer_alphas(0, baseline_id, pdct_fam[0], session)
+            get_alphas(0, baseline_id, pdct_fam[0], session)
         session.commit()
 
         print("The Network is Reconstructed")
@@ -214,8 +215,8 @@ def set_baseline(baseline_id, start, end, description, session):
     try:
         populate_baseline_nodes(baseline_id, session)
         for pdct_fam in pdct_fams:
-            get_node_supply(0, baseline_id, pdct_fam, session)
-            get_node_capacity(0, baseline_id, pdct_fam, session)
+            get_node_supply(0, baseline_id, pdct_fam[0], session)
+            get_node_capacity(0, baseline_id, pdct_fam[0], session)
         session.commit()
 
         print("Scenario Nodes are Populated")
@@ -271,8 +272,8 @@ if __name__ == '__main__':
 
     start = datetime.now()
 
-    baseline_id = 1
-    # set_baseline(baseline_id, '2019-01-01', '2020-12-31', 'trial' , session)
+    baseline_id = 2
+    set_baseline(baseline_id, '2019-01-01', '2020-12-31', "'nam" , session)
 
     # get_co2e_time_omega(baseline_id, session)
     # get_cost_omega(baseline_id, session)
