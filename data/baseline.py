@@ -70,8 +70,8 @@ def populate_scenario_lanes(baseline_id, session):
         and ship_to_region_code is not null
         and length(ship_to_name) > 3
         group by product_family, 
-        ship_from_name, ship_from_region_code, 
-        ship_to_name, ship_to_region_code, 
+        lower(ship_from_name), lower(ship_from_region_code), 
+        lower(ship_to_name), lower(ship_to_region_code), 
         shipment_type) as rl join scdsi_ship_rank sr 
         on rl.shipment_type = sr.ship_type
     """).params(baseline_id = baseline_id, start = baseline.start, end = baseline.end)
