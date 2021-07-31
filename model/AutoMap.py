@@ -37,26 +37,6 @@ metadata.reflect(engine) # extend_existing
 Base = automap_base(metadata=metadata)
 # print('\n', metadata.tables.keys(), '\n')
 
-
-
-
-class RawHANA(Base):
-
-    row_id = Column(Integer, primary_key=True, autoincrement=True)
-
-    __tablename__ = 'scdsi_cv_lane_rate_automation_pl'
-
-
-    __table_args__ = {'extend_existing': True}
-
-    def __repr__(self):
-        return "{}: ({}_{}_{}) -> ({}_{}_{}) | <transport_mode: {}, ship_type: {}>".format(
-            self.product_family,
-            self.ship_from_name, self.ship_from_country, self.ship_from_region_code,
-            self.ship_to_name, self.ship_to_country, self.ship_to_region_code,
-            self.transport_mode, self.shipment_type)
-
-
 class Baselines(Base):
     
     baseline_id = Column('baseline_id', String, primary_key=True, nullable=True)
@@ -73,18 +53,6 @@ class Baselines(Base):
             self.baseline_id, self.start, self.end, self.date, self.description
             )
 
-class ShipRank(Base):
-
-    ship_type_id = Column('ship_type_id', primary_key=True, autoincrement=True)
-    ship_type = Column('ship_type', String)
-    ship_rank = Column('ship_rank', Integer)
-
-    __tablename__ = 'scdsi_ship_rank'
-    __table_args__ = {'extend_existing': True}
-
-    def __repr__(self):
-        return "ShipRank(ship_type = {}, ship_rank = {})".format(self.ship_rank, self.ship_type)
-
 
 class Scenarios(Base):
 
@@ -100,34 +68,6 @@ class Scenarios(Base):
         return 'Scenario: {} - Baseline: {} - Date: {} - {} '.format(
             self.scenario_id, self.baseline_id, self.date, self.description
         )
-
-
-class RawLanes(Base):
-
-    id = Column('id', Integer, primary_key=True, nullable=True)
-    baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
-    pdct_fam = Column('pdct_fam', String)
-    shipment_type = Column('shipment_type', String)
-    fiscal_quarter_ship = Column('fiscal_quarter_ship', String)
-    agg_total_amount_paid = Column('agg_total_amount_paid', Float)
-    agg_chargeable_weight_total_amount = Column('agg_chargeable_weight_total_amount', Float)
-    ori_name = Column('ori_name', String)
-    ori_region = Column('ori_region', String)
-    desti_name = Column('desti_name', String)
-    desti_region = Column('desti_region', String)
-
-    __tablename__ = 'scdsi_nrp_raw_data'
-    __table_args__ = {'extend_existing': True}
-
-
-    def __repr__(self):
-        return "{} | {} - {}: ({}_{}_{}) -> ({}_{}_{}) | ship_type: {} | total_paid: {}, total_shipped: {}>".format(
-            self.baseline_id, 
-            self.pdct_fam, self.fiscal_quarter_ship,
-            self.ori_name, self.ori_region,
-            self.desti_name, self.desti_region,
-            self.shipment_type, self.agg_total_amount_paid, self.agg_chargeable_weight_total_amount
-            )
 
 
 class DecomNodes(Base):
@@ -183,29 +123,6 @@ class AltNodes(Base):
             )
 
 
-class Edges(Base):
-
-    edge_id = Column('edge_id', Integer, primary_key=True, nullable=True)
-    distance = Column('distance', Float)
-    co2e = Column('co2e', Float)
-    transport_mode = Column('transport_mode', String)
-    transport_time = Column('transport_time', Float)
-    ori_name = Column('ori_name', String)
-    ori_region = Column('ori_region', String)
-    desti_name = Column('desti_name', String)
-    desti_region = Column('desti_region', String)
-
-
-    __tablename__ = 'scdsi_edges'
-    __table_args__ = {'extend_existing': True}
-
-    def __repr__(self) -> str:
-        return '({}_{}_{}) --> ({}_{}_{}): | {} | distance = {}, time = {}, co2 = {}'.format(
-            self.ori_name, self.ori_region,
-            self.desti_name, self.desti_region,
-            self.transport_mode,
-            self.distance, self.transport_time, self.co2e
-        )
 class Omega(Base):
 
     baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'), primary_key=True, nullable=True)
@@ -516,32 +433,13 @@ class Solution(Base):
         )
 
 
-class CO2Factors(Base):
-
-    co2e_factor_id = Column('co2e_factor_id', Integer, primary_key=True, autoincrement=True, nullable=True)
-    transport_mode = Column('transport_mode', String)
-    co2e_factor = Column('co2e_factor', Float)
-
-    __tablename__ = 'scdsi_co2e_factors'
-    __table_args__ = {'extend_existing': True}
-
-    def __repr__(self) -> str:
-        return 'Mode: {} - Emissions: {} kg CO2e/kg flow/km'.format(
-            self.transport_mode, self.co2e_factor
-        )
-
-
 Base.prepare()
 
 def test_auto_mapping():
-    print(RawHANA.__tablename__, RawHANA.__table__.columns.keys())
     print(Baselines.__tablename__, Baselines.__table__.columns.keys())
-    print(ShipRank.__tablename__, ShipRank.__table__.columns.keys())
     print(Scenarios.__tablename__, Scenarios.__table__.columns.keys())
-    print(RawLanes.__tablename__, RawLanes.__table__.columns.keys())
     print(DecomNodes.__tablename__, DecomNodes.__table__.columns.keys())
     print(AltNodes.__tablename__, AltNodes.__table__.columns.keys())
-    print(Edges.__tablename__, Edges.__table__.columns.keys())
     print(Omega.__tablename__, Omega.__table__.columns.keys())
     print(AltEdges.__tablename__, AltEdges.__table__.columns.keys())
     print(DecomEdges.__tablename__, DecomEdges.__table__.columns.keys())
@@ -553,7 +451,6 @@ def test_auto_mapping():
     print(OptimalFlows.__tablename__, OptimalFlows.__table__.columns.keys())
     print(OptimalNodes.__tablename__, OptimalNodes.__table__.columns.keys())
     print(Solution.__tablename__, Solution.__table__.columns.keys())
-    print(CO2Factors.__tablename__, CO2Factors.__table__.columns.keys())
 
 if __name__ == "__main__":
 
