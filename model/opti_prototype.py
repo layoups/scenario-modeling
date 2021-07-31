@@ -101,7 +101,7 @@ for l,v in lanes.items():
 #ensures manufacturing processes are respected
 for key in adj:
     for e in adj[key]:
-        m.addConstr(sum(X.select(e[0],e[1],e[2],'*'))== alpha[(e[0], e[1], e[2])] * sum(X.select(key[0],'*',e[2],'*')) - S[(key[0], e[2])])
+        m.addConstr(sum(X.select(e[0],e[1],e[2],'*'))== alpha[(e[0], e[1], e[2])] * (sum(X.select(key[0],'*',e[2],'*')) - S[(key[0], e[2])]))
 
 m.write('opt.lp')
 
