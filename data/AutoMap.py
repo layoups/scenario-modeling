@@ -479,6 +479,7 @@ class OptimalNodes(Base):
     baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
     scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
     run_id = Column('run_id', Integer, ForeignKey('scdsi_runs.run_id'))
+    pdct_fam = Column('pdct_fam', String)
     role = Column('role', String)
     name = Column('name', String)
     region = Column('region', String)
