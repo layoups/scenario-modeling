@@ -25,8 +25,8 @@ def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
 
 def populate_Locations(session):
     stmt = text("""
-            insert into scdsi_locations (name, country, region)
-            select distinct lower(ship_from_name), lower(ship_from_country), lower(ship_from_region_code)
+            insert into scdsi_locations (name, region)
+            select distinct lower(ship_from_name), lower(ship_from_region_code)
             from scdsi_cv_lane_rate_automation_pl 
             where billed_weight != 0 
             and shipment_type not in ('OTHER', 'BROKERAGE')
@@ -36,8 +36,8 @@ def populate_Locations(session):
     session.commit()
 
     stmt = text("""
-            insert into scdsi_locations (name, country, region)
-            select distinct lower(ship_to_name), lower(ship_to_country), lower(ship_to_region_code)
+            insert into scdsi_locations (name, region)
+            select distinct lower(ship_to_name), lower(ship_to_region_code)
             from scdsi_cv_lane_rate_automation_pl 
             where billed_weight != 0 
             and shipment_type in ('LEG2-2')
@@ -77,8 +77,8 @@ def get_lat_long(session, node=None):
 def populate_baseline_nodes(baseline_id, session):
     stmt = text("""
         insert into scdsi_scenario_nodes 
-        (baseline_id, scenario_id, pdct_fam, name, country, region, role, in_pflow)
-        select distinct baseline_id, scenario_id, pdct_fam, ori_name, ori_country, ori_region, ori_role, 1
+        (baseline_id, scenario_id, pdct_fam, name, region, role, in_pflow)
+        select distinct baseline_id, scenario_id, pdct_fam, ori_name, ori_region, ori_role, 1
         from scdsi_scenario_lanes
         where in_pflow = 1
         and baseline_id = baseline_id
@@ -90,8 +90,8 @@ def populate_baseline_nodes(baseline_id, session):
 
     stmt = text("""
         insert into scdsi_scenario_nodes 
-        (baseline_id, scenario_id, pdct_fam, name, country, region, role, in_pflow)
-        select distinct baseline_id, scenario_id, pdct_fam, desti_name, desti_country, desti_region, desti_role, 1
+        (baseline_id, scenario_id, pdct_fam, name, region, role, in_pflow)
+        select distinct baseline_id, scenario_id, pdct_fam, desti_name, desti_region, desti_role, 1
         from scdsi_scenario_lanes
         where in_pflow = 1 
         and desti_role = 'Customer'
@@ -116,15 +116,15 @@ def get_node_supply(scenario_id, baseline_id, pdct_fam, session):
                 ScenarioLanes.scenario_id == n.scenario_id,
                 ScenarioLanes.baseline_id == n.baseline_id,
                 ScenarioLanes.desti_name == n.name,
-                ScenarioLanes.desti_country == n.country, 
-                # ScenarioLanes.desti_region == n.region, 
+                # ScenarioLanes.desti_country == n.country, 
+                ScenarioLanes.desti_region == n.region, 
                 ScenarioLanes.desti_role == n.role,
                 ScenarioLanes.pdct_fam == n.pdct_fam,
                 ScenarioLanes.in_pflow == 1
                 ).group_by(
                     ScenarioLanes.desti_name,
-                    ScenarioLanes.desti_country,
-                    # ScenarioLanes.desti_region,
+                    # ScenarioLanes.desti_country,
+                    ScenarioLanes.desti_region,
                     ScenarioLanes.desti_role
                 ).first()
             n.supply = -total.total
@@ -164,14 +164,14 @@ def get_node_capacity(scenario_id, baseline_id, pdct_fam, session):
             update scdsi_scenario_nodes 
             set capacity = sub.cap
             from (
-                select total_alpha * :demand / 0.8 as cap, ori_role, ori_name, ori_country, ori_region
+                select total_alpha * :demand / 0.8 as cap, ori_role, ori_name, ori_region
                 from scdsi_scenario_lanes join scdsi_scenario_nodes
-                on ori_role = role and ori_name = name and ori_country = country and ori_region = region 
+                on ori_role = role and ori_name = name and ori_region = region 
                 and scdsi_scenario_lanes.scenario_id = scdsi_scenario_nodes.scenario_id and scdsi_scenario_lanes.baseline_id = scdsi_scenario_nodes.baseline_id
                 where ori_role in ('PCBA', 'DF', 'GHUB', 'OSLC', 'DSLC')
                 and pflow = :pflow
             ) as sub
-            where role = sub.ori_role and name = sub.ori_name and sub.ori_country = country and sub.ori_region = region
+            where role = sub.ori_role and name = sub.ori_name and sub.ori_region = region
             and scenario_id = :scenario_id and baseline_id = :baseline_id
         """).params(demand = pflow_demand, pflow = pflow.pflow, scenario_id = scenario_id, baseline_id = baseline_id)
         session.execute(stmt)
@@ -207,9 +207,10 @@ if __name__ == '__main__':
     # populate_Locations(session)
     # get_lat_long(session)
 
-    populate_baseline_nodes(baseline_id, session)
+    # populate_baseline_nodes(baseline_id, session)
 
     pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
+    pdct_fams = [('AIRANT',), ('WPHONE',), ('SBPHONE',), ('PHONVOC',), ('4400ISR',)]
     for pdct_fam in pdct_fams:
         print(pdct_fam[0])
         get_node_supply(0, baseline_id, pdct_fam[0], session)

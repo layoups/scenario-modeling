@@ -112,10 +112,8 @@ class RawLanes(Base):
     agg_total_amount_paid = Column('agg_total_amount_paid', Float)
     agg_chargeable_weight_total_amount = Column('agg_chargeable_weight_total_amount', Float)
     ori_name = Column('ori_name', String)
-    ori_country = Column('ori_country', String)
     ori_region = Column('ori_region', String)
     desti_name = Column('desti_name', String)
-    desti_country = Column('desti_country', String)
     desti_region = Column('desti_region', String)
 
     __tablename__ = 'scdsi_nrp_raw_data'
@@ -126,8 +124,8 @@ class RawLanes(Base):
         return "{} | {} - {}: ({}_{}_{}) -> ({}_{}_{}) | ship_type: {} | total_paid: {}, total_shipped: {}>".format(
             self.baseline_id, 
             self.pdct_fam, self.fiscal_quarter_ship,
-            self.ori_name, self.ori_country, self.ori_region,
-            self.desti_name, self.desti_country, self.desti_region,
+            self.ori_name, self.ori_region,
+            self.desti_name, self.desti_region,
             self.shipment_type, self.agg_total_amount_paid, self.agg_chargeable_weight_total_amount
             )
 
@@ -140,7 +138,6 @@ class DecomNodes(Base):
     pdct_fam = Column('pdct_fam', String)
     role = Column('role', String)
     name = Column('name', String)
-    country = Column('country', String)
     region = Column('region', String)
 
     __tablename__ = 'scdsi_decommisioned_nodes'
@@ -148,7 +145,7 @@ class DecomNodes(Base):
 
     def __repr__(self):
         return '({}, {}) | {} - <{}_{}_{}_{}>'.format(
-            self.baseline_id, self.scenario_id, self.pdct_fam, self.name, self.country, self.region, self.role
+            self.baseline_id, self.scenario_id, self.pdct_fam, self.name, self.region, self.role
             )
 
     @classmethod
@@ -156,7 +153,7 @@ class DecomNodes(Base):
         decom_nodes = session.query(cls).filter(
             cls.baseline_id == baseline_id,
             cls.scenario_id == scenario_id).all()
-        return [((n.name, n.country, n.region, n.role), n.pdct_fam) for n in decom_nodes]
+        return [((n.name, n.region, n.role), n.pdct_fam) for n in decom_nodes]
 
 
 class AltNodes(Base):
@@ -167,10 +164,8 @@ class AltNodes(Base):
     pdct_fam = Column('pdct_fam', String)
     role = Column('role', String)
     name = Column('name', String)
-    country = Column('country', String)
     region = Column('region', String)
     alt_name = Column('alt_name', String)
-    alt_country = Column('alt_country', String)
     alt_region = Column('alt_region', String)
     supply = Column('supply', Float)
     capacity = Column('capacity', Float)
@@ -182,8 +177,8 @@ class AltNodes(Base):
     def __repr__(self) -> str:
         return '({}, {}) | {} - <{}_{}_{}_{}> replaces <({}_{}_{}_{})> | supply: {}, capacity: {}, opex'.format(
             self.baseline_id, self.scenario_id, self.pdct_fam, 
-            self.alt_name, self.alt_country, self.alt_region, self.role,
-            self.name, self.country, self.region, self.role,
+            self.alt_name, self.alt_region, self.role,
+            self.name, self.region, self.role,
             self.supply, self.capacity, self.opex
             )
 
@@ -196,10 +191,8 @@ class Edges(Base):
     transport_mode = Column('transport_mode', String)
     transport_time = Column('transport_time', Float)
     ori_name = Column('ori_name', String)
-    ori_country = Column('ori_country', String)
     ori_region = Column('ori_region', String)
     desti_name = Column('desti_name', String)
-    desti_country = Column('desti_country', String)
     desti_region = Column('desti_region', String)
 
 
@@ -208,8 +201,8 @@ class Edges(Base):
 
     def __repr__(self) -> str:
         return '({}_{}_{}) --> ({}_{}_{}): | {} | distance = {}, time = {}, co2 = {}'.format(
-            self.ori_name, self.ori_country, self.ori_region,
-            self.desti_name, self.desti_country, self.desti_region,
+            self.ori_name, self.ori_region,
+            self.desti_name, self.desti_region,
             self.transport_mode,
             self.distance, self.transport_time, self.co2e
         )
@@ -242,8 +235,8 @@ class AltEdges(Base):
         return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
             self.scenario_id, self.baseline_id,
             self.pdct_fam,
-            self.ori_name, self.ori_country, self.ori_region, self.ori_role,
-            self.desti_name, self.desti_country, self.desti_region, self.desti_role,
+            self.ori_name, self.ori_region, self.ori_role,
+            self.desti_name, self.desti_region, self.desti_role,
             self.ship_type, self.pflow, self.path, self.path_rank, self.alpha,
             self.d, self.f
         ) 
@@ -256,11 +249,9 @@ class DecomEdges(Base):
     scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
     pdct_fam = Column('pdct_fam', String)
     ori_name = Column('ori_name', String)
-    ori_country = Column('ori_country', String)
     ori_region = Column('ori_region', String)
     ori_role = Column('ori_role', String, default='')
     desti_name = Column('desti_name', String)
-    desti_country = Column('desti_country', String)
     desti_region = Column('desti_region', String)
     desti_role = Column('desti_role', String, default='')
     ship_type = Column('ship_type', String)
@@ -285,8 +276,8 @@ class DecomEdges(Base):
         return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
             self.scenario_id, self.baseline_id,
             self.pdct_fam,
-            self.ori_name, self.ori_country, self.ori_region, self.ori_role,
-            self.desti_name, self.desti_country, self.desti_region, self.desti_role,
+            self.ori_name, self.ori_region, self.ori_role,
+            self.desti_name, self.desti_region, self.desti_role,
             self.ship_type, self.pflow, self.path, self.path_rank, self.alpha,
             self.d, self.f
         ) 
@@ -299,11 +290,9 @@ class ScenarioLanes(Base):
     scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
     pdct_fam = Column('pdct_fam', String)
     ori_name = Column('ori_name', String)
-    ori_country = Column('ori_country', String)
     ori_region = Column('ori_region', String)
     ori_role = Column('ori_role', String, default='')
     desti_name = Column('desti_name', String)
-    desti_country = Column('desti_country', String)
     desti_region = Column('desti_region', String)
     desti_role = Column('desti_role', String, default='')
     ship_type = Column('ship_type', String)
@@ -328,8 +317,8 @@ class ScenarioLanes(Base):
         return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})> | {}".format(
             self.scenario_id, self.baseline_id,
             self.pdct_fam,
-            self.ori_name, self.ori_country, self.ori_region, self.ori_role,
-            self.desti_name, self.desti_country, self.desti_region, self.desti_role,
+            self.ori_name, self.ori_region, self.ori_role,
+            self.desti_name, self.desti_region, self.desti_role,
             self.ship_type, self.pflow, self.path, self.path_rank, self.alpha,
             self.d, self.f,
             self.in_pflow
@@ -347,7 +336,6 @@ class Locations(Base):
 
     location_id = Column(Integer, primary_key=True, autoincrement=True, nullable=True)
     name = Column('name', String)
-    country = Column('country', String)
     region = Column('region', String)
     lat = Column('lat', Float)
     long = Column('long', Float)
@@ -357,13 +345,13 @@ class Locations(Base):
 
     def __repr__(self):
         return '({}_{}_{}) | Latitude: {} - Longitude: {}'.format(
-            self.name, self.country, self.region, self.lat, self.long
+            self.name, self.region, self.lat, self.long
         )
 
     @classmethod
     def get_locations(cls, session):
         locations = session.query(cls).all()
-        return {(x.name, x.country, x.region): {'lat': x.lat, 'long': x.long} for x in locations}
+        return {(x.name, x.region): {'lat': x.lat, 'long': x.long} for x in locations}
 
 class ScenarioEdges(Base):
 
@@ -371,10 +359,8 @@ class ScenarioEdges(Base):
     baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'))
     scenario_id = Column('scenario_id', Integer, ForeignKey('scdsi_scenarios.scenario_id'))
     ori_name = Column('ori_name', String)
-    ori_country = Column('ori_country', String)
     ori_region = Column('ori_region', String)
     desti_name = Column('desti_name', String)
-    desti_country = Column('desti_country', String)
     desti_region = Column('desti_region', String)
     transport_mode = Column('transport_mode', String)
     transport_time = Column('transport_time', Float)
@@ -390,8 +376,8 @@ class ScenarioEdges(Base):
     def __repr__(self) -> str:
         return '({}, {}) | ({}_{}_{}) --> ({}_{}_{}): | {} | distance = {}, time = {}, co2 = {}'.format(
             self.scenario_id, self.baseline_id,
-            self.ori_name, self.ori_country, self.ori_region,
-            self.desti_name, self.desti_country, self.desti_region,
+            self.ori_name, self.ori_region,
+            self.desti_name, self.desti_region,
             self.transport_mode,
             self.distance, self.transport_time, self.co2e
         )
@@ -404,10 +390,8 @@ class ScenarioEdges(Base):
         ).all()
         return {(
             x.ori_name, 
-            x.ori_country, 
             x.ori_region, 
             x.desti_name, 
-            x.desti_country,
             x.desti_region,
             x.transport_mode): {
                 'cost': x.transport_cost, 
@@ -422,7 +406,6 @@ class ScenarioNodes(Base):
     pdct_fam = Column('pdct_fam', String)
     role = Column('role', String)
     name = Column('name', String)
-    country = Column('country', String)
     region = Column('region', String)
     supply = Column('supply', Float)
     capacity = Column('capacity', Float)
@@ -435,7 +418,7 @@ class ScenarioNodes(Base):
     def __repr__(self) -> str:
         return '({}, {}) | ({}_{}_{}_{}) | supply: {}, capacity: {}, opex: {}'.format(
             self.scenario_id, self.baseline_id,
-            self.name, self.country, self.region, self.role,
+            self.name, self.region, self.role,
             self.supply, self.capacity, self.opex
         )
 
@@ -470,11 +453,9 @@ class OptimalFlows(Base):
     run_id = Column('run_id', Integer, ForeignKey('scdsi_runs.run_id'))
     pdct_fam = Column('pdct_fam', String)
     ori_name = Column('ori_name', String)
-    ori_country = Column('ori_country', String)
     ori_region = Column('ori_region', String)
     ori_role = Column('ori_role', String, default='')
     desti_name = Column('desti_name', String)
-    desti_country = Column('desti_country', String)
     desti_region = Column('desti_region', String)
     desti_role = Column('desti_role', String, default='')
     transport_mode = Column('transport_mode', String)
@@ -486,8 +467,8 @@ class OptimalFlows(Base):
         return "({}, {}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <transport_mode: {}, flow: {}>".format(
             self.run_id, self.scenario_id, self.baseline_id, 
             self.pdct_fam,
-            self.ori_name, self.ori_country, self.ori_region, self.ori_role,
-            self.desti_name, self.desti_country, self.desti_region, self.desti_role,
+            self.ori_name, self.ori_region, self.ori_role,
+            self.desti_name, self.desti_region, self.desti_role,
             self.transport_mode, self.flow
         )
 
@@ -500,7 +481,6 @@ class OptimalNodes(Base):
     run_id = Column('run_id', Integer, ForeignKey('scdsi_runs.run_id'))
     role = Column('role', String)
     name = Column('name', String)
-    country = Column('country', String)
     region = Column('region', String)
     state = Column('state', Integer)
 
@@ -510,7 +490,7 @@ class OptimalNodes(Base):
     def __repr__(self) -> str:
         return '({}, {}, {}) | ({}_{}_{}_{}) | state: {}'.format(
             self.run_id, self.scenario_id, self.baseline_id, 
-            self.name, self.country, self.region, self.role,
+            self.name, self.region, self.role,
             self.state
         )
 

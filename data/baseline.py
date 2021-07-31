@@ -43,17 +43,17 @@ def populate_scenario_lanes(baseline_id, session):
     stmt = text("""
         insert into scdsi_scenario_lanes 
         (scenario_id, baseline_id, pdct_fam, 
-        ori_name, ori_country, ori_region, 
-        desti_name, desti_country, desti_region, 
+        ori_name, ori_region, 
+        desti_name, desti_region, 
         ship_type, ship_rank, total_weight, total_paid)
         select 0, :baseline_id, product_family, 
-        ori_name, ori_country, ori_region, 
-        desti_name, desti_country, desti_region, 
+        ori_name, ori_region, 
+        desti_name, desti_region, 
         ship_type, ship_rank, total_weight, total_paid
         from
         (select product_family, 
-        lower(ship_from_name) as ori_name, lower(ship_from_country) as ori_country, lower(ship_from_region_code) as ori_region,
-        lower(ship_to_name) as desti_name, lower(ship_to_country) as desti_country, lower(ship_to_region_code) as desti_region,
+        lower(ship_from_name) as ori_name, lower(ship_from_region_code) as ori_region,
+        lower(ship_to_name) as desti_name, lower(ship_to_region_code) as desti_region,
         shipment_type,
         sum(billed_weight) as total_weight, sum(total_amount_paid_usd) as total_paid
         from scdsi_cv_lane_rate_automation_pl 
@@ -70,8 +70,8 @@ def populate_scenario_lanes(baseline_id, session):
         and ship_to_region_code is not null
         and length(ship_to_name) > 3
         group by product_family, 
-        ship_from_name, ship_from_country, ship_from_region_code, 
-        ship_to_name, ship_to_country, ship_to_region_code, 
+        ship_from_name, ship_from_region_code, 
+        ship_to_name, ship_to_region_code, 
         shipment_type) as rl join scdsi_ship_rank sr 
         on rl.shipment_type = sr.ship_type
     """).params(baseline_id = baseline_id, start = baseline.start, end = baseline.end)
