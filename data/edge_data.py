@@ -42,11 +42,11 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
     stmt = text("""
             insert into scdsi_scenario_edges 
             (scenario_id, baseline_id , 
-            ori_name, ori_country, ori_region, 
-            desti_name, desti_country, desti_region, 
+            ori_name, ori_region, 
+            desti_name, desti_region, 
             transport_cost, total_weight, transport_mode, in_pflow)
-            select distinct :scenario_id, :baseline_id, lower(ship_from_name), lower(ship_from_country), lower(ship_from_region_code),
-            lower(ship_to_name), lower(ship_to_country), lower(ship_to_region_code), sum(total_amount_paid_usd) / sum(billed_weight),
+            select distinct :scenario_id, :baseline_id, lower(ship_from_name), lower(ship_from_region_code),
+            lower(ship_to_name), lower(ship_to_region_code), sum(total_amount_paid_usd) / sum(billed_weight),
             sum(billed_weight),
             case
                 when transport_mode in ('PARCEL', 'AIR') THEN 'Air'
@@ -68,8 +68,8 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             and ship_to_country is not null
             and ship_to_region_code is not null
             and length(ship_to_name) > 3
-            group by ship_from_name, ship_from_country, ship_from_region_code, 
-            ship_to_name, ship_to_country, ship_to_region_code, 
+            group by ship_from_name, ship_from_region_code, 
+            ship_to_name, ship_to_region_code, 
             transport_mode
         """).params(
             scenario_id=scenario_id, 
@@ -102,8 +102,8 @@ def get_distances_time_co2e(scenario_id, baseline_id, session):
     # start = datetime.now()
     for edge in edges.all():
         try:
-            ori_location = locations[(edge.ori_name, edge.ori_country, edge.ori_region)]
-            desti_location = locations[(edge.desti_name, edge.desti_country, edge.desti_region)]
+            ori_location = locations[(edge.ori_name, edge.ori_region)]
+            desti_location = locations[(edge.desti_name, edge.desti_region)]
             ori_lat, ori_long = ori_location['lat'], ori_location['long']
             desti_lat, desti_long = desti_location['lat'], desti_location['long']
         except:
@@ -141,11 +141,11 @@ def get_transport_time_and_co2(edge):
 def set_in_pflow_for_scenario_edges(scenario_id, baseline_id, session):
     edges = session.query(
         ScenarioLanes.ori_name,
-        ScenarioLanes.ori_country,
+        # ScenarioLanes.ori_country,
         ScenarioLanes.ori_region,
         # ScenarioLanes.ori_role,
         ScenarioLanes.desti_name,
-        ScenarioLanes.desti_country,
+        # ScenarioLanes.desti_country,
         ScenarioLanes.desti_region
         # ScenarioLanes.desti_role
         ).filter(
@@ -155,10 +155,10 @@ def set_in_pflow_for_scenario_edges(scenario_id, baseline_id, session):
     for edge in edges:
         scenario_edges = session.query(ScenarioEdges).filter(
             ScenarioEdges.ori_name == edge.ori_name,
-            ScenarioEdges.ori_country == edge.ori_country,
+            # ScenarioEdges.ori_country == edge.ori_country,
             ScenarioEdges.ori_region == edge.ori_region,
             ScenarioEdges.desti_name == edge.desti_name,
-            ScenarioEdges.desti_country == edge.desti_country,
+            # ScenarioEdges.desti_country == edge.desti_country,
             ScenarioEdges.desti_region == edge.desti_region,
             ScenarioLanes.scenario_id == scenario_id,
             ScenarioLanes.baseline_id == baseline_id
