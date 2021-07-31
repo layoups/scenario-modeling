@@ -14,11 +14,11 @@ pcba_lanes = {}
 
 manufacturing_adjacency_list = {}
 
-C = {}
-V = {}
-E = {}
-T = {}
+C = {} # transportation cost
+V = {} # transformation cost
+E = {} # co2e
+T = {} # time
 
-S = {}
-U = {}
+S = {} # supply
+U = {} # capacity
 alpha = {}

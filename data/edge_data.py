@@ -54,7 +54,7 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
                 when transport_mode in ('OCEAN') THEN 'Ocean'
                 when transport_mode in ('RAIL') THEN 'Rail'
                 else transport_mode
-            end as transport_mode, 0
+            end as mode, 0
             from scdsi_cv_lane_rate_automation_pl
             where billed_weight != 0 
             and shipment_type not in ('OTHER', 'BROKERAGE')
@@ -70,7 +70,7 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             and length(ship_to_name) > 3
             group by lower(ship_from_name), lower(ship_from_region_code), 
             lower(ship_to_name), lower(ship_to_region_code), 
-            transport_mode
+            mode
         """).params(
             scenario_id=scenario_id, 
             baseline_id=baseline_id,
