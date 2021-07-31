@@ -160,8 +160,8 @@ def set_baseline(baseline_id, start, end, description, session):
         session.execute(stmt)
         return session.commit()
     
-    pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
-    # ['AIRANT', 'WPHONE', 'SBPHONE', 'PHONVOC', '4400ISR']
+    # pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
+    pdct_fams = ['AIRANT', 'WPHONE', 'SBPHONE', 'PHONVOC', '4400ISR']
 
     try:
         for pdct_fam in pdct_fams: 
@@ -268,14 +268,11 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    pdct_fam = 'PHONE'
-
     start = datetime.now()
 
-    baseline_id = 2
-    set_baseline(baseline_id, '2019-01-01', '2020-12-31', "'nam" , session)
+    baseline_id = 1
+    set_baseline(baseline_id, '2019-01-01', '2020-12-31', "trial" , session)
 
-    # get_co2e_time_omega(baseline_id, session)
     # get_cost_omega(baseline_id, session)
     # get_co2e_time_omega(baseline_id, session)
 
