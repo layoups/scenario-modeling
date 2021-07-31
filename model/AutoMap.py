@@ -243,8 +243,9 @@ class ScenarioLanes(Base):
 
     def get_successors(self, session):
         stmt = text("""
-        select * from "SCDSI_SCENARIO_LANES"
+        select * from scdsi_scenario_lanes
         where d > {} and f < {}
+        and in_pflow = 1
         """).format(self.d, self.f)
         return session.execute(stmt)
 
@@ -295,7 +296,10 @@ class ScenarioLanes(Base):
 
     @classmethod
     def get_manufacturing_adjaceny_list(cls, scenario_id, baseline_id, session):
-
+        stmt = (
+            """
+            """
+        )
 
 class Locations(Base):
 
