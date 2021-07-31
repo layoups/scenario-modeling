@@ -1,10 +1,10 @@
-import gurobipy as GRB
+import gurobipy as gp
+from gurobipy import GRB
 
 from inputs import *
 
 def run_model(objective_weights):
-    model = GRB.Model()
-    model.params.outputFlag = 1
+    model = gp.Model()
 
     X = model.addVars(
         [(i, j, p, m) for i, j, p, m in lanes],
@@ -60,4 +60,4 @@ def run_model(objective_weights):
         )
 
 
-
+run_model(0)
