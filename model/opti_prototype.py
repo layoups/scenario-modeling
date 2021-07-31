@@ -1,5 +1,4 @@
 #!/opt/conda/bin/python
-import gurobipy as gp
 from gurobipy import GRB
 import numpy as np
 # randomly generating given data structures C, V R E T lambda omega, alpha S and U
