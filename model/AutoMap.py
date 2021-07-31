@@ -248,6 +248,54 @@ class ScenarioLanes(Base):
         """).format(self.d, self.f)
         return session.execute(stmt)
 
+    def get_lanes(scenario_id, baseline_id, node_to_index, pdct_to_index, mode_to_index, session):
+        stmt = text(
+            """
+            select * 
+            from scdsi_scenario_lanes l
+            left join scdsi_scenario_edges e
+            on l.baseline_id = e.baseline_id
+            and l.scenario_id = e.scenario_id
+            and l.ori_name = e.ori_name
+            and l.ori_region = e.ori_region
+            and l.desti_name = e.desti_name
+            and l.desti_region = e.desti_region
+            where l.in_pflow = 1  
+            and l.baseline_id = :baseline_id
+            and l.scenario_id = :scenario_id
+            """
+        ).params(
+            scenario_id = scenario_id,
+            baseline_id = baseline_id 
+        )
+        lanes = session.execute(stmt).all()
+
+        return {
+            (
+                node_to_index[(x.pdct_fam, x.ori_name, x.ori_region, x.ori_role)], 
+                node_to_index[(x.pdct_fam, x.desti_name, x.desti_region, x.desti_role)], 
+                pdct_to_index[x.pdct_fam], 
+                mode_to_index[x.transport_mode]
+            ): {
+                    'transport_cost': x.transport_cost,
+                    'transport_time': x.transport_time,
+                    'co2e': x.co2e
+                } 
+                for x in lanes
+            }
+
+    @classmethod
+    def get_pdct_maps(cls, scenario_id, baseline_id, session):
+        pdct_fams = session.query(ScenarioLanes.pdct_fam).filter(
+            ScenarioLanes.scenario_id == scenario_id,
+            ScenarioLanes.baseline_id == baseline_id,
+            ScenarioLanes.in_pflow == 1
+            ).distinct().all()
+        return {pdct_fams[i][0]: i for i in range(len(pdct_fams))}, {i: pdct_fams[i][0] for i in range(len(pdct_fams))}
+
+    @classmethod
+    def get_manufacturing_adjaceny_list(cls, scenario_id, baseline_id, session):
+
 
 class Locations(Base):
 
@@ -338,6 +386,20 @@ class ScenarioNodes(Base):
             self.name, self.region, self.role,
             self.supply, self.capacity, self.opex
         )
+
+    @classmethod
+    def get_node_maps(cls, scenario_id, baseline_id, session):
+        nodes = session.query(cls).filter(
+            ScenarioNodes.scenario_id == scenario_id,
+            ScenarioNodes.baseline_id == baseline_id,
+            ScenarioNodes.in_pflow == 1
+        )
+        return {x.scenario_node_id: {
+            'name': (x.pdct_fam, x.name, x.region, x.role),
+            'supply': x.supply,
+            'capacity': x.capacity,
+            'opex': x.opex
+        } for x in nodes}, {(x.pdct_fam, x.name, x.region, x.role): x.scenario_node_id for x in nodes}
 
 
 
