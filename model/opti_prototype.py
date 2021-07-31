@@ -105,4 +105,4 @@ for key in adj:
 
 m.write('opt.lp')
 
-
+m.optimize()
