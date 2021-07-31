@@ -127,8 +127,6 @@ def get_node_supply(scenario_id, baseline_id, pdct_fam, session):
                     # ScenarioLanes.desti_region,
                     ScenarioLanes.desti_role
                 ).first()
-            if (n.pdct_fam == 'SBPHONE'):
-                print(n)
             n.supply = -total.total
         else:
             n.supply = 0
@@ -142,7 +140,7 @@ def get_pflow_demand(scenario_id, baseline_id, pflow, pdct_fam, session):
                 ScenarioLanes.baseline_id == baseline_id,
                 ScenarioLanes.desti_role == ScenarioNodes.role,
                 ScenarioLanes.desti_name == ScenarioNodes.name,
-                ScenarioLanes.desti_country == ScenarioNodes.country,
+                # ScenarioLanes.desti_country == ScenarioNodes.country,
                 ScenarioLanes.desti_region == ScenarioNodes.region,
                 ScenarioLanes.pdct_fam == pdct_fam
             ).filter(
@@ -181,7 +179,7 @@ def get_node_capacity(scenario_id, baseline_id, pdct_fam, session):
         stmt = text("""
             update scdsi_scenario_nodes
             set capacity = -1
-            where role in ('Customer', 'Supplier')
+            where role in ('Customer', 'Supplier', 'Gateway')
         """)
         session.execute(stmt)
     session.commit()
@@ -209,7 +207,7 @@ if __name__ == '__main__':
     # populate_Locations(session)
     # get_lat_long(session)
 
-    # populate_baseline_nodes(baseline_id, session)
+    populate_baseline_nodes(baseline_id, session)
 
     pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
     for pdct_fam in pdct_fams:
