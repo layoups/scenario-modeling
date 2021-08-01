@@ -51,6 +51,13 @@ def run_model(objective_weights):
                     name = 'capacity_constraint'
                 )
 
+    for j in manufacturing_adjacency_list:
+        adj = manufacturing_adjacency_list[j]
+        model.addConstrs(
+            (np.sum([X.sum(x[0], j, '*') for x in adj[d]]) == adj[d][0][-1] * (X.sum(j, '*', '*') - node_map[j]['supply']) for d in adj),
+            name = 'alpha_constraint'
+        )
+
 
     model.write('model/opt.lp')
     model.optimize()
