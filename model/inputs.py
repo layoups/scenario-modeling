@@ -49,14 +49,6 @@ if __name__ == '__main__':
 
     # pprint(specified_lanes)
 
-    customer_lanes = {} 
-    gateway_lanes = {}
-    dslc_lanes = {} 
-    oslc_lanes = {} 
-    df_lanes = {} 
-    ghub_lanes = {} 
-    pcba_lanes = {}
-
     # C = lanes[(ori_index, desti_index, mode_index)]['transport_cost'] # transportation cost
     # V = node_map[node_index]['opex'] # transformation cost
     # E = lanes[(ori_index, desti_index, mode_index)]['co2e'] # co2e
