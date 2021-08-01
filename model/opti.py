@@ -45,6 +45,12 @@ def run_model(objective_weights):
                 (X.sum(j, '*', '*') - X.sum('*', j, '*') == node_map[j]['supply'] for j in specified_lanes[role]),
                 name = 'non_customer_flow'
             )
+            if role != 'Gateway':
+                model.addConstrs(
+                    (X.sum('*', j, '*') <= node_map[j]['capacity'] * O[j] for j in specified_lanes[role]),
+                    name = 'capacity_constraint'
+                )
+
 
     # for j, p in customer_lanes:
     #     model.addConstr(
