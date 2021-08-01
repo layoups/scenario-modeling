@@ -310,30 +310,34 @@ class ScenarioLanes(Base):
 
         ret = {}
 
+        start = datetime.now()
         for m in manuf:
-            print(m)
             index = node_to_index[(m.pdct_fam, m.ori_name, m.ori_region, m.ori_role)]
             product = pdct_to_index[m.pdct_fam]
             ret[
                 (
-                    (m.pdct_fam, m.ori_name, m.ori_region, m.ori_role),
-                    m.pdct_fam
+                    index,
+                    product
                 )
             ] = {}
             adj = m.get_successors(session)
+            d = 0
             for i in adj:
-                print(i)
-                ret[(
-                    (m.pdct_fam, m.ori_name, m.ori_region, m.ori_role),
-                    m.pdct_fam
-                )].setdefault(
-                    i.d,
-                    []
-                )
-                ret[(
-                    (m.pdct_fam, m.ori_name, m.ori_region, m.ori_role),
-                    m.pdct_fam
-                )][i.d] += [(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)]
+                if i.d != d:
+                    ret[
+                        (
+                            index,
+                            product
+                        )
+                    ][i.d] = [(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)]
+                else:
+                    ret[
+                        (
+                            index,
+                            product
+                        )
+                    ][i.d] += [(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)]
+        print(datetime.now() - start)
         return ret
 
 class Locations(Base):
