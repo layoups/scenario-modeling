@@ -297,7 +297,12 @@ class ScenarioLanes(Base):
             cls.in_pflow == 1
         ).all()
 
-        
+        ret = {
+            'Customer': [],
+            'Gateway': [],
+            'DSLC': [],
+            'OSLC': []
+        }
 
     @classmethod
     def get_pdct_maps(cls, scenario_id, baseline_id, session):
@@ -413,6 +418,7 @@ class ScenarioNodes(Base):
     supply = Column('supply', Float)
     capacity = Column('capacity', Float)
     opex = Column('opex', Float)
+    pflow = Column('pflow', Integer)
     in_pflow = Column('in_pflow', Integer)
 
     __tablename__ = 'scdsi_scenario_nodes'
