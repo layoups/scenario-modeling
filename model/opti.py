@@ -13,6 +13,8 @@ from inputs import *
 # index_to_node = node_map[node_index]['name']
 # alpha = {} manufacturing_adjacency_list[manuf_index][d][i][-1]
 
+# MODEL IS CURRENTLY CONSTRAINED TO MASTER PFLOWS
+
 def run_model(objective_weights):
     model = gp.Model()
 
@@ -47,7 +49,7 @@ def run_model(objective_weights):
             )
             if role != 'Gateway':
                 model.addConstrs(
-                    (X.sum('*', j, '*') <= 1e6 * O[j] for j in specified_lanes[role]), # node_map[j]['capacity']
+                    (X.sum('*', j, '*') <= node_map[j]['capacity'] * O[j] for j in specified_lanes[role]), # node_map[j]['capacity']
                     name = 'capacity_constraint'
                 )
 

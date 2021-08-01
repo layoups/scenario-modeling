@@ -14,25 +14,25 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session() 
 
-    pareto_weights = get_pareto_weights()
-    print(pareto_weights)
+    # pareto_weights = get_pareto_weights()
+    # print(pareto_weights)
 
-    # scenario_id = 0
-    # baseline_id = 1
+    scenario_id = 0
+    baseline_id = 3
 
-    # lambda_cost = 0.5
-    # lambda_time = 0.25
-    # lambda_co2e = 0.25
+    lambda_cost = 1
+    lambda_time = 0
+    lambda_co2e = 0
 
-    # run = Runs(
-    #     scenario_id = scenario_id,
-    #     baseline_id = baseline_id,
-    #     date = datetime.now(),
-    #     description = 'first run',
-    #     lambda_cost = lambda_cost,
-    #     lambda_time = lambda_time,
-    #     lambda_co2e = lambda_co2e 
-    # )
+    run = Runs(
+        scenario_id = scenario_id,
+        baseline_id = baseline_id,
+        date = datetime.now(),
+        description = 'first run',
+        lambda_cost = lambda_cost,
+        lambda_time = lambda_time,
+        lambda_co2e = lambda_co2e 
+    )
 
-    # session.add(run)
-    # session.commit()
+    session.add(run)
+    session.commit()
