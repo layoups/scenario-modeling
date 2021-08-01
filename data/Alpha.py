@@ -66,6 +66,7 @@ def get_alphas(scenario_id, baseline_id, pdct_fam, session):
                 ScenarioLanes.d > edge.d, 
                 ScenarioLanes.f < edge.f, 
                 ScenarioLanes.path_rank == edge.path_rank + 1, 
+                ScenarioLanes.in_pflow == 1
             )
             total = np.sum([e.total_weight for e in adj.all()])
             for e in adj.all():
