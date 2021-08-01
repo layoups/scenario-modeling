@@ -41,6 +41,10 @@ if __name__ == '__main__':
 
     specified_lanes = ScenarioLanes.get_specified_lanes(scenario_id, baseline_id, node_to_index, session)
 
+    omega = Omega.get_omegas(baseline_id, session)
+
+    lamda = {}
+
     # pprint(manufacturing_adjacency_list)
 
     # pprint(lanes)
@@ -48,6 +52,8 @@ if __name__ == '__main__':
     # pprint(node_map)
 
     # pprint(specified_lanes)
+
+    # pprint(omega)
 
     # C = lanes[(ori_index, desti_index, mode_index)]['transport_cost'] # transportation cost
     # V = node_map[node_index]['opex'] # transformation cost

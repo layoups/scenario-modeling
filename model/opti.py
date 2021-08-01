@@ -19,6 +19,8 @@ def run_model(objective_weights):
         name="O",
     )
 
+    # obj = 
+
     for j, p in customer_lanes:
         model.addConstr(
             -X.sum('*', j, p, '*') == -S[(j, p)]

@@ -139,6 +139,11 @@ class Omega(Base):
             self.baseline_id, self.cost, self.co2e, self.lead_time
         )
 
+    @classmethod
+    def get_omegas(cls, baseline_id, session):
+        omega = session.query(cls).filter(cls.baseline_id == baseline_id).first()
+        return {'cost': omega.baseline_cost, 'lead_time': omega.baseline_lead_time, 'co2e': omega.baseline_co2e}
+
 
 class AltEdges(Base):
 
