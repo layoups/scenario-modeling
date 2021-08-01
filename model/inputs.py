@@ -8,6 +8,9 @@ from sqlalchemy import create_engine, desc, or_, text
 
 from pprint import pprint
 
+Session = sessionmaker(bind=engine)
+session = Session()
+
 mode_to_index = {
     'Air': 1,
     'Truck': 2,
@@ -22,45 +25,41 @@ index_to_mode = {
     4: 'Rail'
 }
 
-# Change node map to location+role, pdct
-# no need for product as index for decision vars
 
-if __name__ == '__main__':
+run_id = 0
+scenario_id = 0
+baseline_id = 1
 
-    Session = sessionmaker(bind=engine)
-    session = Session()
+node_map, node_to_index = ScenarioNodes.get_node_maps(scenario_id, baseline_id, session)
 
-    scenario_id = 0
-    baseline_id = 1
+lanes = ScenarioLanes.get_lanes(scenario_id, baseline_id, node_to_index, mode_to_index, session)
 
-    node_map, node_to_index = ScenarioNodes.get_node_maps(scenario_id, baseline_id, session)
+manufacturing_adjacency_list = ScenarioLanes.get_manufacturing_adjacency_list(scenario_id, baseline_id, node_to_index, session)
 
-    lanes = ScenarioLanes.get_lanes(scenario_id, baseline_id, node_to_index, mode_to_index, session)
+specified_lanes = ScenarioLanes.get_specified_lanes(scenario_id, baseline_id, node_to_index, session)
 
-    manufacturing_adjacency_list = ScenarioLanes.get_manufacturing_adjacency_list(scenario_id, baseline_id, node_to_index, session)
+omega = Omega.get_omegas(baseline_id, session)
 
-    specified_lanes = ScenarioLanes.get_specified_lanes(scenario_id, baseline_id, node_to_index, session)
+lamdas = Runs.get_lambdas(run_id, scenario_id, baseline_id, session)
 
-    omega = Omega.get_omegas(baseline_id, session)
+# pprint(manufacturing_adjacency_list)
 
-    lamda = {}
+# pprint(lanes)
 
-    # pprint(manufacturing_adjacency_list)
+# pprint(node_map)
 
-    # pprint(lanes)
+# pprint(specified_lanes)
 
-    # pprint(node_map)
+# pprint(omega)
 
-    # pprint(specified_lanes)
+pprint(lamdas)
 
-    # pprint(omega)
+# C = lanes[(ori_index, desti_index, mode_index)]['transport_cost'] # transportation cost
+# V = node_map[node_index]['opex'] # transformation cost
+# E = lanes[(ori_index, desti_index, mode_index)]['co2e'] # co2e
+# T = lanes[(ori_index, desti_index, mode_index)]['transport_time'] # time
 
-    # C = lanes[(ori_index, desti_index, mode_index)]['transport_cost'] # transportation cost
-    # V = node_map[node_index]['opex'] # transformation cost
-    # E = lanes[(ori_index, desti_index, mode_index)]['co2e'] # co2e
-    # T = lanes[(ori_index, desti_index, mode_index)]['transport_time'] # time
-
-    # S = node_map[node_index]['supply'] # supply
-    # U = node_map[node_index]['capacity'] # capacity
-    # index_to_node = node_map[node_index]['name']
-    # alpha = {} manufacturing_adjacency_list[manuf_index][d][i][-1]
+# S = node_map[node_index]['supply'] # supply
+# U = node_map[node_index]['capacity'] # capacity
+# index_to_node = node_map[node_index]['name']
+# alpha = {} manufacturing_adjacency_list[manuf_index][d][i][-1]

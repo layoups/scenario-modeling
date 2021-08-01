@@ -482,6 +482,15 @@ class Runs(Base):
             self.lambda_cost, self.lambda_time, self.lambda_co2e
         )
 
+    @classmethod
+    def get_lambdas(cls, run_id, scenario_id, baseline_id, session):
+        lamdas = session.query(cls).filter(
+            cls.run_id == run_id,
+            cls.scenario_id == scenario_id,
+            cls.baseline_id == baseline_id
+        ).first()
+        return {'cost': lamdas.lambda_cost, 'time': lamdas.lambda_time, 'co2e': lamdas.lambda_co2e}
+
 class OptimalFlows(Base):
 
     opt_flow_id = Column('opt_flow_id', Integer, primary_key=True)
