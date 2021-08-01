@@ -26,9 +26,9 @@ index_to_mode = {
 }
 
 
-run_id = 2
+run_id = 1
 scenario_id = 0
-baseline_id = 1
+baseline_id = 3
 
 node_map, node_to_index = ScenarioNodes.get_node_maps(scenario_id, baseline_id, session)
 

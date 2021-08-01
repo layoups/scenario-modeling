@@ -26,7 +26,8 @@ def get_customer_alphas(scenario_id, baseline_id, pdct_fam, session):
             ScenarioLanes.scenario_id == scenario_id,
             ScenarioLanes.baseline_id == baseline_id,
             ScenarioLanes.desti_role == 'Customer', 
-            ScenarioLanes.pdct_fam == pdct_fam
+            ScenarioLanes.pdct_fam == pdct_fam,
+            ScenarioLanes.in_pflow == 1
         ).distinct().all()
     for c in customers:
         c_pflow = session.query(ScenarioLanes).filter(
