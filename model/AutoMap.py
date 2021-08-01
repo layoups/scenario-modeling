@@ -309,7 +309,7 @@ class ScenarioLanes(Base):
 
         for lane in lanes:
             index = node_to_index[(lane.pdct_fam, lane.desti_name, lane.desti_region, lane.desti_role)]
-            ret[lane.desti_role] += [(lane.pdct_fam, lane.desti_name, lane.desti_region, lane.desti_role)]
+            ret[lane.desti_role] += [index]
 
         return ret
 
