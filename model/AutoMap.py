@@ -253,7 +253,7 @@ class ScenarioLanes(Base):
         ).order_by(ScenarioLanes.d).all()
         return successors
 
-    def get_lanes(scenario_id, baseline_id, node_to_index, pdct_to_index, mode_to_index, session):
+    def get_lanes(scenario_id, baseline_id, node_to_index, mode_to_index, session, pdct_to_index=None):
         stmt = text(
             """
             select * 
@@ -279,7 +279,7 @@ class ScenarioLanes(Base):
             (
                 node_to_index[(x.pdct_fam, x.ori_name, x.ori_region, x.ori_role)], 
                 node_to_index[(x.pdct_fam, x.desti_name, x.desti_region, x.desti_role)], 
-                pdct_to_index[x.pdct_fam], 
+                # pdct_to_index[x.pdct_fam], 
                 mode_to_index[x.transport_mode]
             ): {
                     'transport_cost': x.transport_cost,
@@ -288,6 +288,16 @@ class ScenarioLanes(Base):
                 } 
                 for x in lanes
             }
+
+    @classmethod
+    def get_specified_lanes(cls, scenario_id, baseline_id, session):
+        lanes = session.query(cls).filter(
+            cls.scenario_id == scenario_id,
+            cls.baseline_id == baseline_id,
+            cls.in_pflow == 1
+        ).all()
+
+        
 
     @classmethod
     def get_pdct_maps(cls, scenario_id, baseline_id, session):
@@ -299,7 +309,7 @@ class ScenarioLanes(Base):
         return {pdct_fams[i][0]: i for i in range(len(pdct_fams))}, {i: pdct_fams[i][0] for i in range(len(pdct_fams))}
 
     @classmethod
-    def get_manufacturing_adjaceny_list(cls, scenario_id, baseline_id, node_to_index, pdct_to_index, session):
+    def get_manufacturing_adjacency_list(cls, scenario_id, baseline_id, node_to_index, session, pdct_to_index=None):
         manuf = session.query(cls).filter(
             ScenarioLanes.scenario_id == scenario_id,
             ScenarioLanes.baseline_id == baseline_id,
@@ -310,34 +320,19 @@ class ScenarioLanes(Base):
 
         ret = {}
 
-        start = datetime.now()
+        # start = datetime.now()
         for m in manuf:
             index = node_to_index[(m.pdct_fam, m.ori_name, m.ori_region, m.ori_role)]
-            product = pdct_to_index[m.pdct_fam]
-            ret[
-                (
-                    index,
-                    product
-                )
-            ] = {}
+            # product = pdct_to_index[m.pdct_fam]
+            ret[index] = {}
             adj = m.get_successors(session)
             d = 0
             for i in adj:
                 if i.d != d:
-                    ret[
-                        (
-                            index,
-                            product
-                        )
-                    ][i.d] = [(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)]
+                    ret[index][i.d] = [(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)]
                 else:
-                    ret[
-                        (
-                            index,
-                            product
-                        )
-                    ][i.d] += [(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)]
-        print(datetime.now() - start)
+                    ret[index][i.d] += [(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)]
+        # print(datetime.now() - start)
         return ret
 
 class Locations(Base):

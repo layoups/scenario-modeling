@@ -37,11 +37,11 @@ if __name__ == '__main__':
 
     pdct_to_index, index_to_pdct = ScenarioLanes.get_pdct_maps(scenario_id, baseline_id, session)
 
-    lanes = ScenarioLanes.get_lanes(scenario_id, baseline_id, node_to_index, pdct_to_index, mode_to_index, session)
+    lanes = ScenarioLanes.get_lanes(scenario_id, baseline_id, node_to_index, mode_to_index, session)
 
     # nodes = node_map['name']
 
-    pprint(ScenarioLanes.get_manufacturing_adjaceny_list(scenario_id, baseline_id, node_to_index, pdct_to_index, session))
+    pprint(ScenarioLanes.get_manufacturing_adjacency_list(scenario_id, baseline_id, node_to_index, session))
 
     customer_lanes = {} 
     gateway_lanes = {}
