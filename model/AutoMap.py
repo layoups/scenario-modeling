@@ -246,6 +246,7 @@ class ScenarioLanes(Base):
             ScenarioLanes.scenario_id == self.scenario_id,
             ScenarioLanes.baseline_id == self.baseline_id,
             ScenarioLanes.in_pflow == 1,
+            ScenarioLanes.pdct_fam == self.pdct_fam,
             ScenarioLanes.path_rank == self.path_rank + 1,
             ScenarioLanes.d > self.d,
             ScenarioLanes.f < self.f
@@ -310,11 +311,30 @@ class ScenarioLanes(Base):
         ret = {}
 
         for m in manuf:
-            ret[m] = {}
+            print(m)
+            index = node_to_index[(m.pdct_fam, m.ori_name, m.ori_region, m.ori_role)]
+            product = pdct_to_index[m.pdct_fam]
+            ret[
+                (
+                    (m.pdct_fam, m.ori_name, m.ori_region, m.ori_role),
+                    m.pdct_fam
+                )
+            ] = {}
             adj = m.get_successors(session)
             for i in adj:
                 print(i)
-        return None
+                ret[(
+                    (m.pdct_fam, m.ori_name, m.ori_region, m.ori_role),
+                    m.pdct_fam
+                )].setdefault(
+                    i.d,
+                    []
+                )
+                ret[(
+                    (m.pdct_fam, m.ori_name, m.ori_region, m.ori_role),
+                    m.pdct_fam
+                )][i.d] += [(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)]
+        return ret
 
 class Locations(Base):
 
