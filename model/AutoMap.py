@@ -231,7 +231,7 @@ class ScenarioLanes(Base):
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
-        return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})> | {}".format(
+        return "({}, {}) | {}: ({}_{}_{}) -> ({}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})> | {}".format(
             self.scenario_id, self.baseline_id,
             self.pdct_fam,
             self.ori_name, self.ori_region, self.ori_role,
@@ -244,10 +244,20 @@ class ScenarioLanes(Base):
     def get_successors(self, session):
         stmt = text("""
         select * from scdsi_scenario_lanes
-        where d > {} and f < {}
+        where d > :d and f < :f
+        and path_rank = :path_rank + 1
         and in_pflow = 1
-        """).format(self.d, self.f)
-        return session.execute(stmt)
+        and scenario_id = :scenario_id
+        and baseline_id = :baseline_id
+        order by d
+        """).params(
+            d = self.d, 
+            f = self.f, 
+            path_rank = self.path_rank,
+            scenario_id = self.scenario_id,
+            baseline_id = self.baseline_id
+        )
+        return session.execute(stmt).all()
 
     def get_lanes(scenario_id, baseline_id, node_to_index, pdct_to_index, mode_to_index, session):
         stmt = text(
@@ -295,11 +305,21 @@ class ScenarioLanes(Base):
         return {pdct_fams[i][0]: i for i in range(len(pdct_fams))}, {i: pdct_fams[i][0] for i in range(len(pdct_fams))}
 
     @classmethod
-    def get_manufacturing_adjaceny_list(cls, scenario_id, baseline_id, session):
-        stmt = (
-            """
-            """
-        )
+    def get_manufacturing_adjaceny_list(cls, scenario_id, baseline_id, node_to_index, pdct_to_index, session):
+        manuf = session.query(cls).filter(
+            ScenarioLanes.scenario_id == scenario_id,
+            ScenarioLanes.baseline_id == baseline_id,
+            ScenarioLanes.in_pflow == 1,
+            ScenarioLanes.parent_pflow == None,
+            ScenarioLanes.ori_role.in_(['DF', 'PCBA'])
+        ).all()
+
+        for m in manuf:
+            print(m)
+            adj = m.get_successors(session)
+            for i in adj:
+                print(i)
+        return None
 
 class Locations(Base):
 
