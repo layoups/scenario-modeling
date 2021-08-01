@@ -38,7 +38,9 @@ if __name__ == '__main__':
 
     lanes = ScenarioLanes.get_lanes(scenario_id, baseline_id, node_to_index, pdct_to_index, mode_to_index, session)
 
-    nodes = node_map['name']
+    # nodes = node_map['name']
+
+    pprint(ScenarioLanes.get_manufacturing_adjaceny_list(scenario_id, baseline_id, node_to_index, pdct_to_index, session))
 
     customer_lanes = {} 
     gateway_lanes = {}
@@ -50,11 +52,11 @@ if __name__ == '__main__':
 
     manufacturing_adjacency_list = {}
 
-    C = lanes['transport_cost'] # transportation cost
-    V = node_map['opex'] # transformation cost
-    E = lanes['co2e'] # co2e
-    T = lanes['transport_time'] # time
+    # C = lanes['transport_cost'] # transportation cost
+    # V = node_map['opex'] # transformation cost
+    # E = lanes['co2e'] # co2e
+    # T = lanes['transport_time'] # time
 
-    S = node_map['supply'] # supply
-    U = node_map['capacity'] # capacity
+    # S = node_map['supply'] # supply
+    # U = node_map['capacity'] # capacity
     alpha = {}
