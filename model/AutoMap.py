@@ -242,22 +242,15 @@ class ScenarioLanes(Base):
         )
 
     def get_successors(self, session):
-        stmt = text("""
-        select * from scdsi_scenario_lanes
-        where d > :d and f < :f
-        and path_rank = :path_rank + 1
-        and in_pflow = 1
-        and scenario_id = :scenario_id
-        and baseline_id = :baseline_id
-        order by d
-        """).params(
-            d = self.d, 
-            f = self.f, 
-            path_rank = self.path_rank,
-            scenario_id = self.scenario_id,
-            baseline_id = self.baseline_id
-        )
-        return session.execute(stmt).all()
+        successors = session.query(ScenarioLanes).filter(
+            ScenarioLanes.scenario_id == self.scenario_id,
+            ScenarioLanes.baseline_id == self.baseline_id,
+            ScenarioLanes.in_pflow == 1,
+            ScenarioLanes.path_rank == self.path_rank + 1,
+            ScenarioLanes.d > self.d,
+            ScenarioLanes.f < self.f
+        ).order_by(ScenarioLanes.d).all()
+        return successors
 
     def get_lanes(scenario_id, baseline_id, node_to_index, pdct_to_index, mode_to_index, session):
         stmt = text(
@@ -314,8 +307,10 @@ class ScenarioLanes(Base):
             ScenarioLanes.ori_role.in_(['DF', 'PCBA'])
         ).all()
 
+        ret = {}
+
         for m in manuf:
-            print(m)
+            ret[m] = {}
             adj = m.get_successors(session)
             for i in adj:
                 print(i)
