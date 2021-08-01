@@ -23,6 +23,7 @@ index_to_mode = {
 }
 
 # Change node map to location+role, pdct
+# no need for product as index for decision vars
 
 if __name__ == '__main__':
 
