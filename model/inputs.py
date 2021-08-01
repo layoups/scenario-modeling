@@ -26,7 +26,7 @@ index_to_mode = {
 }
 
 
-run_id = 0
+run_id = 2
 scenario_id = 0
 baseline_id = 1
 
@@ -52,7 +52,7 @@ lamdas = Runs.get_lambdas(run_id, scenario_id, baseline_id, session)
 
 # pprint(omega)
 
-pprint(lamdas)
+# pprint(lamdas)
 
 # C = lanes[(ori_index, desti_index, mode_index)]['transport_cost'] # transportation cost
 # V = node_map[node_index]['opex'] # transformation cost
