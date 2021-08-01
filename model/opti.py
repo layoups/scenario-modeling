@@ -3,6 +3,16 @@ from gurobipy import GRB
 
 from inputs import *
 
+# C = lanes[(ori_index, desti_index, mode_index)]['transport_cost'] # transportation cost
+# V = node_map[node_index]['opex'] # transformation cost
+# E = lanes[(ori_index, desti_index, mode_index)]['co2e'] # co2e
+# T = lanes[(ori_index, desti_index, mode_index)]['transport_time'] # time
+
+# S = node_map[node_index]['supply'] # supply
+# U = node_map[node_index]['capacity'] # capacity
+# index_to_node = node_map[node_index]['name']
+# alpha = {} manufacturing_adjacency_list[manuf_index][d][i][-1]
+
 def run_model(objective_weights):
     model = gp.Model()
 
@@ -23,6 +33,18 @@ def run_model(objective_weights):
     obj += objective_weights['time'] * np.reciprocal(omega['lead_time']) * gp.quicksum(lanes[(i, j, m)]['transport_time'] * X[i, j, m] for i, j ,m in lanes)
     obj += objective_weights['co2e'] * np.reciprocal(omega['co2e']) * gp.quicksum(lanes[(i,j,m)]['co2e'] * X[i, j, m] for i, j, m in lanes)
     model.setObjective(obj, GRB.MINIMIZE)
+
+    for role in specified_lanes:
+        if role == 'Customer':
+            model.addConstrs(
+                (-X.sum('*', j, '*') == node_map[j]['supply'] for j in specified_lanes[role]),
+                name = 'customer_flow'
+            )
+        else:
+            model.addConstrs(
+                (X.sum(j, '*', '*') - X.sum('*', j, '*') == node_map[j]['supply'] for j in specified_lanes[role]),
+                name = 'non_customer_flow'
+            )
 
     # for j, p in customer_lanes:
     #     model.addConstr(
