@@ -38,9 +38,9 @@ manufacturing_adjacency_list = ScenarioLanes.get_manufacturing_adjacency_list(sc
 
 specified_lanes = ScenarioLanes.get_specified_lanes(scenario_id, baseline_id, node_to_index, session)
 
-omega = Omega.get_omegas(baseline_id, session)
+omega = Omega.get_omegas(baseline_id, session) # cost, lead_time, co2e
 
-lamdas = Runs.get_lambdas(run_id, scenario_id, baseline_id, session)
+lamdas = Runs.get_lambdas(run_id, scenario_id, baseline_id, session) # cost, time, co2e
 
 # pprint(manufacturing_adjacency_list)
 

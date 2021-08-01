@@ -19,47 +19,24 @@ def run_model(objective_weights):
         name="O",
     )
 
-    # obj = 
+    obj = objective_weights['cost'] * np.reciprocal(omega['cost']) * gp.quicksum((lanes[(i, j, m)]['transport_cost']) * X[i, j, m] for i, j, m in lanes)
+    obj += objective_weights['time'] * np.reciprocal(omega['lead_time']) * gp.quicksum(lanes[(i, j, m)]['transport_time'] * X[i, j, m] for i, j ,m in lanes)
+    obj += objective_weights['co2e'] * np.reciprocal(omega['co2e']) * gp.quicksum(lanes[(i,j,m)]['co2e'] * X[i, j, m] for i, j, m in lanes)
+    model.setObjective(obj, GRB.MINIMIZE)
 
-    for j, p in customer_lanes:
-        model.addConstr(
-            -X.sum('*', j, p, '*') == -S[(j, p)]
-        )
+    # for j, p in customer_lanes:
+    #     model.addConstr(
+    #         -X.sum('*', j, p, '*') == -S[(j, p)]
+    #     )
 
-    for j, p in gateway_lanes:
-        model.addConstr(
-            X.sum(j, '*', p, '*') - X.sum('*', j, p, '*') == S[(j, p)]
-        )
+    # for j, p in gateway_lanes:
+    #     model.addConstr(
+    #         X.sum(j, '*', p, '*') - X.sum('*', j, p, '*') == S[(j, p)]
+    #     )
 
-    for j, p in oslc_lanes:
-        model.addConstr(
-            X.sum(j, '*', p, '*') - X.sum('*', j, p, '*') == S[(j, p)]
-        )
-
-    for j, p in dslc_lanes:
-        model.addConstr(
-            X.sum(j, '*', p, '*') - X.sum('*', j, p, '*') == S[(j, p)]
-        )
-    
-    for j, p in df_lanes:
-        model.addConstr(
-            X.sum(j, '*', p, '*') - X.sum('*', j, p, '*') == S[(j, p)]
-        )
-
-    for j, p in ghub_lanes:
-        model.addConstr(
-            X.sum(j, '*', p, '*') - X.sum('*', j, p, '*') == S[(j, p)]
-        )
-
-    for j, p in pcba_lanes:
-        model.addConstr(
-            X.sum(j, '*', p, '*') - X.sum('*', j, p, '*') == S[(j, p)]
-        )
-
-    for j, p in dslc_lanes:
-        model.addConstr(
-            X.sum('*', j, p, '*') <= U[(j, p)] * O[j, p]
-        )
+    model.write('opt.lp')
 
 
-run_model(0)
+if __name__ == '__main__':
+
+    run_model(lamdas)
