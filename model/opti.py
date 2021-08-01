@@ -47,22 +47,13 @@ def run_model(objective_weights):
             )
             if role != 'Gateway':
                 model.addConstrs(
-                    (X.sum('*', j, '*') <= node_map[j]['capacity'] * O[j] for j in specified_lanes[role]),
+                    (X.sum('*', j, '*') <= 1e6 * O[j] for j in specified_lanes[role]), # node_map[j]['capacity']
                     name = 'capacity_constraint'
                 )
 
 
-    # for j, p in customer_lanes:
-    #     model.addConstr(
-    #         -X.sum('*', j, p, '*') == -S[(j, p)]
-    #     )
-
-    # for j, p in gateway_lanes:
-    #     model.addConstr(
-    #         X.sum(j, '*', p, '*') - X.sum('*', j, p, '*') == S[(j, p)]
-    #     )
-
-    model.write('opt.lp')
+    model.write('model/opt.lp')
+    model.optimize()
 
 
 if __name__ == '__main__':
