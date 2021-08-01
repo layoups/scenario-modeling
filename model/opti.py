@@ -14,6 +14,7 @@ from inputs import *
 # alpha = {} manufacturing_adjacency_list[manuf_index][d][i][-1]
 
 # MODEL IS CURRENTLY CONSTRAINED TO MASTER PFLOWS
+# CHANGE ALPHA TO MAKE SURE SUM = 1
 
 def run_model(objective_weights):
     model = gp.Model()

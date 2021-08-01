@@ -40,10 +40,16 @@ def get_customer_alphas(scenario_id, baseline_id, pdct_fam, session):
             ScenarioLanes.pdct_fam == pdct_fam,
             ScenarioLanes.in_pflow == 1
         )
-        total = np.sum([e.total_weight for e in c_pflow.all()])
-        for e in c_pflow.all():
+        c_pflow = c_pflow.all()
+        total = np.sum([e.total_weight for e in c_pflow])
+        alpha = 0
+        for e in c_pflow[:-1]:
             e.alpha = round(e.total_weight / total, 5)
             e.total_alpha = e.alpha
+            alpha += e.alpha
+        if len(c_pflow) > 0:
+            c_pflow[-1].alpha = 1 - alpha
+            c_pflow[-1].total_alpha = c_pflow[-1].alpha
         session.commit()
 
 
@@ -70,16 +76,22 @@ def get_alphas(scenario_id, baseline_id, pdct_fam, session):
                 ScenarioLanes.path_rank == edge.path_rank + 1, 
                 ScenarioLanes.in_pflow == 1
             )
-            total = np.sum([e.total_weight for e in adj.all()])
-            for e in adj.all():
+            adj = adj.all()
+            total = np.sum([e.total_weight for e in adj])
+            alpha = 0
+            for e in adj[:-1]:
                 e.alpha = round(e.total_weight / total, 5)
                 e.total_alpha = round(e.alpha * edge.total_alpha, 5)
+                alpha += e.alpha
+            if len(adj) > 0:
+                adj[-1].alpha = 1 - alpha
+                adj[-1].total_alpha = round(adj[-1].alpha * edge.total_alpha, 5)
         session.commit()
 
 if __name__ == "__main__":
-    engine = create_engine(DB_CONN_PARAMETER)
+    engine = create_engine(DB_CONN_PARAMETER_CLOUD)
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    get_customer_alphas(0, 1, '4400ISR' ,session)
-    get_alphas(0, 1, '4400ISR', session)
+    get_customer_alphas(0, 3, 'QSFP40G', session)
+    get_alphas(0, 3, 'QSFP40G', session)
