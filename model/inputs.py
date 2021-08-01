@@ -35,17 +35,19 @@ if __name__ == '__main__':
 
     node_map, node_to_index = ScenarioNodes.get_node_maps(scenario_id, baseline_id, session)
 
-    pdct_to_index, index_to_pdct = ScenarioLanes.get_pdct_maps(scenario_id, baseline_id, session)
-
     lanes = ScenarioLanes.get_lanes(scenario_id, baseline_id, node_to_index, mode_to_index, session)
 
-    # nodes = node_map['name']
+    manufacturing_adjacency_list = ScenarioLanes.get_manufacturing_adjacency_list(scenario_id, baseline_id, node_to_index, session)
 
-    # pprint(ScenarioLanes.get_manufacturing_adjacency_list(scenario_id, baseline_id, node_to_index, session))
+    specified_lanes = ScenarioLanes.get_specified_lanes(scenario_id, baseline_id, node_to_index, session)
 
-    # pprint(ScenarioLanes.get_specified_lanes(scenario_id, baseline_id, node_to_index, session))
+    # pprint(manufacturing_adjacency_list)
 
-    pprint(node_map)
+    # pprint(lanes)
+
+    # pprint(node_map)
+
+    # pprint(specified_lanes)
 
     customer_lanes = {} 
     gateway_lanes = {}
@@ -55,13 +57,12 @@ if __name__ == '__main__':
     ghub_lanes = {} 
     pcba_lanes = {}
 
-    manufacturing_adjacency_list = {}
+    # C = lanes[(ori_index, desti_index, mode_index)]['transport_cost'] # transportation cost
+    # V = node_map[node_index]['opex'] # transformation cost
+    # E = lanes[(ori_index, desti_index, mode_index)]['co2e'] # co2e
+    # T = lanes[(ori_index, desti_index, mode_index)]['transport_time'] # time
 
-    # C = lanes['transport_cost'] # transportation cost
-    # V = node_map['opex'] # transformation cost
-    # E = lanes['co2e'] # co2e
-    # T = lanes['transport_time'] # time
-
-    # S = node_map['supply'] # supply
-    # U = node_map['capacity'] # capacity
-    alpha = {}
+    # S = node_map[node_index]['supply'] # supply
+    # U = node_map[node_index]['capacity'] # capacity
+    # index_to_node = node_map[node_index]['name']
+    # alpha = {} manufacturing_adjacency_list[manuf_index][d][i][-1]
