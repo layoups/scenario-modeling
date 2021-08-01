@@ -77,8 +77,12 @@ def get_lat_long(session, node=None):
 def populate_baseline_nodes(baseline_id, session):
     stmt = text("""
         insert into scdsi_scenario_nodes 
-        (baseline_id, scenario_id, pdct_fam, name, region, role, in_pflow)
-        select distinct baseline_id, scenario_id, pdct_fam, ori_name, ori_region, ori_role, 1
+        (baseline_id, scenario_id, pdct_fam, name, region, role, pflow, in_pflow)
+        select distinct baseline_id, scenario_id, pdct_fam, ori_name, ori_region, ori_role,
+        case 
+            when parent_pflow is null then pflow
+            else parent_pflow 
+        end as pflow, 1
         from scdsi_scenario_lanes
         where in_pflow = 1
         and baseline_id = baseline_id
@@ -90,8 +94,12 @@ def populate_baseline_nodes(baseline_id, session):
 
     stmt = text("""
         insert into scdsi_scenario_nodes 
-        (baseline_id, scenario_id, pdct_fam, name, region, role, in_pflow)
-        select distinct baseline_id, scenario_id, pdct_fam, desti_name, desti_region, desti_role, 1
+        (baseline_id, scenario_id, pdct_fam, name, region, role, pflow, in_pflow)
+        select distinct baseline_id, scenario_id, pdct_fam, desti_name, desti_region, desti_role,
+        case 
+            when parent_pflow is null then pflow
+            else parent_pflow 
+        end as pflow, 1
         from scdsi_scenario_lanes
         where in_pflow = 1 
         and desti_role = 'Customer'
@@ -142,9 +150,10 @@ def get_pflow_demand(scenario_id, baseline_id, pflow, pdct_fam, session):
                 ScenarioLanes.desti_name == ScenarioNodes.name,
                 # ScenarioLanes.desti_country == ScenarioNodes.country,
                 ScenarioLanes.desti_region == ScenarioNodes.region,
-                ScenarioLanes.pdct_fam == pdct_fam
+                ScenarioLanes.pdct_fam == ScenarioNodes.pdct_fam
             ).filter(
                 ScenarioLanes.desti_role == 'Customer',
+                ScenarioLanes.pdct_fam == pdct_fam,
                 or_(ScenarioLanes.pflow == pflow, ScenarioLanes.parent_pflow == pflow)  
             )
     return pflow_demand.first()
