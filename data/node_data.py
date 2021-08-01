@@ -141,34 +141,25 @@ def get_node_supply(scenario_id, baseline_id, pdct_fam, session):
     
     session.commit()
 
-def get_pflow_demand(scenario_id, baseline_id, pflow, pdct_fam, session):
+def get_pflow_demand(scenario_id, baseline_id, pdct_fam, session):
     pflow_demand = session.query(
+            ScenarioNodes.pdct_fam,
+            ScenarioNodes.pflow,
             func.sum(ScenarioNodes.supply).label('total_supply')).filter(
-                ScenarioLanes.scenario_id == scenario_id,
-                ScenarioLanes.baseline_id == baseline_id,
-                ScenarioLanes.desti_role == ScenarioNodes.role,
-                ScenarioLanes.desti_name == ScenarioNodes.name,
-                # ScenarioLanes.desti_country == ScenarioNodes.country,
-                ScenarioLanes.desti_region == ScenarioNodes.region,
-                ScenarioLanes.pdct_fam == ScenarioNodes.pdct_fam
-            ).filter(
-                ScenarioLanes.desti_role == 'Customer',
-                ScenarioLanes.pdct_fam == pdct_fam,
-                or_(ScenarioLanes.pflow == pflow, ScenarioLanes.parent_pflow == pflow)  
-            )
-    return pflow_demand.first()
+                ScenarioNodes.scenario_id == scenario_id,
+                ScenarioNodes.baseline_id == baseline_id,
+                ScenarioNodes.pdct_fam == pdct_fam
+            ).group_by(
+                ScenarioNodes.pflow,
+                ScenarioNodes.pdct_fam
+                )
+    return pflow_demand.all()
 
 def get_node_capacity(scenario_id, baseline_id, pdct_fam, session):
-    nodes = session.query(ScenarioNodes).filter(
-        ScenarioNodes.scenario_id == scenario_id,
-        ScenarioNodes.baseline_id == baseline_id,
-        ScenarioNodes.pdct_fam == pdct_fam
-        )
+    pflow_demand = get_pflow_demand(scenario_id, baseline_id, pdct_fam, session)
 
-    model_pflows = get_main_pflow(scenario_id, baseline_id, pdct_fam, session)
-
-    for pflow in model_pflows.all():
-        pflow_demand = - get_pflow_demand(scenario_id, baseline_id, pflow.pflow, pdct_fam, session).total_supply
+    for p in pflow_demand:
+        demand = - p.total_supply
         stmt = text("""
             update scdsi_scenario_nodes 
             set capacity = sub.cap
@@ -178,11 +169,16 @@ def get_node_capacity(scenario_id, baseline_id, pdct_fam, session):
                 on ori_role = role and ori_name = name and ori_region = region 
                 and scdsi_scenario_lanes.scenario_id = scdsi_scenario_nodes.scenario_id and scdsi_scenario_lanes.baseline_id = scdsi_scenario_nodes.baseline_id
                 where ori_role in ('PCBA', 'DF', 'GHUB', 'OSLC', 'DSLC')
-                and pflow = :pflow
+                and scdsi_scenario_nodes.pflow = :pflow
             ) as sub
             where role = sub.ori_role and name = sub.ori_name and sub.ori_region = region
-            and scenario_id = :scenario_id and baseline_id = :baseline_id
-        """).params(demand = pflow_demand, pflow = pflow.pflow, scenario_id = scenario_id, baseline_id = baseline_id)
+            and scenario_id = :scenario_id and baseline_id = :baseline_id and pflow = :pflow
+        """).params(
+                demand = demand, 
+                pflow = p.pflow, 
+                scenario_id = scenario_id, 
+                baseline_id = baseline_id
+            )
         session.execute(stmt)
 
         stmt = text("""
@@ -202,7 +198,7 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    baseline_id = 2
+    baseline_id = 1
     scenario_id = 0
 
     pdct_fam = 'AIRANT'
@@ -216,10 +212,10 @@ if __name__ == '__main__':
     # populate_Locations(session)
     # get_lat_long(session)
 
-    # populate_baseline_nodes(baseline_id, session)
+    populate_baseline_nodes(baseline_id, session)
 
-    pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
-    pdct_fams = [('AIRANT',), ('WPHONE',), ('SBPHONE',), ('PHONVOC',), ('4400ISR',)]
+    # pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
+    pdct_fams = [('AIRANT',), ('WPHONE',), ('SBPHONE',), ('PHONVOC',)]
     for pdct_fam in pdct_fams:
         print(pdct_fam[0])
         get_node_supply(0, baseline_id, pdct_fam[0], session)
