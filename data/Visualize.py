@@ -153,7 +153,7 @@ if __name__ == "__main__":
     scenario_id = 0
     baseline_id = 2
 
-    pdct_fam = 'SFP10G'
+    pdct_fam = 'QSFP40G'
     # visualize_networkx(pdct_fam, session)
     visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
 
