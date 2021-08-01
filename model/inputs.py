@@ -42,24 +42,17 @@ omega = Omega.get_omegas(baseline_id, session) # cost, lead_time, co2e
 
 lamdas = Runs.get_lambdas(run_id, scenario_id, baseline_id, session) # cost, time, co2e
 
-# pprint(manufacturing_adjacency_list)
+if __name__ == '__main__':
+    print(node_map[456699]['name'])
 
-# pprint(lanes)
+    # pprint(manufacturing_adjacency_list)
 
-# pprint(node_map)
+    # pprint(lanes)
 
-# pprint(specified_lanes)
+    # pprint(node_map)
 
-# pprint(omega)
+    # pprint(specified_lanes)
 
-# pprint(lamdas)
+    # pprint(omega)
 
-# C = lanes[(ori_index, desti_index, mode_index)]['transport_cost'] # transportation cost
-# V = node_map[node_index]['opex'] # transformation cost
-# E = lanes[(ori_index, desti_index, mode_index)]['co2e'] # co2e
-# T = lanes[(ori_index, desti_index, mode_index)]['transport_time'] # time
-
-# S = node_map[node_index]['supply'] # supply
-# U = node_map[node_index]['capacity'] # capacity
-# index_to_node = node_map[node_index]['name']
-# alpha = {} manufacturing_adjacency_list[manuf_index][d][i][-1]
+    # pprint(lamdas)
