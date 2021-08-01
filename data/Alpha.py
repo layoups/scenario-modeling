@@ -53,6 +53,7 @@ def get_alphas(scenario_id, baseline_id, pdct_fam, session):
             ScenarioLanes.scenario_id == scenario_id,
             ScenarioLanes.baseline_id == baseline_id,
             ScenarioLanes.pdct_fam == pdct_fam, 
+            ScenarioLanes.in_pflow == 1,
             ScenarioLanes.pflow == p[0]
             ).order_by(
                 ScenarioLanes.path, 
