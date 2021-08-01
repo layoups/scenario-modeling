@@ -290,7 +290,7 @@ class ScenarioLanes(Base):
             }
 
     @classmethod
-    def get_specified_lanes(cls, scenario_id, baseline_id, session):
+    def get_specified_lanes(cls, scenario_id, baseline_id, node_to_index, session):
         lanes = session.query(cls).filter(
             cls.scenario_id == scenario_id,
             cls.baseline_id == baseline_id,
@@ -301,8 +301,17 @@ class ScenarioLanes(Base):
             'Customer': [],
             'Gateway': [],
             'DSLC': [],
-            'OSLC': []
+            'OSLC': [],
+            'DF': [],
+            'PCBA': [],
+            'GHUB': [],
         }
+
+        for lane in lanes:
+            index = node_to_index[(lane.pdct_fam, lane.desti_name, lane.desti_region, lane.desti_role)]
+            ret[lane.desti_role] += [(lane.pdct_fam, lane.desti_name, lane.desti_region, lane.desti_role)]
+
+        return ret
 
     @classmethod
     def get_pdct_maps(cls, scenario_id, baseline_id, session):

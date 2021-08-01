@@ -43,6 +43,8 @@ if __name__ == '__main__':
 
     pprint(ScenarioLanes.get_manufacturing_adjacency_list(scenario_id, baseline_id, node_to_index, session))
 
+    pprint(ScenarioLanes.get_specified_lanes(scenario_id, baseline_id, node_to_index, session))
+
     customer_lanes = {} 
     gateway_lanes = {}
     dslc_lanes = {} 
