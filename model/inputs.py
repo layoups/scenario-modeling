@@ -22,7 +22,7 @@ index_to_mode = {
     4: 'Rail'
 }
 
-
+# Change node map to location+role, pdct
 
 if __name__ == '__main__':
 
