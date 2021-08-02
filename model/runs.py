@@ -93,7 +93,7 @@ def write_optimal(model, run_id, scenario_id, baseline_id, index_to_node, index_
 def get_mode_mix(scenario_id, baseline_id, session, run_id=None):
     stmt = text(
         """
-        select a.run_id, transport_mode, cast(sum(flow) as float) / b.total * 100
+        select a.run_id, transport_mode, cast(sum(flow) as float) / b.total * 100 as mix
         from scdsi_optimal_flows a
         join(
             select run_id, scenario_id, baseline_id, sum(flow) as total
@@ -110,7 +110,15 @@ def get_mode_mix(scenario_id, baseline_id, session, run_id=None):
         scenario_id = scenario_id,
         baseline_id = baseline_id
     )
-    return session.execute(stmt).all()
+    mode_mix = session.execute(stmt).all()   
+    ret = {}
+    run = 0
+    for x in mode_mix:
+        if x.run_id != run:
+            ret[x.run_id] = {}
+            run = x.run_id
+        ret[x.run_id][x.transport_mode] = round(x.mix, 2)
+    return ret
 
 def get_kpi_ranges(scenario_id, baseline_id, session):
     stmt = text(
@@ -127,7 +135,7 @@ def get_kpi_ranges(scenario_id, baseline_id, session):
         baseline_id = baseline_id
     )
     ret = session.execute(stmt).first()
-    return {'cost': ret.cost_range, 'time': ret.time_range, 'co2e': ret.co2e_range}
+    return {'cost': round(ret.cost_range, 2), 'time': round(ret.time_range, 2), 'co2e': round(ret.co2e_range, 2)}
 
 if __name__ == '__main__':
 
