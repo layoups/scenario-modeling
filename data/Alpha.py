@@ -1,7 +1,7 @@
 from env import DB_CONN_PARAMETER_WI
 import numpy as np
 
-from sqlalchemy import create_engine, desc, distinct
+from sqlalchemy import create_engine, desc, distinct, or_
 from sqlalchemy.orm import sessionmaker
 
 from AutoMap import *
@@ -61,7 +61,7 @@ def get_alphas(scenario_id, baseline_id, pdct_fam, session):
             ScenarioLanes.baseline_id == baseline_id,
             ScenarioLanes.pdct_fam == pdct_fam, 
             ScenarioLanes.in_pflow == 1,
-            ScenarioLanes.pflow == p[0]
+            or_(ScenarioLanes.pflow == p[0], ScenarioLanes.parent_pflow == p[0])
             ).order_by(
                 ScenarioLanes.path, 
                 desc(ScenarioLanes.ship_rank)
@@ -93,5 +93,12 @@ if __name__ == "__main__":
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    get_customer_alphas(0, 3, 'QSFP40G', session)
-    get_alphas(0, 3, 'QSFP40G', session)
+    baseline_id = 4
+    scenario_id = 0
+
+    pdct_fams = [('AIRANT',), ('C2960X',), ('4400ISR',), ('WPHONE',), ('SBPHONE',), ('PHONE',)]
+
+    for pdct_fam in pdct_fams:
+        print(pdct_fam)
+        get_customer_alphas(scenario_id, baseline_id, pdct_fam[0], session)
+        get_alphas(scenario_id, baseline_id, pdct_fam[0], session)
