@@ -411,6 +411,8 @@ class ScenarioNodes(Base):
     capacity = Column('capacity', Float)
     opex = Column('opex', Float)
     in_pflow = Column('in_pflow', Integer)
+    pflow = Column('pflow', Integer)
+    total_alpha = Column('total_alpha', Float)
 
     __tablename__ = 'scdsi_scenario_nodes'
     __table_args__ = {'extend_existing': True}

@@ -65,6 +65,8 @@ def run_model(objective_weights):
     model.write('model/opt.lp')
     model.optimize()
 
+    input()
+
     print_optimal(model, node_map, index_to_mode)
 
 
