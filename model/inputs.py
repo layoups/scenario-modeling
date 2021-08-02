@@ -31,8 +31,8 @@ baseline_id = 1
 run_id = session.query(Runs.run_id).filter(
     Runs.scenario_id == scenario_id,
     Runs.baseline_id == baseline_id,
-    Runs.lambda_cost == 0.2,
-    Runs.lambda_time == 0.5,
+    Runs.lambda_cost == 0.5,
+    Runs.lambda_time == 0.2,
     Runs.lambda_co2e == 0.3
 ).first().run_id
 
