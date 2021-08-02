@@ -16,7 +16,7 @@ from runs import *
 
 # MODEL IS CURRENTLY CONSTRAINED TO MASTER PFLOWS
 
-def run_model(objective_weights):
+def run_model(run_id, scenario_id, baseline_id, objective_weights):
     model = gp.Model()
 
     X = model.addVars(
@@ -65,9 +65,11 @@ def run_model(objective_weights):
     model.write('model/opt.lp')
     model.optimize()
 
-    input()
+    # input()
+    # print_optimal(model, node_map, index_to_mode)
 
-    print_optimal(model, node_map, index_to_mode)
+    input()
+    write_optimal(model, run_id, scenario_id, baseline_id, node_map, index_to_mode, lanes, session)
 
 
 if __name__ == '__main__':
@@ -81,4 +83,4 @@ if __name__ == '__main__':
     #     lamdas = Runs.get_lambdas(run.run_id, run.scenario_id, run.baseline_id, session)
     #     run_model(lamdas)
 
-    run_model(lamdas)
+    run_model(run_id, scenario_id, baseline_id, lamdas)
