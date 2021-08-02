@@ -112,6 +112,22 @@ def get_mode_mix(scenario_id, baseline_id, session, run_id=None):
     )
     return session.execute(stmt).all()
 
+def get_kpi_ranges(scenario_id, baseline_id, session):
+    stmt = text(
+        """
+        select cast(max(optimal_cost) as float) / min(optimal_cost) as cost_range, 
+        cast(max(optimal_time) as float) / min(optimal_time) as time_range,
+        cast(max(optimal_co2e) as float) / min(optimal_co2e) as co2e_range
+        from scdsi_solution
+        where scenario_id = :scenario_id
+        and baseline_id = :baseline_id
+        """
+    ).params(
+        scenario_id = scenario_id,
+        baseline_id = baseline_id
+    )
+    ret = session.execute(stmt).first()
+    return {'cost': ret.cost_range, 'time': ret.time_range, 'co2e': ret.co2e_range}
 
 if __name__ == '__main__':
 
@@ -139,3 +155,4 @@ if __name__ == '__main__':
     # session.commit()
 
     pprint(get_mode_mix(scenario_id, baseline_id, session))
+    pprint(get_kpi_ranges(scenario_id, baseline_id, session))
