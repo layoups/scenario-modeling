@@ -31,7 +31,7 @@ if __name__ == '__main__':
     # print(pareto_weights)
 
     scenario_id = 0
-    baseline_id = 3
+    baseline_id = 1
 
     for w in get_pareto_weights():
         run = Runs(
