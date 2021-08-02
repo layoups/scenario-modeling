@@ -507,6 +507,7 @@ class Solution(Base):
     optimal_cost = Column('optimal_cost', Float)
     optimal_co2e = Column('optimal_co2e', Float)
     optimal_time = Column('optimal_time', Float)
+    solution = Column('solution', Float)
 
     __tablename__ = 'scdsi_solution'
     __table_args__ = {'extend_existing': True}
