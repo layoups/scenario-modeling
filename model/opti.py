@@ -81,6 +81,6 @@ if __name__ == '__main__':
 
     # for run in runz:
     #     lamdas = Runs.get_lambdas(run.run_id, run.scenario_id, run.baseline_id, session)
-    #     run_model(lamdas)
+    #     run_model(run_id, scenario_id, baseline_id, lamdas)
 
     run_model(run_id, scenario_id, baseline_id, lamdas)
