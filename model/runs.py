@@ -19,6 +19,10 @@ def print_optimal(model, index_to_node, index_to_mode):
                 ori, desti, mode = index_to_node[int(ori[2:])]['name'], index_to_node[int(desti)]['name'], index_to_mode[int(mode[:-1])]
                 print('<{}> | {}'.format((ori, desti, mode), v.X))
 
+def write_optimal(model, index_to_node, index_to_mode, session):
+    if model.Status == GRB.optimal:
+        for v in model.getVars():
+            None
 
 
 

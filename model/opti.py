@@ -72,4 +72,13 @@ def run_model(objective_weights):
 
 if __name__ == '__main__':
 
+    # runz = session.query(Runs).filter(
+    #     Runs.scenario_id == 0,
+    #     Runs.baseline_id == 1
+    # ).all()
+
+    # for run in runz:
+    #     lamdas = Runs.get_lambdas(run.run_id, run.scenario_id, run.baseline_id, session)
+    #     run_model(lamdas)
+
     run_model(lamdas)
