@@ -2,6 +2,7 @@ import gurobipy as gp
 from gurobipy import GRB
 
 from inputs import *
+from runs import *
 
 # C = lanes[(ori_index, desti_index, mode_index)]['transport_cost'] # transportation cost
 # V = node_map[node_index]['opex'] # transformation cost
@@ -63,6 +64,8 @@ def run_model(objective_weights):
 
     model.write('model/opt.lp')
     model.optimize()
+
+    print_optimal(model, node_map, index_to_mode)
 
 
 if __name__ == '__main__':

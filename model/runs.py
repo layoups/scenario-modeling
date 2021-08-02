@@ -15,7 +15,9 @@ def print_optimal(model, index_to_node, index_to_mode):
         print("Variable Values")
         for v in model.getVars():
             if v.VarName[0] == 'X':
-                print('<({})> | {}'.format(v.VarName, v.X))
+                ori, desti, mode = v.VarName.split(',')
+                ori, desti, mode = index_to_node[int(ori[2:])]['name'], index_to_node[int(desti)]['name'], index_to_mode[int(mode[:-1])]
+                print('<{}> | {}'.format((ori, desti, mode), v.X))
 
 
 
