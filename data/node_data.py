@@ -207,7 +207,7 @@ if __name__ == '__main__':
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    baseline_id = 3
+    baseline_id = 4
     scenario_id = 0
 
     pdct_fam = 'AIRANT'
@@ -226,6 +226,8 @@ if __name__ == '__main__':
     # pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
     pdct_fams = [('AIRANT',), ('WPHONE',), ('SBPHONE',), ('PHONVOC',)]
     pdct_fams = [('QSFP40G',)]
+    pdct_fams = [('AIRANT',), ('C2960X',), ('4400ISR',), ('WPHONE',), ('SBPHONE',), ('PHONE',)]
+
     for pdct_fam in pdct_fams:
         print(pdct_fam[0])
         get_node_supply(0, baseline_id, pdct_fam[0], session)

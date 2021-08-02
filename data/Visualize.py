@@ -151,9 +151,9 @@ if __name__ == "__main__":
     session = Session()
 
     scenario_id = 0
-    baseline_id = 1
+    baseline_id = 4
 
-    pdct_fam = 'AIRANT'
+    pdct_fam = 'C2960X'
     # visualize_networkx(pdct_fam, session)
     visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
 
