@@ -2,6 +2,8 @@ from AutoMap import *
 
 from gurobipy import GRB
 
+from pprint import pprint
+
 def get_pareto_weights():
     ret = []
     for i in range(0, 11):
@@ -88,6 +90,27 @@ def write_optimal(model, run_id, scenario_id, baseline_id, index_to_node, index_
     else:
         return False
 
+def get_mode_mix(scenario_id, baseline_id, session, run_id=None):
+    stmt = text(
+        """
+        select a.run_id, transport_mode, cast(sum(flow) as float) / b.total * 100
+        from scdsi_optimal_flows a
+        join(
+            select run_id, scenario_id, baseline_id, sum(flow) as total
+            from scdsi_optimal_flows
+            group by run_id, scenario_id, baseline_id
+        ) as b
+        on a.baseline_id = b.baseline_id and a.scenario_id = b.scenario_id and a.run_id = b.run_id
+        where a.baseline_id = :baseline_id
+        and a.scenario_id = :scenario_id
+        group by a.run_id, a.transport_mode, b.total
+        order by a.run_id
+        """
+    ).params(
+        scenario_id = scenario_id,
+        baseline_id = baseline_id
+    )
+    return session.execute(stmt).all()
 
 
 if __name__ == '__main__':
@@ -101,16 +124,18 @@ if __name__ == '__main__':
     scenario_id = 0
     baseline_id = 1
 
-    for w in get_pareto_weights():
-        run = Runs(
-            scenario_id = scenario_id,
-            baseline_id = baseline_id,
-            date = datetime.now(),
-            description = 'one pf: QSFP40G',
-            lambda_cost = w[0],
-            lambda_time = w[1],
-            lambda_co2e = w[2] 
-        )
+    # for w in get_pareto_weights():
+    #     run = Runs(
+    #         scenario_id = scenario_id,
+    #         baseline_id = baseline_id,
+    #         date = datetime.now(),
+    #         description = 'one pf: QSFP40G',
+    #         lambda_cost = w[0],
+    #         lambda_time = w[1],
+    #         lambda_co2e = w[2] 
+    #     )
 
-        session.add(run)
-    session.commit()
+    #     session.add(run)
+    # session.commit()
+
+    pprint(get_mode_mix(scenario_id, baseline_id, session))
