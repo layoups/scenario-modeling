@@ -65,11 +65,13 @@ def run_model(run_id, scenario_id, baseline_id, objective_weights):
     model.write('model/opt.lp')
     model.optimize()
 
+    print(model.objval)
+
     # input()
     # print_optimal(model, node_map, index_to_mode)
 
-    input()
-    write_optimal(model, run_id, scenario_id, baseline_id, node_map, index_to_mode, lanes, session)
+    # input()
+    # write_optimal(model, run_id, scenario_id, baseline_id, node_map, index_to_mode, lanes, session)
 
 
 if __name__ == '__main__':
