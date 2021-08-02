@@ -83,7 +83,8 @@ def write_optimal(model, run_id, scenario_id, baseline_id, index_to_node, index_
             baseline_id = baseline_id,
             optimal_cost = total_cost,
             optimal_time = total_time,
-            optimal_co2e = total_co2e
+            optimal_co2e = total_co2e,
+            solution = model.objval
         )
         session.add(solution)
         session.commit()
