@@ -45,7 +45,7 @@ def populate_scenario_edges(scenario_id, baseline_id, session):
             ori_name, ori_region, 
             desti_name, desti_region, 
             transport_cost, total_weight, transport_mode, in_pflow)
-            select distinct :scenario_id, :baseline_id, lower(ship_from_name), lower(ship_from_region_code),
+            select :scenario_id, :baseline_id, lower(ship_from_name), lower(ship_from_region_code),
             lower(ship_to_name), lower(ship_to_region_code), sum(total_amount_paid_usd) / sum(billed_weight),
             sum(billed_weight),
             case
