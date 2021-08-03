@@ -129,6 +129,7 @@ class Omega(Base):
     baseline_cost = Column('baseline_cost', Float)
     baseline_lead_time = Column('baseline_lead_time', Float)
     baseline_co2e = Column('baseline_co2e', Float)
+    total_flow = Column('total_flow', Float)
 
 
     __tablename__ = 'scdsi_omega'
@@ -555,6 +556,7 @@ class Solution(Base):
     optimal_co2e = Column('optimal_co2e', Float)
     optimal_time = Column('optimal_time', Float)
     solution = Column('solution', Float)
+    total_flow = Column('total_flow', Float)
 
     __tablename__ = 'scdsi_solution'
     __table_args__ = {'extend_existing': True}
