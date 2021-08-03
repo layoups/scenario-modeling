@@ -1,7 +1,7 @@
 from env import DB_CONN_PARAMETER_WI
 import numpy as np
 
-from sqlalchemy import create_engine, desc, distinct, or_
+from sqlalchemy import create_engine, desc, distinct, or_, and_
 from sqlalchemy.orm import sessionmaker
 
 from AutoMap import *
@@ -71,8 +71,9 @@ def get_alphas(scenario_id, baseline_id, pdct_fam, session):
                 ScenarioLanes.scenario_id == scenario_id,
                 ScenarioLanes.baseline_id == baseline_id,
                 ScenarioLanes.pdct_fam == pdct_fam, 
-                ScenarioLanes.d > edge.d, 
-                ScenarioLanes.f < edge.f, 
+                or_(
+                    and_(ScenarioLanes.d > edge.d, ScenarioLanes.f < edge.f), 
+                    ScenarioLanes.parent_pflow == edge.pflow),
                 ScenarioLanes.path_rank == edge.path_rank + 1, 
                 ScenarioLanes.in_pflow == 1
             )
