@@ -181,14 +181,23 @@ def get_kpi_per(scenario_id, baseline_id, session, lambda_cost=None, lambda_co2e
             lambda_time = lambda_time
         )
     x = session.execute(stmt).first()
-    kpis = {'scenario_cost': round(x.optimal_cost, 3), 'scenario_time': round(x.optimal_time, 3), 'scenario_co2e': round(x.optimal_co2e, 3)}
-    print(kpis)
-    # stmt = text(
-    #     """
-    #     select baseline_cost / total_flow as cost_per,
+    scenario_kpis = {'scenario_cost': round(x.optimal_cost, 3), 'scenario_time': round(x.optimal_time, 3), 'scenario_co2e': round(x.optimal_co2e, 3)}
 
-    #     """
-    # )
+    stmt = text(
+        """
+        select baseline_cost / total_flow as cost_per,
+        baseline_lead_time / total_flow as time_per,
+        baseline_co2e / total_flow as co2e_per
+        from scdsi_omega
+        where baseline_id = :baseline_id
+        """
+    ).params(
+        baseline_id = baseline_id
+    )
+    x = session.execute(stmt).first()
+    baseline_kpis = {'baseline_cost': round(x.cost_per, 3), 'baseline_time': round(x.time_per, 3), 'baseline_co2e': round(x.co2e_per, 3)}
+
+    return baseline_kpis, scenario_kpis
 
 
 if __name__ == '__main__':
@@ -218,4 +227,4 @@ if __name__ == '__main__':
 
     pprint(get_mode_mix(scenario_id, baseline_id, session))
     pprint(get_kpi_ranges(scenario_id, baseline_id, session))
-    get_kpi_per(scenario_id, baseline_id, session)
+    pprint(get_kpi_per(scenario_id, baseline_id, session))
