@@ -78,15 +78,20 @@ def populate_baseline_nodes(baseline_id, session):
     stmt = text("""
         insert into scdsi_scenario_nodes 
         (baseline_id, scenario_id, pdct_fam, name, region, role, pflow, in_pflow, total_alpha)
-        select distinct baseline_id, scenario_id, pdct_fam, ori_name, ori_region, ori_role,
+        select baseline_id, scenario_id, pdct_fam, ori_name, ori_region, ori_role,
         case 
             when parent_pflow is null then pflow
             else parent_pflow 
-        end as pflow, 1, total_alpha
+        end as composite_pflow, 1, 
+        case
+            when sum(total_alpha) > 1 then 1
+            else sum(total_alpha)
+        end
         from scdsi_scenario_lanes
         where in_pflow = 1
         and baseline_id = baseline_id
         and scenario_id = 0
+        group by baseline_id, scenario_id, pdct_fam, ori_name, ori_region, ori_role, composite_pflow, in_pflow
     """).params(baseline_id = baseline_id)
 
     session.execute(stmt)

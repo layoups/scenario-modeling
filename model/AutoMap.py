@@ -274,7 +274,7 @@ class ScenarioLanes(Base):
             where l.in_pflow = 1  
             and l.baseline_id = :baseline_id
             and l.scenario_id = :scenario_id
-            -- and l.parent_pflow is null
+            and l.parent_pflow is null
             """
         ).params(
             scenario_id = scenario_id,
