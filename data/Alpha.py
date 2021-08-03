@@ -6,6 +6,8 @@ from sqlalchemy.orm import sessionmaker
 
 from AutoMap import *
 
+from Eraser import *
+
 def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
     model_pflows = session.query(ScenarioLanes.pflow).filter(
         ScenarioLanes.scenario_id == scenario_id,
@@ -71,9 +73,8 @@ def get_alphas(scenario_id, baseline_id, pdct_fam, session):
                 ScenarioLanes.scenario_id == scenario_id,
                 ScenarioLanes.baseline_id == baseline_id,
                 ScenarioLanes.pdct_fam == pdct_fam, 
-                or_(
-                    and_(ScenarioLanes.d > edge.d, ScenarioLanes.f < edge.f), 
-                    ScenarioLanes.parent_pflow == edge.pflow),
+                ScenarioLanes.d > edge.d, 
+                ScenarioLanes.f < edge.f,
                 ScenarioLanes.path_rank == edge.path_rank + 1, 
                 ScenarioLanes.in_pflow == 1
             )
@@ -101,5 +102,6 @@ if __name__ == "__main__":
 
     for pdct_fam in pdct_fams:
         print(pdct_fam)
+        erase_alphas(pdct_fam.pdct_fam, scenario_id, baseline_id, session, ScenarioLanes)
         get_customer_alphas(scenario_id, baseline_id, pdct_fam[0], session)
         get_alphas(scenario_id, baseline_id, pdct_fam[0], session)
