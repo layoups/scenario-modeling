@@ -31,9 +31,9 @@ baseline_id = 5
 run_id = session.query(Runs.run_id).filter(
     Runs.scenario_id == scenario_id,
     Runs.baseline_id == baseline_id,
-    Runs.lambda_cost == 1,
+    Runs.lambda_cost == 0,
     Runs.lambda_time == 0,
-    Runs.lambda_co2e == 0
+    Runs.lambda_co2e == 1
 ).first().run_id
 
 node_map, node_to_index = ScenarioNodes.get_node_maps(scenario_id, baseline_id, session)
