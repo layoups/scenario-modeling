@@ -302,7 +302,7 @@ class ScenarioLanes(Base):
             cls.scenario_id == scenario_id,
             cls.baseline_id == baseline_id,
             cls.in_pflow == 1,
-            # cls.parent_pflow == None
+            cls.parent_pflow == None
         ).all()
 
         ret = {
