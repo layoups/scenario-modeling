@@ -82,7 +82,7 @@ def populate_scenario_lanes(baseline_id, session):
 def get_cost_omega(baseline_id, session):
     stmt = text("""
         insert into scdsi_omega (baseline_id, baseline_cost)
-        select baseline_id, sum(total_weight)
+        select baseline_id, sum(total_paid)
         from scdsi_scenario_lanes
         where baseline_id = :baseline_id
         and scenario_id = 0
