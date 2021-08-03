@@ -163,7 +163,7 @@ def set_baseline(baseline_id, start, end, description, session):
     # pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
     # pdct_fams = [('AIRANT',), ('WPHONE',), ('SBPHONE',), ('PHONVOC',)]
     # pdct_fams = [('QSFP40G',)]
-    pdct_fams = [('AIRANT',), ('C2960X',), ('4400ISR',), ('WPHONE',), ('SBPHONE',), ('PHONE',), ('IPPHONE',), ('PHONEDI',)]
+    pdct_fams = [('AIRANT',), ('C2960X',), ('4400ISR',), ('WPHONE',), ('SBPHONE',)]
 
     try:
         for pdct_fam in pdct_fams: 

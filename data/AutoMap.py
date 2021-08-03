@@ -314,7 +314,7 @@ class ScenarioLanes(Base):
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
-        return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})> | {}".format(
+        return "({}, {}) | {}: ({}_{}_{}) -> ({}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})> | {}".format(
             self.scenario_id, self.baseline_id,
             self.pdct_fam,
             self.ori_name, self.ori_region, self.ori_role,

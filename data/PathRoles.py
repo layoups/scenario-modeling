@@ -118,8 +118,9 @@ def get_parent_pflow(path, v, curr_path_head_rank, path_rank, session):
         return True
 
 def set_parent_pflow(path, parent_pflow_node, curr_path_head_rank, path_rank, session):
+    pflow = parent_pflow_node.pflow if parent_pflow_node.parent_pflow == None else parent_pflow_node.parent_pflow
     for u in path:
-        u.parent_pflow = parent_pflow_node.parent_pflow if parent_pflow_node.parent_pflow else parent_pflow_node.pflow
+        u.parent_pflow = pflow
     # session.commit()
     node_role_per_path(path + [parent_pflow_node], curr_path_head_rank[0], path_rank, session)
 
