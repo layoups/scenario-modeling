@@ -164,7 +164,8 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
         region = node_dict['alt_region'],
         capacity = node_dict['capacity'],
         supply = node_dict['supply'],
-        opex = node_dict['opex']
+        opex = node_dict['opex'],
+        in_pflow = 1
     )
     session.add(scenario_node)
     session.commit()
