@@ -32,6 +32,7 @@ def write_optimal(model, run_id, scenario_id, baseline_id, index_to_node, index_
         total_cost = 0
         total_time = 0
         total_co2e = 0
+        total_flow = 0
         for v in model.getVars():
             if v.VarName[0] == 'X':
                 ori, desti, mode = v.VarName.split(',')
@@ -40,6 +41,7 @@ def write_optimal(model, run_id, scenario_id, baseline_id, index_to_node, index_
                 total_cost += lanes[(ori, desti, mode)]['transport_cost'] * v.X
                 total_time += lanes[(ori, desti, mode)]['transport_time'] * v.X
                 total_co2e += lanes[(ori, desti, mode)]['co2e'] * v.X
+                total_flow += v.X
                 
                 ori, desti, mode = index_to_node[ori]['name'], index_to_node[desti]['name'], index_to_mode[mode]
                 ori_name, ori_region, ori_role = ori[1], ori[2], ori[3]
@@ -84,6 +86,7 @@ def write_optimal(model, run_id, scenario_id, baseline_id, index_to_node, index_
             optimal_cost = total_cost,
             optimal_time = total_time,
             optimal_co2e = total_co2e,
+            total_flow = total_flow,
             solution = model.objval
         )
         session.add(solution)
