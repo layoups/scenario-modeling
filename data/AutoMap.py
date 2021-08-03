@@ -89,7 +89,7 @@ class ShipRank(Base):
 class Scenarios(Base):
 
     baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'), primary_key=True)
-    scenario_id = Column('scenario_id', Integer, primary_key=True, nullable=True)
+    scenario_id = Column('scenario_id', Integer, primary_key=True, nullable=True, autoincrement=True)
     date = Column('date', Date)
     description = Column('description', String)
 

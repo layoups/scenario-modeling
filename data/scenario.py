@@ -1,3 +1,5 @@
+from sqlalchemy.sql.coercions import expect
+from node_data import get_lat_long
 from networkx.classes.function import edges, nodes
 import numpy as np
 import pandas as pd
@@ -19,28 +21,36 @@ from Alpha import *
 from dfs import *
 
 
-def create_scenario(baseline_id, descriprion, session):
-    scenario = Scenarios(baseline_id=baseline_id)
-    scenario.date = datetime.now()
-    scenario.description = descriprion
-
-    scenario_id = scenario.scenario_id
+def create_scenario(scenario_id, baseline_id, description, session):
+    scenario = Scenarios(
+        scenario_id = scenario_id,
+        baseline_id = baseline_id,
+        date = datetime.now(),
+        description = description
+    )
 
     session.add(scenario)
     session.commit()
+
+    
 
     stmt = text(
         """
         insert into scdsi_scenario_lanes
         (scenario_id, baseline_id, pdct_fam, 
-        ori_name, ori_region, 
-        desti_name, desti_region, 
-        ship_type, ship_rank, total_weight, total_paid,
-        d, f, alpha, total_alpha, path)
+        ori_name, ori_region, ori_role,
+        desti_name, desti_region, desti_role,
+        ship_type, ship_rank,
+        total_weight, total_paid,
+        color, d, f, alpha, total_alpha, path, path_rank,
+        pflow, parent_pflow, in_pflow)
         select :scenario_id, baseline_id, pdct_fam, 
-        ori_name, ori_region, 
-        desti_name, desti_region, 
-        ship_type, ship_rank, total_weight, total_paid
+        ori_name, ori_region, ori_role,
+        desti_name, desti_region, desti_role,
+        ship_type, ship_rank,
+        total_weight, total_paid,
+        color, d, f, alpha, total_alpha, path, path_rank,
+        pflow, parent_pflow, in_pflow
         from scdsi_scenario_lanes
         where baseline_id = :baseline_id
         and scenario_id = 0
@@ -49,34 +59,84 @@ def create_scenario(baseline_id, descriprion, session):
         scenario_id = scenario_id,
         baseline_id = baseline_id
     )
+    session.execute(stmt)
+    session.commit()
+
+    stmt = text(
+        """
+        insert into scdsi_scenario_nodes
+        (scenario_id, baseline_id, pdct_fam, 
+        name, region, role,
+        supply, capacity, opex,
+        total_alpha, pflow, in_pflow)
+        select :scenario_id, baseline_id, pdct_fam,
+        name, region, role,
+        supply, capacity, opex,
+        total_alpha, pflow, in_pflow
+        from scdsi_scenario_nodes
+        where baseline_id = :baseline_id
+        and scenario_id = 0
+        """
+    ).params(
+        scenario_id = scenario_id,
+        baseline_id = baseline_id
+    )
+    session.execute(stmt)
+    session.commit()
+
+    stmt = text(
+        """
+        insert into scdsi_scenario_edges
+        (scenario_id, baseline_id, 
+        ori_name, ori_region,
+        desti_name, desti_region,
+        transport_mode, distance, transport_time,
+        co2e, transport_cost, total_weight, in_pflow)
+        select :scenario_id, baseline_id, 
+        ori_name, ori_region,
+        desti_name, desti_region,
+        transport_mode, distance, transport_time,
+        co2e, transport_cost, total_weight, in_pflow
+        from scdsi_scenario_edges
+        where baseline_id = :baseline_id
+        and scenario_id = 0
+        """
+    ).params(
+        scenario_id = scenario_id,
+        baseline_id = baseline_id
+    )
+    session.execute(stmt)
+    session.commit()
+    return True
 
     # copy scenario lanes, scenario edges, scenario nodes
     
 
-# node_dict = {
-#     'pdct_fam': , 
-#     'name': ,  
-#     'region': , 
-#     'role': , 
-#     'capacity': , 
-#     'supply': , 
-#     'opex': ,
-#     'alt_name': ,
-#     'alt_region': 
-# } 
+node_dict = {
+    'pdct_fam': '4400ISR' , 
+    'name': ',cn',  
+    'region': 'apac', 
+    'role': 'PCBA', 
+    'capacity': 8431, 
+    'supply': 0, 
+    'opex': 0,
+    'alt_name': 'hanoi,vn',
+    'alt_region': 'apac',
+} 
 # add to alt nodes
 # add to scenario nodes
 # add to locations, get Locations
 # add to alternative edges
 # add to scenario edges, get distance, co2e, time
 def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
-    if not session.query(Locations).filter(Locations.name == node_dict['name']):
+    if not session.query(Locations).filter(Locations.name == node_dict['name']).first():
         location = Locations(
-            name = node_dict['name'],
-            region = node_dict['region'],
+            name = node_dict['alt_name'],
+            region = node_dict['alt_region'],
         )
         session.add(location)
         session.commit()
+        get_lat_long(session, location)
 
     alt_node = AltNodes(
         scenario_id=scenario_id, 
@@ -99,8 +159,8 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
         baseline_id=baseline_id,
         pdct_fam = node_dict['pdct_fam'],
         role = node_dict['role'],
-        name = node_dict['name'],
-        region = node_dict['region'],
+        name = node_dict['alt_name'],
+        region = node_dict['alt_region'],
         capacity = node_dict['capacity'],
         supply = node_dict['supply'],
         opex = node_dict['opex']
@@ -112,7 +172,7 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
         """
         insert into scdsi_alternative_edges 
             (scenario_id, baseline_id, pdct_fam, 
-            ori_name, ori_region, ori_role 
+            ori_name, ori_region, ori_role, 
             desti_name, desti_region, desti_role, 
             ship_type, ship_rank, 
             total_weight, total_paid, 
@@ -141,7 +201,7 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
         alt_role = alt_node.role,
         scenario_id = scenario_id,
         baseline_id = baseline_id,
-        pdct_fam = pdct_fam,
+        pdct_fam = alt_node.pdct_fam,
         ori_name = alt_node.name,
         ori_region = alt_node.region,
         ori_role = alt_node.role
@@ -154,7 +214,7 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
         """
         insert into scdsi_alternative_edges 
             (scenario_id, baseline_id, pdct_fam, 
-            ori_name, ori_region, ori_role 
+            ori_name, ori_region, ori_role, 
             desti_name, desti_region, desti_role, 
             ship_type, ship_rank, 
             total_weight, total_paid, 
@@ -183,7 +243,7 @@ def add_alt_nodes(scenario_id, baseline_id, node_dict, session):
         alt_role = alt_node.role,
         scenario_id = scenario_id,
         baseline_id = baseline_id,
-        pdct_fam = pdct_fam,
+        pdct_fam = alt_node.pdct_fam,
         desti_name = alt_node.name,
         desti_region = alt_node.region,
         desti_role = alt_node.role
@@ -279,6 +339,18 @@ def add_decom_edges(scenario_id, baseline_id, edge_dict, session):
 
 
 def update_scenario_edges(scenario_id, baseline_id, session):
+    alt_edges = session.query(AltEdges).filter(
+        AltEdges.scenario_id == scenario_id,
+        AltEdges.baseline_id == baseline_id
+    ).all()
+    for e in alt_edges:
+        if not session.query(ScenarioEdges).filter(
+            ScenarioEdges.ori_name == e.ori_name,
+            ScenarioEdges.ori_region == e.ori_region,
+            ScenarioEdges.desti_name == e.desti_name,
+            ScenarioEdges.desti_region == e.desti_region,
+            ):
+
     return None
 
 
@@ -313,13 +385,33 @@ def update_scenario_lanes(scenario_id, baseline_id, session):
     return None
 
 if __name__ == '__main__':
-    engine = create_engine(DB_CONN_PARAMETER_WI)
+    engine = create_engine(DB_CONN_PARAMETER_CLOUD)
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    location = session.query(Locations).first()
-    location2 = location
+    # location = session.query(Locations).first()
+    # location2 = location
     # location2.name = 'hi'
-    print(location.name)
+    # print(location.name)
+
+    scenario_id = 1
+    baseline_id = 5
+
+    print(session.query(Locations).filter(Locations.name == 'Karim'))
+
+    # try:
+    #     print(create_scenario(1, 5, "the 'nam scenario", session))
+    #     add_alt_nodes(1, 5, node_dict, session)
+    # except Exception as e:
+    #     print(e)
+    #     session.rollback()
+    #     stmt = text("""
+    #     delete from scdsi_scenarios where scenario_id = :scenario_id and baseline_id = :baseline_id
+    #     """).params(
+    #         scenario_id = scenario_id,
+    #         baseline_id = baseline_id
+    #     )
+    #     session.execute(stmt)
+    #     session.commit()
 
     session.close()
