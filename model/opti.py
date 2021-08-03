@@ -48,16 +48,17 @@ def run_model(run_id, scenario_id, baseline_id, objective_weights):
                 (X.sum(j, '*', '*') - X.sum('*', j, '*') == node_map[j]['supply'] for j in specified_lanes[role]),
                 name = 'non_customer_flow'
             )
-            if role != 'Gateway':
-                model.addConstrs(
-                    (X.sum('*', j, '*') <= node_map[j]['capacity'] * O[j] for j in specified_lanes[role]), # node_map[j]['capacity']
-                    name = 'capacity_constraint'
-                )
+            # if role != 'Gateway':
+            #     model.addConstrs(
+            #         (X.sum('*', j, '*') <= node_map[j]['capacity'] * O[j] for j in specified_lanes[role]), # node_map[j]['capacity']
+            #         name = 'capacity_constraint'
+            #     )
 
     for j in manufacturing_adjacency_list:
+        print(node_map[j]['supply'])
         adj = manufacturing_adjacency_list[j]
         model.addConstrs(
-            (np.sum([X.sum(x[0], j, '*') for x in adj[d]]) == adj[d][0][-1] * (X.sum(j, '*', '*') - node_map[j]['supply']) for d in adj),
+            (np.sum([X.sum(x[0], j, '*') for x in adj[d]]) == list(adj[d])[0][-1] * (X.sum(j, '*', '*') - node_map[j]['supply']) for d in adj),
             name = 'alpha_constraint'
         )
 
@@ -66,10 +67,10 @@ def run_model(run_id, scenario_id, baseline_id, objective_weights):
     model.optimize()
 
     # input()
-    # print_optimal(model, node_map, index_to_mode)
+    print_optimal(model, node_map, index_to_mode)
 
     # input()
-    write_optimal(model, run_id, scenario_id, baseline_id, node_map, index_to_mode, lanes, session)
+    # write_optimal(model, run_id, scenario_id, baseline_id, node_map, index_to_mode, lanes, session)
 
 
 if __name__ == '__main__':
