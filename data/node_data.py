@@ -173,7 +173,8 @@ def get_node_capacity(scenario_id, baseline_id, pdct_fam, session):
             ScenarioNodes.role.in_(['PCBA', 'DF', 'GHUB', 'OSLC', 'DSLC'])
         ).all()
         for node in nodes:
-            node.capacity = demand * node.total_alpha / 0.8
+            total_alpha = 1 if node.total_alpha == None else node.total_alpha
+            node.capacity = demand * total_alpha / 0.8
         # stmt = text("""
         #     update scdsi_scenario_nodes 
         #     set capacity = sub.cap
