@@ -141,6 +141,56 @@ def get_kpi_ranges(scenario_id, baseline_id, session):
     ret = session.execute(stmt).first()
     return {'cost': round(ret.cost_range, 2), 'time': round(ret.time_range, 2), 'co2e': round(ret.co2e_range, 2)}
 
+def get_kpi_per(scenario_id, baseline_id, session, lambda_cost=None, lambda_co2e=None, lambda_time=None):
+    if lambda_cost == None:
+        stmt = text(
+            """
+            select min(optimal_cost)/ min(total_flow) as optimal_cost, 
+            min(optimal_time) / min(total_flow) as optimal_time, 
+            min(optimal_co2e) / min(total_flow)as optimal_co2e
+            from scdsi_solution
+            where scenario_id = :scenario_id
+            and baseline_id = :baseline_id
+            """
+        ).params(
+            scenario_id = scenario_id,
+            baseline_id = baseline_id
+        )
+    else:
+        stmt = text(
+            """
+            select optimal_cost/ total_flow as optimal_cost, 
+            optimal_time / total_flow as optimal_time, 
+            optimal_co2e / total_flowas optimal_co2e
+            from scdsi_solution s
+                join scdsi_runs r
+                on s.run_id = r.run_id
+                and s.scenario_id = r.scenario_id
+                and s.baseline_id = r.baseline_id
+            where s.scenario_id = :scenario_id
+            and s.baseline_id = :baseline_id
+            and r.lambda_cost = :lambda_cost
+            and r.lambda_time = :lambda_time
+            and r.lambda_co2e = :lambda_co2e
+            """
+        ).params(
+            scenario_id = scenario_id,
+            baseline_id = baseline_id,
+            lambda_cost = lambda_cost,
+            lambda_co2e = lambda_co2e,
+            lambda_time = lambda_time
+        )
+    x = session.execute(stmt).first()
+    kpis = {'scenario_cost': round(x.optimal_cost, 3), 'scenario_time': round(x.optimal_time, 3), 'scenario_co2e': round(x.optimal_co2e, 3)}
+    print(kpis)
+    # stmt = text(
+    #     """
+    #     select baseline_cost / total_flow as cost_per,
+
+    #     """
+    # )
+
+
 if __name__ == '__main__':
 
     Session = sessionmaker(bind=engine)
@@ -168,3 +218,4 @@ if __name__ == '__main__':
 
     pprint(get_mode_mix(scenario_id, baseline_id, session))
     pprint(get_kpi_ranges(scenario_id, baseline_id, session))
+    get_kpi_per(scenario_id, baseline_id, session)
