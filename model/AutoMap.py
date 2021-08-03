@@ -3,6 +3,8 @@ from networkx.algorithms.shortest_paths.unweighted import single_source_shortest
 import numpy as np
 import pandas as pd
 
+from pprint import pprint
+
 import snowflake as sf
 import snowflake.connector
 from snowflake.sqlalchemy import URL
@@ -351,9 +353,10 @@ class ScenarioLanes(Base):
             d = 0
             for i in adj:
                 if i.d != d:
-                    ret[index][i.d] = [(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)]
+                    ret[index][i.d] = set([(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)])
+                    d = i.d
                 else:
-                    ret[index][i.d] += [(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)]
+                    ret[index][i.d].add((node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha))
         # print(datetime.now() - start)
         return ret
 

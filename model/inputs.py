@@ -38,11 +38,11 @@ run_id = session.query(Runs.run_id).filter(
 
 node_map, node_to_index = ScenarioNodes.get_node_maps(scenario_id, baseline_id, session)
 
-# lanes = ScenarioLanes.get_lanes(scenario_id, baseline_id, node_to_index, mode_to_index, session)
+lanes = ScenarioLanes.get_lanes(scenario_id, baseline_id, node_to_index, mode_to_index, session)
 
-# manufacturing_adjacency_list = ScenarioLanes.get_manufacturing_adjacency_list(scenario_id, baseline_id, node_to_index, session)
+manufacturing_adjacency_list = ScenarioLanes.get_manufacturing_adjacency_list(scenario_id, baseline_id, node_to_index, session)
 
-# specified_lanes = ScenarioLanes.get_specified_lanes(scenario_id, baseline_id, node_to_index, session)
+specified_lanes = ScenarioLanes.get_specified_lanes(scenario_id, baseline_id, node_to_index, session)
 
 omega = Omega.get_omegas(baseline_id, session) # cost, lead_time, co2e
 
@@ -51,11 +51,11 @@ lamdas = Runs.get_lambdas(run_id, scenario_id, baseline_id, session) # cost, tim
 if __name__ == '__main__':
     # print(node_map[456699]['name'])
 
-    # pprint(manufacturing_adjacency_list)
+    pprint(manufacturing_adjacency_list)
 
     # pprint(lanes)
 
-    pprint(node_map)
+    # pprint(node_map)
 
     # pprint(specified_lanes)
 
