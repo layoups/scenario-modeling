@@ -86,7 +86,7 @@ def get_cost_omega(baseline_id, session):
         from scdsi_scenario_lanes
         where baseline_id = :baseline_id
         and scenario_id = 0
-        -- and in_pflow = 1
+        and in_pflow = 1
         group by baseline_id, scenario_id
     """).params(baseline_id = baseline_id)
 
@@ -121,7 +121,7 @@ def get_co2e_time_omega(baseline_id, session):
     lanes = session.query(ScenarioLanes).filter(
         ScenarioLanes.scenario_id == 0,
         ScenarioLanes.baseline_id == baseline_id,
-        # ScenarioLanes.in_pflow == 1
+        ScenarioLanes.in_pflow == 1
     ).all()
 
     omega = session.query(Omega).filter(
