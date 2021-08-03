@@ -1,7 +1,7 @@
 from env import DB_CONN_PARAMETER_WI
 import numpy as np
 
-from sqlalchemy import create_engine, desc, distinct, or_, and_
+from sqlalchemy import create_engine, desc, distinct, or_, and_, text
 from sqlalchemy.orm import sessionmaker
 
 from AutoMap import *
@@ -12,7 +12,6 @@ def get_main_pflow(scenario_id, baseline_id, pdct_fam, session):
     model_pflows = session.query(ScenarioLanes.pflow).filter(
         ScenarioLanes.scenario_id == scenario_id,
         ScenarioLanes.baseline_id == baseline_id,
-        ScenarioLanes.parent_pflow == None,
         ScenarioLanes.pdct_fam == pdct_fam,
         ScenarioLanes.in_pflow == 1
     ).distinct()
@@ -23,7 +22,8 @@ def get_customer_alphas(scenario_id, baseline_id, pdct_fam, session):
         ScenarioLanes.desti_name, 
         # ScenarioLanes.desti_country, 
         ScenarioLanes.desti_region,
-        ScenarioLanes.desti_role
+        ScenarioLanes.desti_role,
+        ScenarioLanes.pflow
         ).filter(
             ScenarioLanes.scenario_id == scenario_id,
             ScenarioLanes.baseline_id == baseline_id,
@@ -40,7 +40,8 @@ def get_customer_alphas(scenario_id, baseline_id, pdct_fam, session):
             ScenarioLanes.desti_region == c.desti_region, 
             ScenarioLanes.desti_role == c.desti_role,
             ScenarioLanes.pdct_fam == pdct_fam,
-            ScenarioLanes.in_pflow == 1
+            ScenarioLanes.in_pflow == 1,
+            ScenarioLanes.pflow == c.pflow
         )
         c_pflow = c_pflow.all()
         total = np.sum([e.total_weight for e in c_pflow])
@@ -63,7 +64,7 @@ def get_alphas(scenario_id, baseline_id, pdct_fam, session):
             ScenarioLanes.baseline_id == baseline_id,
             ScenarioLanes.pdct_fam == pdct_fam, 
             ScenarioLanes.in_pflow == 1,
-            or_(ScenarioLanes.pflow == p.pflow, ScenarioLanes.parent_pflow == p.pflow)
+            ScenarioLanes.pflow == p.pflow
             ).order_by(
                 ScenarioLanes.path, 
                 desc(ScenarioLanes.ship_rank)
@@ -76,6 +77,7 @@ def get_alphas(scenario_id, baseline_id, pdct_fam, session):
                 ScenarioLanes.d > edge.d, 
                 ScenarioLanes.f < edge.f,
                 ScenarioLanes.path_rank == edge.path_rank + 1, 
+                ScenarioLanes.pflow == edge.pflow,
                 ScenarioLanes.in_pflow == 1
             )
             adj = adj.all()
@@ -102,6 +104,6 @@ if __name__ == "__main__":
 
     for pdct_fam in pdct_fams:
         print(pdct_fam)
-        erase_alphas(pdct_fam.pdct_fam, scenario_id, baseline_id, session, ScenarioLanes)
+        erase_alphas([pdct_fam[0]], scenario_id, baseline_id, session, ScenarioLanes)
         get_customer_alphas(scenario_id, baseline_id, pdct_fam[0], session)
         get_alphas(scenario_id, baseline_id, pdct_fam[0], session)

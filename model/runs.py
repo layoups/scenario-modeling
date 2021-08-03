@@ -150,7 +150,7 @@ if __name__ == '__main__':
     # print(pareto_weights)
 
     scenario_id = 0
-    baseline_id = 4
+    baseline_id = 5
 
     for w in get_pareto_weights():
         run = Runs(
@@ -167,4 +167,4 @@ if __name__ == '__main__':
     session.commit()
 
     # pprint(get_mode_mix(scenario_id, baseline_id, session))
-    # pprint(get_kpi_ranges(scenario_id, baseline_id, session))
+    # pprint(getkpi_ranges(scenario_id, baseline_id, session))
