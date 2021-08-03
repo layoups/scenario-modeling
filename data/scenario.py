@@ -1,6 +1,7 @@
+from re import S
 from sqlalchemy.sql.coercions import expect
 from node_data import get_lat_long
-from networkx.classes.function import edges, nodes
+from edge_data import get_distances_time_co2e, get_transport_time_and_co2
 import numpy as np
 import pandas as pd
 
@@ -345,43 +346,62 @@ def update_scenario_edges(scenario_id, baseline_id, session):
     ).all()
     for e in alt_edges:
         if not session.query(ScenarioEdges).filter(
+            ScenarioEdges.scenario_id == scenario_id,
+            ScenarioEdges.baseline_id == baseline_id,
             ScenarioEdges.ori_name == e.ori_name,
             ScenarioEdges.ori_region == e.ori_region,
             ScenarioEdges.desti_name == e.desti_name,
             ScenarioEdges.desti_region == e.desti_region,
-            ):
-
-    return None
+        ).first():
+            edge = ScenarioEdges(
+                scenario_id = scenario_id,
+                baseline_id = baseline_id,
+                ori_name = e.ori_name,
+                ori_region = e.ori_region,
+                desti_name = e.desti_name,
+                desti_region = e.desti_region,
+                transport_mode = 'Air',
+                transport_cost = 2.3
+            )
+            session.add(edge)
+            session.commit()
+    get_distances_time_co2e(scenario_id, baseline_id, session)
+            
 
 
 def update_scenario_lanes(scenario_id, baseline_id, session):
-    alt_edges = session.query(AltEdges).all()
+    alt_edges = session.query(AltEdges).filter(
+        AltEdges.scenario_id == scenario_id,
+        AltEdges.baseline_id == baseline_id
+    ).all()
     for e in alt_edges:
         lane = ScenarioLanes(
             scenario_id = scenario_id,
             baseline_id = baseline_id,
             pdct_fam = e.pdct_fam,
             ori_name = e.ori_name,
-            # ori_region = Column('ori_region', String)
-            # ori_role = Column('ori_role', String, default='')
-            # desti_name = Column('desti_name', String)
-            # desti_region = Column('desti_region', String)
-            # desti_role = Column('desti_role', String, default='')
-            # ship_type = Column('ship_type', String)
-            # ship_rank = Column('ship_rank', Integer)
-            # total_weight = Column('total_weight', Float)
-            # total_paid = Column('total_paid', Float)
-            # alpha = Column('alpha', Float)
-            # total_alpha = Column('total_alpha', Float)
-            # color = Column('color', Integer, default=0)
-            # d = Column('d', Integer, default=0)
-            # f = Column('f', Integer, default=0)
-            # path = Column('path', Integer, default=0)
-            # path_rank = Column('path_rank', Integer, default=0)
-            # pflow = Column('pflow', Integer, default=0)
-            # parent_pflow = Column('parent_pflow', Integer)
-            # in_pflow = Column('in_pflow', Integer)
+            ori_region = e.ori_region,
+            ori_role = e.ori_role,
+            desti_name = e.desti_name,
+            desti_region = e.desti_region,
+            desti_role = e.desti_role,
+            ship_type = e.ship_type,
+            ship_rank = e.ship_rank,
+            total_weight = e.total_weight,
+            total_paid = e.total_paid,
+            alpha = e.alpha,
+            total_alpha = e.total_alpha,
+            color = e.color,
+            d = e.d,
+            f = e.f,
+            path = e.path,
+            path_rank = e.path_rank,
+            pflow = e.pflow,
+            parent_pflow = e.parent_pflow,
+            in_pflow = e.in_pflow
         )
+        session.add(lane)
+        session.commit()
     return None
 
 if __name__ == '__main__':
@@ -397,21 +417,21 @@ if __name__ == '__main__':
     scenario_id = 1
     baseline_id = 5
 
-    print(session.query(Locations).filter(Locations.name == 'Karim'))
-
-    # try:
-    #     print(create_scenario(1, 5, "the 'nam scenario", session))
-    #     add_alt_nodes(1, 5, node_dict, session)
-    # except Exception as e:
-    #     print(e)
-    #     session.rollback()
-    #     stmt = text("""
-    #     delete from scdsi_scenarios where scenario_id = :scenario_id and baseline_id = :baseline_id
-    #     """).params(
-    #         scenario_id = scenario_id,
-    #         baseline_id = baseline_id
-    #     )
-    #     session.execute(stmt)
-    #     session.commit()
+    try:
+        create_scenario(1, 5, "the 'nam scenario", session)
+        add_alt_nodes(1, 5, node_dict, session)
+        update_scenario_edges(scenario_id, baseline_id, session)
+        update_scenario_lanes(scenario_id, baseline_id, session)
+    except Exception as e:
+        print(e)
+        session.rollback()
+        stmt = text("""
+        delete from scdsi_scenarios where scenario_id = :scenario_id and baseline_id = :baseline_id
+        """).params(
+            scenario_id = scenario_id,
+            baseline_id = baseline_id
+        )
+        session.execute(stmt)
+        session.commit()
 
     session.close()
