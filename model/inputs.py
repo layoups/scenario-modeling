@@ -49,11 +49,12 @@ omega = Omega.get_omegas(baseline_id, session) # cost, lead_time, co2e
 lamdas = Runs.get_lambdas(run_id, scenario_id, baseline_id, session) # cost, time, co2e
 
 if __name__ == '__main__':
+    None
     # print(node_map[456699]['name'])
 
-    pprint(manufacturing_adjacency_list)
+    # pprint(manufacturing_adjacency_list)
 
-    # pprint(lanes)
+    pprint(lanes)
 
     # pprint(node_map)
 
