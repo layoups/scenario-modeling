@@ -161,7 +161,7 @@ def get_kpi_per(scenario_id, baseline_id, session, lambda_cost=None, lambda_co2e
             """
             select optimal_cost/ total_flow as optimal_cost, 
             optimal_time / total_flow as optimal_time, 
-            optimal_co2e / total_flowas optimal_co2e
+            optimal_co2e / total_flow as optimal_co2e
             from scdsi_solution s
                 join scdsi_runs r
                 on s.run_id = r.run_id
