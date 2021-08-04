@@ -394,10 +394,7 @@ def update_scenario_edges(scenario_id, baseline_id, session):
 
             mode_cost = [{'mode': 'Air', 'cost': 18}] if len(closest_edge_estimates) == 0 else [{'mode': x.transport_mode, 'cost': x.cost} for x in closest_edge_estimates]
 
-
-            print(mode_cost)
             for i in mode_cost:
-                print(e)
                 edge = ScenarioEdges(
                     scenario_id = scenario_id,
                     baseline_id = baseline_id,
@@ -408,8 +405,6 @@ def update_scenario_edges(scenario_id, baseline_id, session):
                     transport_mode = i['mode'],
                     transport_cost = i['cost']
                 )
-                print(edge)
-                input()
                 session.add(edge)
                 session.commit()
     get_distances_time_co2e(scenario_id, baseline_id, session)
@@ -475,23 +470,23 @@ if __name__ == '__main__':
     scenario_id = 1
     baseline_id = 5
 
-    # try:
-    #     create_scenario(1, 5, "the 'nam scenario", session)
-    #     add_alt_nodes(1, 5, node_dict, session)
-    #     # update_scenario_edges(scenario_id, baseline_id, session)
-    #     update_scenario_lanes(scenario_id, baseline_id, session)
-    # except Exception as e:
-    #     print(e)
-    #     session.rollback()
-    #     stmt = text("""
-    #     delete from scdsi_scenarios where scenario_id = :scenario_id and baseline_id = :baseline_id
-    #     """).params(
-    #         scenario_id = scenario_id,
-    #         baseline_id = baseline_id
-    #     )
-    #     session.execute(stmt)
-    #     session.commit()
+    try:
+        create_scenario(1, 5, "the 'nam scenario", session)
+        add_alt_nodes(1, 5, node_dict, session)
+        update_scenario_edges(scenario_id, baseline_id, session)
+        update_scenario_lanes(scenario_id, baseline_id, session)
+    except Exception as e:
+        print(e)
+        session.rollback()
+        stmt = text("""
+        delete from scdsi_scenarios where scenario_id = :scenario_id and baseline_id = :baseline_id
+        """).params(
+            scenario_id = scenario_id,
+            baseline_id = baseline_id
+        )
+        session.execute(stmt)
+        session.commit()
 
-    update_scenario_edges(scenario_id, baseline_id, session)
+    # update_scenario_edges(scenario_id, baseline_id, session)
 
     session.close()
