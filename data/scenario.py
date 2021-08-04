@@ -1,5 +1,6 @@
 from re import S
 from sqlalchemy.sql.coercions import expect
+from sqlalchemy.sql.functions import mode
 from node_data import get_lat_long
 from edge_data import get_distances_time_co2e, get_transport_time_and_co2
 import numpy as np
@@ -13,6 +14,7 @@ from collections import deque
 from datetime import datetime
 
 from sqlalchemy.sql.expression import or_
+from sqlalchemy.sql import func
 
 from AutoMap import *
 from PathRoles import *
@@ -345,30 +347,68 @@ def update_scenario_edges(scenario_id, baseline_id, session):
         AltEdges.scenario_id == scenario_id,
         AltEdges.baseline_id == baseline_id
     ).all()
+
     for e in alt_edges:
-        if not session.query(ScenarioEdges).filter(
+        if session.query(ScenarioEdges).filter(
             ScenarioEdges.scenario_id == scenario_id,
             ScenarioEdges.baseline_id == baseline_id,
             ScenarioEdges.ori_name == e.ori_name,
             ScenarioEdges.ori_region == e.ori_region,
             ScenarioEdges.desti_name == e.desti_name,
             ScenarioEdges.desti_region == e.desti_region,
-        ).first():
-            edge = ScenarioEdges(
-                scenario_id = scenario_id,
-                baseline_id = baseline_id,
-                ori_name = e.ori_name,
-                ori_region = e.ori_region,
-                desti_name = e.desti_name,
-                desti_region = e.desti_region,
-                transport_mode = 'Air',
-                transport_cost = 2.3
-            )
-            session.add(edge)
-            session.commit()
-    get_distances_time_co2e(scenario_id, baseline_id, session)
+        ).first() == None:
+            ori_country = e.ori_name.split(',')[-1]
+            desti_country = e.desti_name.split(',')[-1]
+
+            closest_edge_estimates = session.query(
+                func.avg(ScenarioEdges.transport_cost).label('cost'),
+                ScenarioEdges.transport_mode).filter(
+                    ScenarioEdges.scenario_id == scenario_id,
+                    ScenarioEdges.baseline_id == baseline_id,
+                    ScenarioEdges.ori_name.like('%{}'.format(ori_country)),
+                    ScenarioEdges.desti_name.like('%{}'.format(desti_country)),
+                ).group_by(
+                    ScenarioEdges.scenario_id,
+                    ScenarioEdges.baseline_id,
+                    ScenarioEdges.ori_name,
+                    ScenarioEdges.desti_name,
+                    ScenarioEdges.transport_mode
+                ).all()
             
 
+            if closest_edge_estimates == None:
+                closest_edge_estimates = session.query(
+                    func.avg(ScenarioEdges.transport_cost).label('cost'),
+                    ScenarioEdges.transport_mode).filter(
+                        ScenarioEdges.scenario_id == scenario_id,
+                        ScenarioEdges.baseline_id == baseline_id,
+                        ScenarioEdges.ori_region == e.ori_region,
+                        ScenarioEdges.desti_region == e.desti_region,
+                    ).group_by(
+                        ScenarioEdges.scenario_id,
+                        ScenarioEdges.baseline_id,
+                        ScenarioEdges.ori_region,
+                        ScenarioEdges.desti_region,
+                        ScenarioEdges.transport_mode
+                    ).all()
+
+            mode_cost = [('Air', 18)] if closest_edge_estimates == None else [(x.transport_mode, x.cost) for x in closest_edge_estimates]
+
+            for i in mode_cost:
+                edge = ScenarioEdges(
+                    scenario_id = scenario_id,
+                    baseline_id = baseline_id,
+                    ori_name = e.ori_name,
+                    ori_region = e.ori_region,
+                    desti_name = e.desti_name,
+                    desti_region = e.desti_region,
+                    transport_mode = i[0],
+                    transport_cost = i[1]
+                )
+                session.add(edge)
+                session.commit()
+    get_distances_time_co2e(scenario_id, baseline_id, session)
+            
 
 def update_scenario_lanes(scenario_id, baseline_id, session):
     alt_edges = session.query(AltEdges).filter(
@@ -434,5 +474,6 @@ if __name__ == '__main__':
         )
         session.execute(stmt)
         session.commit()
+
 
     session.close()
