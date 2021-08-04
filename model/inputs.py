@@ -27,12 +27,12 @@ index_to_mode = {
 
 
 scenario_id = 0
-baseline_id = 1
+baseline_id = 5
 run_id = session.query(Runs.run_id).filter(
     Runs.scenario_id == scenario_id,
     Runs.baseline_id == baseline_id,
-    Runs.lambda_cost == 1,
-    Runs.lambda_time == 0,
+    Runs.lambda_cost == 0,
+    Runs.lambda_time == 1,
     Runs.lambda_co2e == 0
 ).first().run_id
 
