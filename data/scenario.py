@@ -115,17 +115,17 @@ def create_scenario(scenario_id, baseline_id, description, session):
     # copy scenario lanes, scenario edges, scenario nodes
     
 
-node_dict = {
-    'pdct_fam': '4400ISR' , 
-    'name': ',cn',  
-    'region': 'apac', 
-    'role': 'PCBA', 
-    'capacity': 8431, 
-    'supply': 0, 
-    'opex': 0,
-    'alt_name': 'hanoi,vn',
-    'alt_region': 'apac',
-} 
+# node_dict = {
+#     'pdct_fam': '4400ISR' , 
+#     'name': ',cn',  
+#     'region': 'apac', 
+#     'role': 'PCBA', 
+#     'capacity': 8431, 
+#     'supply': 0, 
+#     'opex': 0,
+#     'alt_name': 'hanoi,vn',
+#     'alt_region': 'apac',
+# } 
 # add to alt nodes
 # add to scenario nodes
 # add to locations, get Locations
@@ -356,7 +356,7 @@ def update_scenario_edges(scenario_id, baseline_id, session):
             ScenarioEdges.ori_region == e.ori_region,
             ScenarioEdges.desti_name == e.desti_name,
             ScenarioEdges.desti_region == e.desti_region,
-        ).first() == None:
+            ).first() == None:
             ori_country = e.ori_name.split(',')[-1]
             desti_country = e.desti_name.split(',')[-1]
 
@@ -376,7 +376,7 @@ def update_scenario_edges(scenario_id, baseline_id, session):
                 ).all()
             
 
-            if closest_edge_estimates == None:
+            if len(closest_edge_estimates) == 0:
                 closest_edge_estimates = session.query(
                     func.avg(ScenarioEdges.transport_cost).label('cost'),
                     ScenarioEdges.transport_mode).filter(
@@ -392,9 +392,12 @@ def update_scenario_edges(scenario_id, baseline_id, session):
                         ScenarioEdges.transport_mode
                     ).all()
 
-            mode_cost = [('Air', 18)] if closest_edge_estimates == None else [(x.transport_mode, x.cost) for x in closest_edge_estimates]
+            mode_cost = [{'mode': 'Air', 'cost': 18}] if len(closest_edge_estimates) == 0 else [{'mode': x.transport_mode, 'cost': x.cost} for x in closest_edge_estimates]
 
+
+            print(mode_cost)
             for i in mode_cost:
+                print(e)
                 edge = ScenarioEdges(
                     scenario_id = scenario_id,
                     baseline_id = baseline_id,
@@ -402,9 +405,11 @@ def update_scenario_edges(scenario_id, baseline_id, session):
                     ori_region = e.ori_region,
                     desti_name = e.desti_name,
                     desti_region = e.desti_region,
-                    transport_mode = i[0],
-                    transport_cost = i[1]
+                    transport_mode = i['mode'],
+                    transport_cost = i['cost']
                 )
+                print(edge)
+                input()
                 session.add(edge)
                 session.commit()
     get_distances_time_co2e(scenario_id, baseline_id, session)
@@ -455,25 +460,38 @@ if __name__ == '__main__':
     # location2.name = 'hi'
     # print(location.name)
 
+    node_dict = {
+    'pdct_fam': '4400ISR' , 
+    'name': ',cn',  
+    'region': 'apac', 
+    'role': 'PCBA', 
+    'capacity': 8431, 
+    'supply': 0, 
+    'opex': 0,
+    'alt_name': 'hanoi,vn',
+    'alt_region': 'apac',
+    } 
+
     scenario_id = 1
     baseline_id = 5
 
-    try:
-        create_scenario(1, 5, "the 'nam scenario", session)
-        add_alt_nodes(1, 5, node_dict, session)
-        update_scenario_edges(scenario_id, baseline_id, session)
-        update_scenario_lanes(scenario_id, baseline_id, session)
-    except Exception as e:
-        print(e)
-        session.rollback()
-        stmt = text("""
-        delete from scdsi_scenarios where scenario_id = :scenario_id and baseline_id = :baseline_id
-        """).params(
-            scenario_id = scenario_id,
-            baseline_id = baseline_id
-        )
-        session.execute(stmt)
-        session.commit()
+    # try:
+    #     create_scenario(1, 5, "the 'nam scenario", session)
+    #     add_alt_nodes(1, 5, node_dict, session)
+    #     # update_scenario_edges(scenario_id, baseline_id, session)
+    #     update_scenario_lanes(scenario_id, baseline_id, session)
+    # except Exception as e:
+    #     print(e)
+    #     session.rollback()
+    #     stmt = text("""
+    #     delete from scdsi_scenarios where scenario_id = :scenario_id and baseline_id = :baseline_id
+    #     """).params(
+    #         scenario_id = scenario_id,
+    #         baseline_id = baseline_id
+    #     )
+    #     session.execute(stmt)
+    #     session.commit()
 
+    update_scenario_edges(scenario_id, baseline_id, session)
 
     session.close()
