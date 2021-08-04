@@ -75,13 +75,18 @@ def run_model(run_id, scenario_id, baseline_id, objective_weights):
 
 if __name__ == '__main__':
 
-    # runz = session.query(Runs).filter(
-    #     Runs.scenario_id == 0,
-    #     Runs.baseline_id == 1
-    # ).all()
+    runz = session.query(Runs).filter(
+        Runs.scenario_id == 1,
+        Runs.baseline_id == 3
+    ).all()
 
-    # for run in runz:
-    #     lamdas = Runs.get_lambdas(run.run_id, run.scenario_id, run.baseline_id, session)
-    #     run_model(run_id, scenario_id, baseline_id, lamdas)
+    i = 0
 
-    run_model(run_id, scenario_id, baseline_id, lamdas)
+    for run in runz:
+        print('------------------------------------- New Run -------------------------------------')
+        print(66 - i)
+        lamdas = Runs.get_lambdas(run.run_id, run.scenario_id, run.baseline_id, session)
+        run_model(run_id, scenario_id, baseline_id, lamdas)
+        i += 1
+
+    # run_model(run_id, scenario_id, baseline_id, lamdas)
