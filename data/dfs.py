@@ -118,9 +118,9 @@ if __name__ == "__main__":
 
     # print(ScenarioLanes.__table__.columns.keys())
 
-    pdct_fam = "4400ISR"
+    pdct_fam = "C9115AX"
     scenario_id = 0
-    baseline_id = 4
+    baseline_id = 5
 
     # create_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
     # populate_scenario_lanes(baseline_id, Session())
@@ -132,3 +132,5 @@ if __name__ == "__main__":
     get_alphas(scenario_id, baseline_id, pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
     visualize_graphivz(scenario_id, baseline_id, pdct_fam, Session())
+    erase([pdct_fam], scenario_id, baseline_id, Session(), ScenarioLanes)
+
