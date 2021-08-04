@@ -164,6 +164,7 @@ def set_baseline(baseline_id, start, end, description, session):
     # pdct_fams = [('AIRANT',), ('WPHONE',), ('SBPHONE',), ('PHONVOC',)]
     # pdct_fams = [('QSFP40G',)]
     pdct_fams = [('AIRANT',), ('C2960X',), ('4400ISR',), ('WPHONE',), ('SBPHONE',)]
+    pdct_fams = session.query(NamPFs.pf).distinct().all()
     # pdct_fams = [('4400ISR',)]
 
     try:

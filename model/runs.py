@@ -122,7 +122,35 @@ def get_mode_mix(scenario_id, baseline_id, session, run_id=None):
             ret[x.run_id] = {}
             run = x.run_id
         ret[x.run_id][x.transport_mode] = round(x.mix, 2)
-    return ret
+
+    stmt = text("""
+        select sub.transport_mode, 
+        cast(sum(sub.total_weight) as float) as mode_weight 
+        from (select e.ori_name, e.ori_region,
+			  e.desti_name, e.desti_region, e.total_weight, e.transport_mode
+            from scdsi_scenario_lanes l
+            left join scdsi_scenario_edges e
+            on l.baseline_id = e.baseline_id
+            and l.scenario_id = e.scenario_id
+            and l.ori_name = e.ori_name
+            and l.ori_region = e.ori_region
+            and l.desti_name = e.desti_name
+            and l.desti_region = e.desti_region
+            where l.in_pflow = 1  
+            and l.alpha is not null 
+            and l.baseline_id = :baseline_id
+            and l.scenario_id = :scenario_id
+            and l.parent_pflow is null
+            ) as sub
+		group by sub.transport_mode
+    """).params(
+        scenario_id = scenario_id,
+        baseline_id = baseline_id
+    )
+    mode_mix = session.execute(stmt).all()
+    total = np.sum([x.mode_weight for x in mode_mix])
+    ret_baseline = {x.transport_mode: round(x.mode_weight / total, 2) for x in mode_mix}
+    return ret, ret_baseline
 
 def get_kpi_ranges(scenario_id, baseline_id, session):
     stmt = text(
@@ -208,23 +236,23 @@ if __name__ == '__main__':
     # pareto_weights = get_pareto_weights()
     # print(pareto_weights)
 
-    scenario_id = 1
-    baseline_id = 5
+    scenario_id = 0
+    baseline_id = 1
 
-    for w in get_pareto_weights():
-        run = Runs(
-            scenario_id = scenario_id,
-            baseline_id = baseline_id,
-            date = datetime.now(),
-            description = "'nam 4400ISR",
-            lambda_cost = w[0],
-            lambda_time = w[1],
-            lambda_co2e = w[2] 
-        )
+    # for w in get_pareto_weights():
+    #     run = Runs(
+    #         scenario_id = scenario_id,
+    #         baseline_id = baseline_id,
+    #         date = datetime.now(),
+    #         description = "'nam 4400ISR",
+    #         lambda_cost = w[0],
+    #         lambda_time = w[1],
+    #         lambda_co2e = w[2] 
+    #     )
 
-        session.add(run)
-    session.commit()
+    #     session.add(run)
+    # session.commit()
 
-    # pprint(get_mode_mix(scenario_id, baseline_id, session))
-    # pprint(get_kpi_ranges(scenario_id, baseline_id, session))
-    # pprint(get_kpi_per(scenario_id, baseline_id, session)) #, lambda_co2e=0, lambda_time=1, lambda_cost=0))
+    pprint(get_mode_mix(scenario_id, baseline_id, session))
+    pprint(get_kpi_ranges(scenario_id, baseline_id, session))
+    pprint(get_kpi_per(scenario_id, baseline_id, session)) #, lambda_co2e=0, lambda_time=1, lambda_cost=0))
