@@ -367,6 +367,7 @@ def update_scenario_edges(scenario_id, baseline_id, session):
                     ScenarioEdges.baseline_id == baseline_id,
                     ScenarioEdges.ori_name.like('%{}'.format(ori_country)),
                     ScenarioEdges.desti_name.like('%{}'.format(desti_country)),
+                    ScenarioEdges.transport_mode.in_(['Air', 'Ocean'])
                 ).group_by(
                     ScenarioEdges.scenario_id,
                     ScenarioEdges.baseline_id,
@@ -384,6 +385,7 @@ def update_scenario_edges(scenario_id, baseline_id, session):
                         ScenarioEdges.baseline_id == baseline_id,
                         ScenarioEdges.ori_region == e.ori_region,
                         ScenarioEdges.desti_region == e.desti_region,
+                        ScenarioEdges.transport_mode.in_(['Air', 'Ocean'])
                     ).group_by(
                         ScenarioEdges.scenario_id,
                         ScenarioEdges.baseline_id,
