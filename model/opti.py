@@ -32,10 +32,9 @@ def run_model(run_id, scenario_id, baseline_id, objective_weights):
         name="O",
     )
 
-    obj = objective_weights['cost'] * np.reciprocal(omega['cost']) * gp.quicksum((lanes[(i, j, m)]['transport_cost']) * X[i, j, m] for i, j, m in lanes)
+    obj = objective_weights['cost'] * np.reciprocal(omega['cost']) * (gp.quicksum((lanes[(i, j, m)]['transport_cost']) * X[i, j, m] for i, j, m in lanes) + gp.quicksum(O[n] for n in node_map) / len(node_map))
     obj += objective_weights['time'] * np.reciprocal(omega['lead_time']) * gp.quicksum(lanes[(i, j, m)]['transport_time'] * X[i, j, m] for i, j ,m in lanes)
     obj += objective_weights['co2e'] * np.reciprocal(omega['co2e']) * gp.quicksum(lanes[(i,j,m)]['co2e'] * X[i, j, m] for i, j, m in lanes)
-    obj += gp.quicksum(O[n] for n in node_map) / len(node_map)
     model.setObjective(obj, GRB.MINIMIZE)
 
     for role in specified_lanes:
