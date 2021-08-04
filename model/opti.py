@@ -63,7 +63,7 @@ def run_model(run_id, scenario_id, baseline_id, objective_weights):
         )
 
 
-    model.write('model/opt.lp')
+    # model.write('model/opt.lp')
     model.optimize()
 
     # input()
@@ -84,9 +84,9 @@ if __name__ == '__main__':
 
     for run in runz:
         print('------------------------------------- New Run -------------------------------------')
-        print(66 - i)
+        print('{} Runs Remaining'.format(66 - i))
         lamdas = Runs.get_lambdas(run.run_id, run.scenario_id, run.baseline_id, session)
-        run_model(run_id, scenario_id, baseline_id, lamdas)
+        run_model(run.run_id, run.scenario_id, run.baseline_id, lamdas)
         i += 1
 
     # run_model(run_id, scenario_id, baseline_id, lamdas)

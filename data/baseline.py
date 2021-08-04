@@ -164,7 +164,10 @@ def set_baseline(baseline_id, start, end, description, session):
     # pdct_fams = [('AIRANT',), ('WPHONE',), ('SBPHONE',), ('PHONVOC',)]
     # pdct_fams = [('QSFP40G',)]
     # pdct_fams = [('AIRANT',), ('C2960X',), ('4400ISR',), ('WPHONE',), ('SBPHONE',)]
-    pdct_fams = session.query(NamPFs.pf).distinct().all()
+    # pdct_fams = session.query(NamPFs.pf).distinct().all()
+    pdct_fams = session.query(ScenarioLanes.pdct_fam).filter(
+        ScenarioLanes.ship_type == 'OTOR1'
+    ).distinct().all()
     # pdct_fams = [('4400ISR',)]
 
     try:
@@ -274,7 +277,7 @@ if __name__ == '__main__':
 
     start = datetime.now()
 
-    baseline_id = 6
+    baseline_id = 7
     set_baseline(baseline_id, start='2020-01-01', end='2020-12-31', description="'nam big basket" , session=session)
 
     # get_cost_omega(baseline_id, session)
