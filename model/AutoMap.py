@@ -404,12 +404,12 @@ class ScenarioEdges(Base):
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
-        return '({}, {}) | ({}_{}) --> ({}_{}): | {} | distance = {}, time = {}, co2 = {}'.format(
+        return '({}, {}) | ({}_{}) --> ({}_{}): | {} | distance = {}, time = {}, co2 = {}, cost = {}'.format(
             self.scenario_id, self.baseline_id,
             self.ori_name, self.ori_region,
             self.desti_name, self.desti_region,
             self.transport_mode,
-            self.distance, self.transport_time, self.co2e
+            self.distance, self.transport_time, self.co2e, self.transport_cost
         )
 
     @classmethod
