@@ -536,6 +536,16 @@ class CO2Factors(Base):
         )
 
 
+class NamPFs(Base):
+
+    pdct_id = Column('pdct_id', Integer, primary_key=True, autoincrement=True)
+    pf = Column('pf', String)
+    bu = Column('bu', String)
+
+    __tablename__ = 'scdsi_vietnam_pfs'
+    __table_args__ = {'extend_existing': True}
+
+
 Base.prepare()
 
 def test_auto_mapping():
