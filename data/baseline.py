@@ -163,7 +163,7 @@ def set_baseline(baseline_id, start, end, description, session):
     # pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
     # pdct_fams = [('AIRANT',), ('WPHONE',), ('SBPHONE',), ('PHONVOC',)]
     # pdct_fams = [('QSFP40G',)]
-    pdct_fams = [('AIRANT',), ('C2960X',), ('4400ISR',), ('WPHONE',), ('SBPHONE',)]
+    # pdct_fams = [('AIRANT',), ('C2960X',), ('4400ISR',), ('WPHONE',), ('SBPHONE',)]
     pdct_fams = session.query(NamPFs.pf).distinct().all()
     # pdct_fams = [('4400ISR',)]
 
@@ -274,8 +274,8 @@ if __name__ == '__main__':
 
     start = datetime.now()
 
-    baseline_id = 3
-    set_baseline(baseline_id, start='2020-01-01', end='2020-12-31', description="'nam basket" , session=session)
+    baseline_id = 6
+    set_baseline(baseline_id, start='2020-01-01', end='2020-12-31', description="'nam big basket" , session=session)
 
     # get_cost_omega(baseline_id, session)
     # get_co2e_time_omega(baseline_id, session)

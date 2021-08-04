@@ -149,7 +149,7 @@ def get_mode_mix(scenario_id, baseline_id, session, run_id=None):
     )
     mode_mix = session.execute(stmt).all()
     total = np.sum([x.mode_weight for x in mode_mix])
-    ret_baseline = {x.transport_mode: round(x.mode_weight / total, 2) for x in mode_mix}
+    ret_baseline = {x.transport_mode: 100 * round(x.mode_weight / total, 2) for x in mode_mix}
     return ret, ret_baseline
 
 def get_kpi_ranges(scenario_id, baseline_id, session):
@@ -239,20 +239,20 @@ if __name__ == '__main__':
     scenario_id = 1
     baseline_id = 3
 
-    for w in get_pareto_weights():
-        run = Runs(
-            scenario_id = scenario_id,
-            baseline_id = baseline_id,
-            date = datetime.now(),
-            description = "'nam basket",
-            lambda_cost = w[0],
-            lambda_time = w[1],
-            lambda_co2e = w[2] 
-        )
+    # for w in get_pareto_weights():
+    #     run = Runs(
+    #         scenario_id = scenario_id,
+    #         baseline_id = baseline_id,
+    #         date = datetime.now(),
+    #         description = "'nam basket",
+    #         lambda_cost = w[0],
+    #         lambda_time = w[1],
+    #         lambda_co2e = w[2] 
+    #     )
 
-        session.add(run)
-    session.commit()
+    #     session.add(run)
+    # session.commit()
 
-    # pprint(get_mode_mix(scenario_id, baseline_id, session))
-    # pprint(get_kpi_ranges(scenario_id, baseline_id, session))
-    # pprint(get_kpi_per(scenario_id, baseline_id, session)) #, lambda_co2e=0, lambda_time=1, lambda_cost=0))
+    pprint(get_mode_mix(scenario_id, baseline_id, session))
+    pprint(get_kpi_ranges(scenario_id, baseline_id, session))
+    pprint(get_kpi_per(scenario_id, baseline_id, session)) #, lambda_co2e=0, lambda_time=1, lambda_cost=0))
