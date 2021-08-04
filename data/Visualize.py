@@ -102,7 +102,7 @@ def visualize_graphivz(scenario_id, baseline_id, pdct_fam, session):
         origin = "{}\n{}".format(e.ori_name, e.ori_role)
         destination = "{}\n{}".format(e.desti_name, e.desti_role)
 
-        G.edge(origin, destination, label=str(e.alpha))
+        G.edge(origin, destination, label=str(round(e.alpha, 5)))
 
     G.unflatten(stagger=5).view()
     # G.view()
