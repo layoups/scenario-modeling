@@ -367,7 +367,7 @@ def update_scenario_edges(scenario_id, baseline_id, session):
                     ScenarioEdges.baseline_id == baseline_id,
                     ScenarioEdges.ori_name.like('%{}'.format(ori_country)),
                     ScenarioEdges.desti_name.like('%{}'.format(desti_country)),
-                    ScenarioEdges.transport_mode.in_(['Air', 'Ocean'])
+                    ScenarioEdges.transport_mode.in_(['Air']) #, 'Ocean'])
                 ).group_by(
                     ScenarioEdges.scenario_id,
                     ScenarioEdges.baseline_id,
@@ -385,7 +385,7 @@ def update_scenario_edges(scenario_id, baseline_id, session):
                         ScenarioEdges.baseline_id == baseline_id,
                         ScenarioEdges.ori_region == e.ori_region,
                         ScenarioEdges.desti_region == e.desti_region,
-                        ScenarioEdges.transport_mode.in_(['Air', 'Ocean'])
+                        ScenarioEdges.transport_mode.in_(['Air']) #, 'Ocean'])
                     ).group_by(
                         ScenarioEdges.scenario_id,
                         ScenarioEdges.baseline_id,
@@ -457,7 +457,7 @@ if __name__ == '__main__':
     # location2.name = 'hi'
     # print(location.name)
 
-    node_dict = {
+    node_dict_1 = {
     'pdct_fam': '4400ISR' , 
     'name': ',cn',  
     'region': 'apac', 
@@ -468,15 +468,29 @@ if __name__ == '__main__':
     'alt_name': 'hanoi,vn',
     'alt_region': 'apac',
     } 
+    node_dict_2 = {
+    'pdct_fam': 'C2960X' , 
+    'name': 'tsing yi, new territories,hk',  
+    'region': 'apac', 
+    'role': 'DF', 
+    'capacity': 150848, 
+    'supply': 0, 
+    'opex': 0,
+    'alt_name': 'hanoi,vn',
+    'alt_region': 'apac',
+    } 
+
+    node_dicts = [node_dict_1, node_dict_2]
 
     scenario_id = 1
-    baseline_id = 5
+    baseline_id = 3
 
     try:
-        create_scenario(1, 5, "the 'nam scenario", session)
-        add_alt_nodes(1, 5, node_dict, session)
-        update_scenario_edges(scenario_id, baseline_id, session)
-        update_scenario_lanes(scenario_id, baseline_id, session)
+        create_scenario(scenario_id, baseline_id, "the 'nam scenario", session)
+        for node_dict in node_dicts:
+            add_alt_nodes(scenario_id, baseline_id, node_dict, session)
+            update_scenario_edges(scenario_id, baseline_id, session)
+            update_scenario_lanes(scenario_id, baseline_id, session)
     except Exception as e:
         print(e)
         session.rollback()

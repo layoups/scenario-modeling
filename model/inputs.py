@@ -27,7 +27,7 @@ index_to_mode = {
 
 
 scenario_id = 1
-baseline_id = 5
+baseline_id = 3
 run_id = session.query(Runs.run_id).filter(
     Runs.scenario_id == scenario_id,
     Runs.baseline_id == baseline_id,
