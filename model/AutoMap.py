@@ -274,6 +274,7 @@ class ScenarioLanes(Base):
             and l.desti_name = e.desti_name
             and l.desti_region = e.desti_region
             where l.in_pflow = 1  
+            and l.alpha is not null 
             and l.baseline_id = :baseline_id
             and l.scenario_id = :scenario_id
             -- and l.parent_pflow is null
@@ -304,6 +305,7 @@ class ScenarioLanes(Base):
             cls.scenario_id == scenario_id,
             cls.baseline_id == baseline_id,
             cls.in_pflow == 1,
+            cls.alpha != None,
             # cls.parent_pflow == None
         ).all()
 
