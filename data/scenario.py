@@ -115,6 +115,25 @@ def create_scenario(scenario_id, baseline_id, description, session):
     # copy scenario lanes, scenario edges, scenario nodes
     
 
+def create_alt_node(scenario_id, baseline_id, alt_name, alt_region, session):
+    nodes = session.query(ScenarioNodes).filter(
+        ScenarioNodes.scenario_id == scenario_id,
+        ScenarioNodes.baseline_id == baseline_id,
+        ScenarioNodes.region == alt_region,
+        ScenarioNodes.role.in_(['PCBA', 'DF'])
+    ).all()
+    return [{
+        'pdct_fam': node.pdct_fam, 
+        'name': node.name, 
+        'region': node.region, 
+        'role': node.role,
+        'capacity': node.capacity,
+        'supply': 0,
+        'opex': 0,
+        'alt_name': alt_name,
+        'alt_region': alt_region
+        } for node in nodes]
+
 # node_dict = {
 #     'pdct_fam': '4400ISR' , 
 #     'name': ',cn',  
@@ -487,6 +506,7 @@ if __name__ == '__main__':
 
     try:
         create_scenario(scenario_id, baseline_id, "the 'nam scenario", session)
+        node_dicts = create_alt_node(0, baseline_id, alt_name='hanoi,vn', alt_region='apac', session=session)
         for node_dict in node_dicts:
             add_alt_nodes(scenario_id, baseline_id, node_dict, session)
             update_scenario_edges(scenario_id, baseline_id, session)
