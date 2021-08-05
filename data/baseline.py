@@ -87,6 +87,7 @@ def get_cost_omega(baseline_id, session):
         where baseline_id = :baseline_id
         and scenario_id = 0
         and in_pflow = 1
+        -- and parent_pflow is null
         group by baseline_id, scenario_id
     """).params(baseline_id = baseline_id)
 
@@ -121,7 +122,8 @@ def get_co2e_time_omega(baseline_id, session):
     lanes = session.query(ScenarioLanes).filter(
         ScenarioLanes.scenario_id == 0,
         ScenarioLanes.baseline_id == baseline_id,
-        ScenarioLanes.in_pflow == 1
+        ScenarioLanes.in_pflow == 1,
+        # ScenarioLanes.parent_pflow == None
     ).all()
 
     omega = session.query(Omega).filter(
@@ -165,10 +167,12 @@ def set_baseline(baseline_id, start, end, description, session):
     # pdct_fams = [('QSFP40G',)]
     # pdct_fams = [('AIRANT',), ('C2960X',), ('4400ISR',), ('WPHONE',), ('SBPHONE',)]
     # pdct_fams = session.query(NamPFs.pf).distinct().all()
-    pdct_fams = session.query(ScenarioLanes.pdct_fam).filter(
-        ScenarioLanes.ship_type == 'OTOR1'
-    ).distinct().all()
+    # pdct_fams = session.query(ScenarioLanes.pdct_fam).filter(
+    #     ScenarioLanes.ship_type == 'OTOR1'
+    # ).distinct().all()
     # pdct_fams = [('4400ISR',)]
+    # pdct_fams = [('4400ISR',), ('ASR1000',), ('C4500',), ('C4500X',)]
+    pdct_fams = [('C4500',)]
 
     try:
         for pdct_fam in pdct_fams: 
@@ -277,8 +281,8 @@ if __name__ == '__main__':
 
     start = datetime.now()
 
-    baseline_id = 7
-    set_baseline(baseline_id, start='2020-01-01', end='2020-12-31', description="'nam big basket" , session=session)
+    baseline_id = 9
+    set_baseline(baseline_id, start='2020-01-01', end='2020-12-31', description="'nam C4500" , session=session)
 
     # get_cost_omega(baseline_id, session)
     # get_co2e_time_omega(baseline_id, session)

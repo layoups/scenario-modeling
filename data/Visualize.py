@@ -191,12 +191,12 @@ if __name__ == "__main__":
     session = Session()
 
     scenario_id = 0
-    baseline_id = 3
+    baseline_id = 9
 
-    pdct_fam = '4400ISR'
+    pdct_fam = 'C4500'
     # visualize_networkx(pdct_fam, session)
-    # visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
-    visualize_solution(scenario_id, baseline_id, pdct_fam, lambda_cost=0, lambda_co2=1, lambda_time=0, session=session)
+    visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
+    # visualize_solution(scenario_id, baseline_id, pdct_fam, lambda_cost=0, lambda_co2=1, lambda_time=0, session=session)
 
     # alt_names = ['DF', 'PCBA']
     # for alt_name in alt_names:
