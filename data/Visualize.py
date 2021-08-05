@@ -121,6 +121,8 @@ def visualize_solution(scenario_id, baseline_id, pdct_fam, lambda_cost, lambda_c
         OptimalFlows.run_id == run_id,
         OptimalFlows.scenario_id == scenario_id,
         OptimalFlows.baseline_id == baseline_id,
+        OptimalFlows.pdct_fam == pdct_fam,
+        OptimalFlows.desti_role != 'Customer'
     )
 
     G = gv.Digraph('{}_optimal'.format(pdct_fam), node_attr={'color': 'lightblue2', 'style': 'filled'})
@@ -134,10 +136,11 @@ def visualize_solution(scenario_id, baseline_id, pdct_fam, lambda_cost, lambda_c
         origin = "{}\n{}".format(e.ori_name, e.ori_role)
         destination = "{}\n{}".format(e.desti_name, e.desti_role)
 
-        g_label = '{} | {}'.format(e.transport_mode, e.flow)
-        f_label = '{}'.format(e.transport_mode)
+        if e.flow > 0 or e.ori_name == 'hanoi,vn' or e.desti_name == 'hanoi,vn':
+            g_label = '{} | {}'.format(e.transport_mode, e.flow)
+            G.edge(origin, destination, label=g_label)
 
-        G.edge(origin, destination, label=g_label)
+        f_label = '{}'.format(e.transport_mode)
         F.edge(origin, destination, label=f_label)
 
     G.unflatten(stagger=5).view()
@@ -187,13 +190,13 @@ if __name__ == "__main__":
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    scenario_id = 1
+    scenario_id = 0
     baseline_id = 3
 
     pdct_fam = '4400ISR'
     # visualize_networkx(pdct_fam, session)
     # visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
-    visualize_solution(scenario_id, baseline_id, pdct_fam, 1, 0, 0, session)
+    visualize_solution(scenario_id, baseline_id, pdct_fam, lambda_cost=0, lambda_co2=1, lambda_time=0, session=session)
 
     # alt_names = ['DF', 'PCBA']
     # for alt_name in alt_names:
