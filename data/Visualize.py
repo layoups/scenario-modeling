@@ -107,6 +107,43 @@ def visualize_graphivz(scenario_id, baseline_id, pdct_fam, session):
     G.unflatten(stagger=5).view()
     # G.view()
 
+def visualize_solution(scenario_id, baseline_id, pdct_fam, lambda_cost, lambda_co2, lambda_time, session):
+    
+    run_id = session.query(Runs.run_id).filter(
+        Runs.scenario_id == scenario_id,
+        Runs.baseline_id == baseline_id,
+        Runs.lambda_cost == lambda_cost,
+        Runs.lambda_time == lambda_time,
+        Runs.lambda_co2e == lambda_co2
+    ).first().run_id
+
+    graph = session.query(OptimalFlows).filter(
+        OptimalFlows.run_id == run_id,
+        OptimalFlows.scenario_id == scenario_id,
+        OptimalFlows.baseline_id == baseline_id,
+    )
+
+    G = gv.Digraph('{}_optimal'.format(pdct_fam), node_attr={'color': 'lightblue2', 'style': 'filled'})
+    F = gv.Digraph('{}_no_flow'.format(pdct_fam), node_attr={'color': 'lightblue2', 'style': 'filled'})
+    # G.attr(size='6,6')
+
+    for e in graph.all():
+        # origin = "{}\n{}\n{}\n{}".format(e.ori_name, e.ori_country, e.ori_region, e.ori_role)
+        # destination = "{}\n{}\n{}\n{}".format(e.desti_name, e.desti_country, e.desti_region, e.desti_role)
+
+        origin = "{}\n{}".format(e.ori_name, e.ori_role)
+        destination = "{}\n{}".format(e.desti_name, e.desti_role)
+
+        g_label = '{} | {}'.format(e.transport_mode, e.flow)
+        f_label = '{}'.format(e.transport_mode)
+
+        G.edge(origin, destination, label=g_label)
+        F.edge(origin, destination, label=f_label)
+
+    G.unflatten(stagger=5).view()
+    F.unflatten(stagger=5).view()
+    # G.view()
+
 def visualize_alt_paths(pdct_fam, var_node, alts, session, leech):
     from graphviz import Digraph
     graph = get_main_pflow(pdct_fam, session)
@@ -150,12 +187,13 @@ if __name__ == "__main__":
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    scenario_id = 0
-    baseline_id = 1
+    scenario_id = 1
+    baseline_id = 3
 
-    pdct_fam = 'PHONVOC'
+    pdct_fam = '4400ISR'
     # visualize_networkx(pdct_fam, session)
-    visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
+    # visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
+    visualize_solution(scenario_id, baseline_id, pdct_fam, 1, 0, 0, session)
 
     # alt_names = ['DF', 'PCBA']
     # for alt_name in alt_names:
