@@ -67,26 +67,26 @@ def run_model(run_id, scenario_id, baseline_id, objective_weights):
     model.optimize()
 
     # input()
-    # print_optimal(model, node_map, index_to_mode)
+    print_optimal(model, node_map, index_to_mode)
 
     # input()
-    write_optimal(model, run_id, scenario_id, baseline_id, node_map, index_to_mode, lanes, session)
+    # write_optimal(model, run_id, scenario_id, baseline_id, node_map, index_to_mode, lanes, session)
 
 
 if __name__ == '__main__':
 
-    runz = session.query(Runs).filter(
-        Runs.scenario_id == 1,
-        Runs.baseline_id == 3
-    ).all()
+    # runz = session.query(Runs).filter(
+    #     Runs.scenario_id == 1,
+    #     Runs.baseline_id == 3
+    # ).all()
 
-    i = 0
+    # i = 0
 
-    for run in runz:
-        print('------------------------------------- New Run -------------------------------------')
-        print('{} Runs Remaining'.format(66 - i))
-        lamdas = Runs.get_lambdas(run.run_id, run.scenario_id, run.baseline_id, session)
-        run_model(run.run_id, run.scenario_id, run.baseline_id, lamdas)
-        i += 1
+    # for run in runz:
+    #     print('------------------------------------- New Run -------------------------------------')
+    #     print('{} Runs Remaining'.format(66 - i))
+    #     lamdas = Runs.get_lambdas(run.run_id, run.scenario_id, run.baseline_id, session)
+    #     run_model(run.run_id, run.scenario_id, run.baseline_id, lamdas)
+    #     i += 1
 
-    # run_model(run_id, scenario_id, baseline_id, lamdas)
+    run_model(run_id, scenario_id, baseline_id, lamdas)
