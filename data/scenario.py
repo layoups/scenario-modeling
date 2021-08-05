@@ -120,7 +120,7 @@ def create_alt_node(scenario_id, baseline_id, alt_name, alt_region, session):
         ScenarioNodes.scenario_id == scenario_id,
         ScenarioNodes.baseline_id == baseline_id,
         ScenarioNodes.region == alt_region,
-        ScenarioNodes.role.in_(['PCBA', 'DF'])
+        ScenarioNodes.role.in_(['PCBA']) #, 'DF'])
     ).all()
     return [{
         'pdct_fam': node.pdct_fam, 
@@ -502,7 +502,7 @@ if __name__ == '__main__':
     node_dicts = [node_dict_1, node_dict_2]
 
     scenario_id = 1
-    baseline_id = 3
+    baseline_id = 9
 
     try:
         create_scenario(scenario_id, baseline_id, "the 'nam scenario", session)

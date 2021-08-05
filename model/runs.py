@@ -140,7 +140,7 @@ def get_mode_mix(scenario_id, baseline_id, session, run_id=None):
             and l.alpha is not null 
             and l.baseline_id = :baseline_id
             and l.scenario_id = :scenario_id
-            and l.parent_pflow is null
+            -- and l.parent_pflow is null
             ) as sub
 		group by sub.transport_mode
     """).params(
@@ -237,7 +237,7 @@ if __name__ == '__main__':
     # print(pareto_weights)
 
     scenario_id = 0
-    baseline_id = 6
+    baseline_id = 9
 
     for w in get_pareto_weights():
         run = Runs(

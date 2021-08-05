@@ -27,7 +27,7 @@ index_to_mode = {
 
 
 scenario_id = 0
-baseline_id = 6
+baseline_id = 9
 run_id = session.query(Runs.run_id).filter(
     Runs.scenario_id == scenario_id,
     Runs.baseline_id == baseline_id,
@@ -52,9 +52,9 @@ if __name__ == '__main__':
     None
     # print(node_map[456699]['name'])
 
-    # pprint(manufacturing_adjacency_list)
+    pprint(manufacturing_adjacency_list)
 
-    pprint(lanes)
+    # pprint(lanes)
 
     # pprint(node_map)
 

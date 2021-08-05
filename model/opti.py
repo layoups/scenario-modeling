@@ -76,8 +76,8 @@ def run_model(run_id, scenario_id, baseline_id, objective_weights):
 if __name__ == '__main__':
 
     # runz = session.query(Runs).filter(
-    #     Runs.scenario_id == 1,
-    #     Runs.baseline_id == 3
+    #     Runs.scenario_id == 0,
+    #     Runs.baseline_id == 9
     # ).all()
 
     # i = 0
