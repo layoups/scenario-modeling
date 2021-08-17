@@ -67,7 +67,7 @@ def dfs_visit(baseline_id, pdct_type, stack, pflow, path_stack, curr_path_head_r
 
     # debug_print(stack, path, path_stack, path_rank, pflow, curr_path_head_rank[0], "HEAD")
 
-    if path[0] > 1 and path_stack[0] < path_stack[1]:
+    if path[0] > 1 and path_stack[0] < path_stack[1] and stack[path_rank - 1].in_pflow == 1:
         curr_path_head_rank[0] = path_rank - 1
 
     path_rank += 1
@@ -118,9 +118,9 @@ if __name__ == "__main__":
 
     # print(ScenarioLanes.__table__.columns.keys())
 
-    pdct_fam = "PHONVOC"
+    pdct_fam = "C9115AX"
     scenario_id = 0
-    baseline_id = 1
+    baseline_id = 5
 
     # create_baseline(baseline_id, '2020-01-01', '2020-12-31', 'trial', Session())
     # populate_scenario_lanes(baseline_id, Session())
@@ -132,3 +132,5 @@ if __name__ == "__main__":
     get_alphas(scenario_id, baseline_id, pdct_fam, Session())
     # visualize_networkx(pdct_fam, Session())
     visualize_graphivz(scenario_id, baseline_id, pdct_fam, Session())
+    erase([pdct_fam], scenario_id, baseline_id, Session(), ScenarioLanes)
+

@@ -26,9 +26,15 @@ index_to_mode = {
 }
 
 
-run_id = 3
 scenario_id = 0
-baseline_id = 3
+baseline_id = 9
+run_id = session.query(Runs.run_id).filter(
+    Runs.scenario_id == scenario_id,
+    Runs.baseline_id == baseline_id,
+    Runs.lambda_cost == 0,
+    Runs.lambda_time == 0,
+    Runs.lambda_co2e == 1
+).first().run_id
 
 node_map, node_to_index = ScenarioNodes.get_node_maps(scenario_id, baseline_id, session)
 
@@ -43,9 +49,10 @@ omega = Omega.get_omegas(baseline_id, session) # cost, lead_time, co2e
 lamdas = Runs.get_lambdas(run_id, scenario_id, baseline_id, session) # cost, time, co2e
 
 if __name__ == '__main__':
-    print(node_map[456699]['name'])
+    None
+    # print(node_map[456699]['name'])
 
-    # pprint(manufacturing_adjacency_list)
+    pprint(manufacturing_adjacency_list)
 
     # pprint(lanes)
 

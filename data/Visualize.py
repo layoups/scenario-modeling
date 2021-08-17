@@ -102,9 +102,49 @@ def visualize_graphivz(scenario_id, baseline_id, pdct_fam, session):
         origin = "{}\n{}".format(e.ori_name, e.ori_role)
         destination = "{}\n{}".format(e.desti_name, e.desti_role)
 
-        G.edge(origin, destination, label=str(e.alpha))
+        G.edge(origin, destination, label=str(round(e.alpha, 5)))
 
     G.unflatten(stagger=5).view()
+    # G.view()
+
+def visualize_solution(scenario_id, baseline_id, pdct_fam, lambda_cost, lambda_co2, lambda_time, session):
+    
+    run_id = session.query(Runs.run_id).filter(
+        Runs.scenario_id == scenario_id,
+        Runs.baseline_id == baseline_id,
+        Runs.lambda_cost == lambda_cost,
+        Runs.lambda_time == lambda_time,
+        Runs.lambda_co2e == lambda_co2
+    ).first().run_id
+
+    graph = session.query(OptimalFlows).filter(
+        OptimalFlows.run_id == run_id,
+        OptimalFlows.scenario_id == scenario_id,
+        OptimalFlows.baseline_id == baseline_id,
+        OptimalFlows.pdct_fam == pdct_fam,
+        OptimalFlows.desti_role != 'Customer'
+    )
+
+    G = gv.Digraph('{}_optimal'.format(pdct_fam), node_attr={'color': 'lightblue2', 'style': 'filled'})
+    F = gv.Digraph('{}_no_flow'.format(pdct_fam), node_attr={'color': 'lightblue2', 'style': 'filled'})
+    # G.attr(size='6,6')
+
+    for e in graph.all():
+        # origin = "{}\n{}\n{}\n{}".format(e.ori_name, e.ori_country, e.ori_region, e.ori_role)
+        # destination = "{}\n{}\n{}\n{}".format(e.desti_name, e.desti_country, e.desti_region, e.desti_role)
+
+        origin = "{}\n{}".format(e.ori_name, e.ori_role)
+        destination = "{}\n{}".format(e.desti_name, e.desti_role)
+
+        if e.flow > 0 or e.ori_name == 'hanoi,vn' or e.desti_name == 'hanoi,vn':
+            g_label = '{} | {}'.format(e.transport_mode, e.flow)
+            G.edge(origin, destination, label=g_label)
+
+        f_label = '{}'.format(e.transport_mode)
+        F.edge(origin, destination, label=f_label)
+
+    G.unflatten(stagger=5).view()
+    F.unflatten(stagger=5).view()
     # G.view()
 
 def visualize_alt_paths(pdct_fam, var_node, alts, session, leech):
@@ -151,11 +191,12 @@ if __name__ == "__main__":
     session = Session()
 
     scenario_id = 0
-    baseline_id = 2
+    baseline_id = 9
 
-    pdct_fam = 'QSFP40G'
+    pdct_fam = 'C4500'
     # visualize_networkx(pdct_fam, session)
     visualize_graphivz(scenario_id, baseline_id, pdct_fam, session)
+    # visualize_solution(scenario_id, baseline_id, pdct_fam, lambda_cost=0, lambda_co2=1, lambda_time=0, session=session)
 
     # alt_names = ['DF', 'PCBA']
     # for alt_name in alt_names:

@@ -62,13 +62,13 @@ def populate_scenario_lanes(baseline_id, session):
         and ship_date_pure_ship >= :start and ship_date_pure_ship <= :end
         and product_family not in ('TBA')
         and ship_from_name is not null
-        and ship_from_country is not null
+        -- and ship_from_country is not null
         and ship_from_region_code is not null
-        and length(ship_from_name) > 3
+        -- and length(ship_from_name) > 3
         and ship_to_name is not null
-        and ship_to_country is not null
+        -- and ship_to_country is not null
         and ship_to_region_code is not null
-        and length(ship_to_name) > 3
+        -- and length(ship_to_name) > 3
         group by product_family, 
         lower(ship_from_name), lower(ship_from_region_code), 
         lower(ship_to_name), lower(ship_to_region_code), 
@@ -81,12 +81,13 @@ def populate_scenario_lanes(baseline_id, session):
 
 def get_cost_omega(baseline_id, session):
     stmt = text("""
-        insert into scdsi_omega (baseline_id, baseline_cost)
-        select baseline_id, sum(total_weight)
+        insert into scdsi_omega (baseline_id, baseline_cost, total_flow)
+        select baseline_id, sum(total_paid), sum(total_weight)
         from scdsi_scenario_lanes
         where baseline_id = :baseline_id
         and scenario_id = 0
         and in_pflow = 1
+        -- and parent_pflow is null
         group by baseline_id, scenario_id
     """).params(baseline_id = baseline_id)
 
@@ -121,7 +122,8 @@ def get_co2e_time_omega(baseline_id, session):
     lanes = session.query(ScenarioLanes).filter(
         ScenarioLanes.scenario_id == 0,
         ScenarioLanes.baseline_id == baseline_id,
-        ScenarioLanes.in_pflow == 1
+        ScenarioLanes.in_pflow == 1,
+        # ScenarioLanes.parent_pflow == None
     ).all()
 
     omega = session.query(Omega).filter(
@@ -162,7 +164,15 @@ def set_baseline(baseline_id, start, end, description, session):
     
     # pdct_fams = session.query(ScenarioLanes.pdct_fam).distinct().all()
     # pdct_fams = [('AIRANT',), ('WPHONE',), ('SBPHONE',), ('PHONVOC',)]
-    pdct_fams = [('QSFP40G',)]
+    # pdct_fams = [('QSFP40G',)]
+    # pdct_fams = [('AIRANT',), ('C2960X',), ('4400ISR',), ('WPHONE',), ('SBPHONE',)]
+    # pdct_fams = session.query(NamPFs.pf).distinct().all()
+    # pdct_fams = session.query(ScenarioLanes.pdct_fam).filter(
+    #     ScenarioLanes.ship_type == 'OTOR1'
+    # ).distinct().all()
+    # pdct_fams = [('4400ISR',)]
+    # pdct_fams = [('4400ISR',), ('ASR1000',), ('C4500',), ('C4500X',)]
+    pdct_fams = [('C4500',)]
 
     try:
         for pdct_fam in pdct_fams: 
@@ -271,8 +281,8 @@ if __name__ == '__main__':
 
     start = datetime.now()
 
-    baseline_id = 3
-    set_baseline(baseline_id, '2010-01-01', '2020-12-31', "mode trial one pdct" , session)
+    baseline_id = 9
+    set_baseline(baseline_id, start='2020-01-01', end='2020-12-31', description="'nam C4500" , session=session)
 
     # get_cost_omega(baseline_id, session)
     # get_co2e_time_omega(baseline_id, session)

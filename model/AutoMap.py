@@ -3,6 +3,8 @@ from networkx.algorithms.shortest_paths.unweighted import single_source_shortest
 import numpy as np
 import pandas as pd
 
+from pprint import pprint
+
 import snowflake as sf
 import snowflake.connector
 from snowflake.sqlalchemy import URL
@@ -57,7 +59,7 @@ class Baselines(Base):
 class Scenarios(Base):
 
     baseline_id = Column('baseline_id', String, ForeignKey('scdsi_baselines.baseline_id'), primary_key=True)
-    scenario_id = Column('scenario_id', Integer, primary_key=True, nullable=True)
+    scenario_id = Column('scenario_id', Integer, primary_key=True, nullable=True, autoincrement=True)
     date = Column('date', Date)
     description = Column('description', String)
 
@@ -129,6 +131,7 @@ class Omega(Base):
     baseline_cost = Column('baseline_cost', Float)
     baseline_lead_time = Column('baseline_lead_time', Float)
     baseline_co2e = Column('baseline_co2e', Float)
+    total_flow = Column('total_flow', Float)
 
 
     __tablename__ = 'scdsi_omega'
@@ -154,7 +157,7 @@ class AltEdges(Base):
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
-        return "({}, {}) | {}: ({}_{}_{}_{}) -> ({}_{}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
+        return "({}, {}) | {}: ({}_{}_{}) -> ({}_{}_{}) | <ship_type: {}, pflow: {}, path: {}, rank: {}, alpha: {}, (d, f): ({}, {})>".format(
             self.scenario_id, self.baseline_id,
             self.pdct_fam,
             self.ori_name, self.ori_region, self.ori_role,
@@ -271,9 +274,10 @@ class ScenarioLanes(Base):
             and l.desti_name = e.desti_name
             and l.desti_region = e.desti_region
             where l.in_pflow = 1  
+            and l.alpha is not null 
             and l.baseline_id = :baseline_id
             and l.scenario_id = :scenario_id
-            and l.parent_pflow is null
+            -- and l.parent_pflow is null
             """
         ).params(
             scenario_id = scenario_id,
@@ -301,7 +305,8 @@ class ScenarioLanes(Base):
             cls.scenario_id == scenario_id,
             cls.baseline_id == baseline_id,
             cls.in_pflow == 1,
-            cls.parent_pflow == None
+            cls.alpha != None,
+            # cls.parent_pflow == None
         ).all()
 
         ret = {
@@ -350,9 +355,10 @@ class ScenarioLanes(Base):
             d = 0
             for i in adj:
                 if i.d != d:
-                    ret[index][i.d] = [(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)]
+                    ret[index][i.d] = set([(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)])
+                    d = i.d
                 else:
-                    ret[index][i.d] += [(node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha)]
+                    ret[index][i.d].add((node_to_index[(i.pdct_fam, i.ori_name, i.ori_region, i.ori_role)], i.alpha))
         # print(datetime.now() - start)
         return ret
 
@@ -398,12 +404,12 @@ class ScenarioEdges(Base):
     __table_args__ = {'extend_existing': True}
 
     def __repr__(self) -> str:
-        return '({}, {}) | ({}_{}_{}) --> ({}_{}_{}): | {} | distance = {}, time = {}, co2 = {}'.format(
+        return '({}, {}) | ({}_{}) --> ({}_{}): | {} | distance = {}, time = {}, co2 = {}, cost = {}'.format(
             self.scenario_id, self.baseline_id,
             self.ori_name, self.ori_region,
             self.desti_name, self.desti_region,
             self.transport_mode,
-            self.distance, self.transport_time, self.co2e
+            self.distance, self.transport_time, self.co2e, self.transport_cost
         )
 
     @classmethod
@@ -435,6 +441,7 @@ class ScenarioNodes(Base):
     capacity = Column('capacity', Float)
     opex = Column('opex', Float)
     pflow = Column('pflow', Integer)
+    total_alpha = Column('total_alpha', Float)
     in_pflow = Column('in_pflow', Integer)
 
     __tablename__ = 'scdsi_scenario_nodes'
@@ -553,6 +560,8 @@ class Solution(Base):
     optimal_cost = Column('optimal_cost', Float)
     optimal_co2e = Column('optimal_co2e', Float)
     optimal_time = Column('optimal_time', Float)
+    solution = Column('solution', Float)
+    total_flow = Column('total_flow', Float)
 
     __tablename__ = 'scdsi_solution'
     __table_args__ = {'extend_existing': True}
