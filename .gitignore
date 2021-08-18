@@ -130,7 +130,7 @@ dmypy.json
 
 # misc
 env.py
-*.pdf 
+# *.pdf 
 *.gv
 *.csv
 *.xlsx
