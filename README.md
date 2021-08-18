@@ -6,4 +6,4 @@ The goal of the project is to develop a tool enabling Cisco to evaluate changes 
 ### Index
 
 All data pipeline methods live in the data folder, and all model methods live in the model folder.
-The Network Reconstruction Protocol (as per the whitepaper) is implemented in data/dfs.py + data/PathRoles.py, and the MIP is implemented in the model/opti.py + model/inputs.py.
+The Network Reconstruction Protocol (as per the whitepaper) is implemented in data/dfs.py + data/PathRoles.py, and the MIP is implemented in model/opti.py + model/inputs.py.
